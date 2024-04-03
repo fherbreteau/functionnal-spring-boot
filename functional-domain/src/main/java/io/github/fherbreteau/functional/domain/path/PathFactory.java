@@ -16,6 +16,7 @@ public class PathFactory {
         this.accessChecker = accessChecker;
     }
 
+    @SuppressWarnings("unchecked")
     public Path resolve(Path current, String segment, User currentUser) {
         if (!accessChecker.canExecute(current.getItem(), currentUser)) {
             return Path.error(new Error(current.getItem(), currentUser));

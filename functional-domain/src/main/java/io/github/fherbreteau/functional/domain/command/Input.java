@@ -5,9 +5,10 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 
-public class Input {
+@SuppressWarnings("rawtypes")
+public final class Input {
 
-    private final Item<?, ?> item;
+    private final Item item;
     private final String name;
     private final User user;
     private final Group group;
@@ -16,42 +17,18 @@ public class Input {
     private final AccessRight otherAccess;
     private final byte[] content;
 
-    public Input(Item<?, ?> item) {
-        this(item, (String) null);
+    private Input(Builder builder) {
+        this.item = builder.item;
+        this.name = builder.name;
+        this.user = builder.user;
+        this.group = builder.group;
+        this.ownerAccess = builder.ownerAccess;
+        this.groupAccess = builder.groupAccess;
+        this.otherAccess = builder.otherAccess;
+        this.content = builder.content;
     }
 
-    public Input(Item<?, ?> item, String name) {
-        this(item, name, null, null, null, null, null, null);
-    }
-
-    public Input(Item<?, ?> item, User user) {
-        this(item, null, user, null, null, null, null, null);
-    }
-
-    public Input(Item<?, ?> item, Group group) {
-        this(item, null, null, group, null, null, null, null);
-    }
-
-    public Input(Item<?, ?> item, byte[] content) {
-        this(item, null, null, null, null, null, null, content);
-    }
-
-    public Input(Item<?, ?> item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
-        this(item, null, null, null, ownerAccess, groupAccess, otherAccess, null);
-    }
-
-    private Input(Item<?, ?> item, String name, User user, Group group, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess, byte[] content) {
-        this.item = item;
-        this.name = name;
-        this.user = user;
-        this.group = group;
-        this.ownerAccess = ownerAccess;
-        this.groupAccess = groupAccess;
-        this.otherAccess = otherAccess;
-        this.content = content;
-    }
-
-    public Item<?, ?> getItem() {
+    public Item getItem() {
         return item;
     }
 
@@ -87,6 +64,10 @@ public class Input {
         return content;
     }
 
+    public static Builder builder(Item item) {
+        return new Builder(item);
+    }
+
     @Override
     public String toString() {
         return "Input{" +
@@ -99,5 +80,60 @@ public class Input {
                 ", otherAccess=" + otherAccess +
                 ", content=<redacted>" +
                 '}';
+    }
+
+    public static final class Builder {
+
+        private final Item item;
+        private String name;
+        private User user;
+        private Group group;
+        private AccessRight ownerAccess;
+        private AccessRight groupAccess;
+        private AccessRight otherAccess;
+        private byte[] content;
+
+        private Builder(Item<?, ?> item) {
+            this.item = item;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withUser(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder withGroup(Group group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder withOwnerAccess(AccessRight ownerAccess) {
+            this.ownerAccess = ownerAccess;
+            return this;
+        }
+
+        public Builder withGroupAccess(AccessRight groupAccess) {
+            this.groupAccess = groupAccess;
+            return this;
+        }
+
+        public Builder withOtherAccess(AccessRight otherAccess) {
+            this.otherAccess = otherAccess;
+            return this;
+        }
+
+        public Builder withContent(byte[] content) {
+            this.content = content;
+            return this;
+        }
+
+        public Input build() {
+            return new Input(this);
+        }
     }
 }

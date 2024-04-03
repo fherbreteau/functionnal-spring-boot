@@ -33,6 +33,9 @@ public class CreateFileCommand extends AbstractCreateCommand<File> {
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.TOUCH, new Input(parent, name), actor);
+        Input input = Input.builder(parent)
+                .withName(name)
+                .build();
+        return new Error(CommandType.TOUCH, input, actor);
     }
 }

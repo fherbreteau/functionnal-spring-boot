@@ -18,7 +18,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateFileCommandTest {
+class CreateFileCommandTest {
     private CreateFileCommand command;
     @Mock
     private FileRepository repository;
@@ -28,7 +28,7 @@ public class CreateFileCommandTest {
     private User actor;
 
     @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
+    private ArgumentCaptor<File> itemCaptor;
 
     @BeforeEach
     public void setup() {

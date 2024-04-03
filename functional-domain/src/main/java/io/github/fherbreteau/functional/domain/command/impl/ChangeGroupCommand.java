@@ -9,13 +9,13 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeGroupCommand extends AbstractCommand<Item<?, ?>> {
+public class ChangeGroupCommand<I extends Item<I, ?>> extends AbstractCommand<I> {
 
-    private final Item<?, ?> item;
+    private final I item;
 
     private final Group newGroup;
 
-    public ChangeGroupCommand(FileRepository repository, AccessChecker accessChecker, Item<?, ?> item, Group newGroup) {
+    public ChangeGroupCommand(FileRepository repository, AccessChecker accessChecker, I item, Group newGroup) {
         super(repository, accessChecker);
         this.item = item;
         this.newGroup = newGroup;
@@ -27,13 +27,14 @@ public class ChangeGroupCommand extends AbstractCommand<Item<?, ?>> {
     }
 
     @Override
-    public Item<?, ?> execute(User actor) {
-        Item<?, ?> newItem = item.copyBuilder().withGroup(newGroup).build();
+    public I execute(User actor) {
+        I newItem = item.copyBuilder().withGroup(newGroup).build();
         return repository.save(newItem);
     }
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.CHGRP, new Input(item, newGroup), actor);
+        Input input = Input.builder(item).withGroup(newGroup).build();
+        return new Error(CommandType.CHGRP, input, actor);
     }
 }

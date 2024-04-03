@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.command.impl.ChangeOwnerCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ChangeOwnerCommandFactory implements CommandFactory {
     @Override
     public boolean supports(CommandType commandType, Input input) {
@@ -19,7 +20,7 @@ public class ChangeOwnerCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<?> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
         return new ChangeOwnerCommand(repository, accessChecker, input.getItem(), input.getUser());
     }
 }

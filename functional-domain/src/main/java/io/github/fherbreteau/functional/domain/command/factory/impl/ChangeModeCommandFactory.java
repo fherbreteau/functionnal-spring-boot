@@ -11,6 +11,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ChangeModeCommandFactory implements CommandFactory {
 
     @Override
@@ -23,7 +24,8 @@ public class ChangeModeCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<?> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
-        return new ChangeModeCommand(repository, accessChecker, input.getItem(), input.getOwnerAccess(), input.getGroupAccess(), input.getOtherAccess());
+    public Command createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+        return new ChangeModeCommand(repository, accessChecker, input.getItem(), input.getOwnerAccess(),
+                input.getGroupAccess(), input.getOtherAccess());
     }
 }

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-public class UnsupportedCommandTest {
+class UnsupportedCommandTest {
     private UnsupportedCommand command;
     private User actor;
 

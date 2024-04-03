@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class CompositeFactoryTest {
+class CompositeFactoryTest {
 
     private CompositeFactory factory;
     @Mock
@@ -35,14 +35,14 @@ public class CompositeFactoryTest {
         User user = mock(User.class);
         Group group = mock(Group.class);
         return Stream.of(
-                Arguments.of(CommandType.TOUCH, new Input(folder, "item")),
-                Arguments.of(CommandType.MKDIR, new Input(folder, "item")),
-                Arguments.of(CommandType.LIST, new Input(folder)),
-                Arguments.of(CommandType.CHOWN, new Input(file, user)),
-                Arguments.of(CommandType.CHGRP, new Input(file, group)),
-                Arguments.of(CommandType.CHMOD, new Input(file, AccessRight.full(), null, null)),
-                Arguments.of(CommandType.DOWNLOAD, new Input(file)),
-                Arguments.of(CommandType.UPLOAD, new Input(file, new byte[0]))
+                Arguments.of(CommandType.TOUCH, Input.builder(folder).withName("item").build()),
+                Arguments.of(CommandType.MKDIR, Input.builder(folder).withName("item").build()),
+                Arguments.of(CommandType.LIST, Input.builder(folder).build()),
+                Arguments.of(CommandType.CHOWN, Input.builder(file).withUser(user).build()),
+                Arguments.of(CommandType.CHGRP, Input.builder(file).withGroup(group).build()),
+                Arguments.of(CommandType.CHMOD, Input.builder(file).withOwnerAccess(AccessRight.full()).build()),
+                Arguments.of(CommandType.DOWNLOAD, Input.builder(file).build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(new byte[0]).build())
         );
     }
 
@@ -50,17 +50,18 @@ public class CompositeFactoryTest {
         Folder folder = mock(Folder.class);
         File file = mock(File.class);
         return Stream.of(
-                Arguments.of(CommandType.TOUCH, new Input(file, "item")),
-                Arguments.of(CommandType.MKDIR, new Input(file, "item")),
-                Arguments.of(CommandType.LIST, new Input(file)),
-                Arguments.of(CommandType.CHOWN, new Input(file)),
-                Arguments.of(CommandType.CHGRP, new Input(file)),
-                Arguments.of(CommandType.CHMOD, new Input(file)),
-                Arguments.of(CommandType.DOWNLOAD, new Input(folder)),
-                Arguments.of(CommandType.UPLOAD, new Input(folder, new byte[0]))
+                Arguments.of(CommandType.TOUCH, Input.builder(file).withName("item").build()),
+                Arguments.of(CommandType.MKDIR, Input.builder(file).withName("item").build()),
+                Arguments.of(CommandType.LIST, Input.builder(file).build()),
+                Arguments.of(CommandType.CHOWN, Input.builder(file).build()),
+                Arguments.of(CommandType.CHGRP, Input.builder(file).build()),
+                Arguments.of(CommandType.CHMOD, Input.builder(file).build()),
+                Arguments.of(CommandType.DOWNLOAD, Input.builder(folder).build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(folder).withContent(new byte[0]).build())
         );
     }
 
+    @SuppressWarnings("rawtypes")
     @BeforeEach
     public void setup() {
         List<CommandFactory> factories = List.of(

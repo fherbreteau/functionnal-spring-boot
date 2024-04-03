@@ -5,15 +5,15 @@ import io.github.fherbreteau.functional.domain.entities.User;
 
 public interface AccessChecker {
 
-    boolean canRead(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canRead(T item, User actor);
 
-    boolean canWrite(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canWrite(T item, User actor);
 
-    boolean canExecute(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canExecute(T item, User actor);
 
-    boolean canChangeMode(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canChangeMode(T item, User actor);
 
-    boolean canChangeOwner(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canChangeOwner(T item, User actor);
 
-    boolean canChangeGroup(Item<?, ?> item, User actor);
+    <T extends Item<T, ?>> boolean canChangeGroup(T item, User actor);
 }

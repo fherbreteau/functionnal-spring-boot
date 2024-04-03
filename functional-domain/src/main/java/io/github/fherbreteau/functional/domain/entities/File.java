@@ -37,8 +37,7 @@ public final class File extends AbstractItem<File, File.Builder> {
 
         private byte[] content = new byte[0];
 
-        private Builder() {
-        }
+        private Builder() { }
 
         public Builder withContent(byte[] content) {
             this.content = content;

@@ -35,6 +35,9 @@ public class CreateFolderCommand extends AbstractCreateCommand<Folder> {
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.MKDIR, new Input(parent, name), actor);
+        Input input = Input.builder(parent)
+                .withName(name)
+                .build();
+        return new Error(CommandType.MKDIR, input, actor);
     }
 }

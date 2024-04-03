@@ -8,13 +8,13 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeOwnerCommand extends AbstractCommand<Item<?, ?>> {
+public class ChangeOwnerCommand<I extends Item<I, ?>> extends AbstractCommand<I> {
 
-    private final Item<?, ?> item;
+    private final I item;
 
     private final User newOwner;
 
-    public ChangeOwnerCommand(FileRepository repository, AccessChecker accessChecker, Item<?, ?> item, User newOwner) {
+    public ChangeOwnerCommand(FileRepository repository, AccessChecker accessChecker, I item, User newOwner) {
         super(repository, accessChecker);
         this.item = item;
         this.newOwner = newOwner;
@@ -26,13 +26,16 @@ public class ChangeOwnerCommand extends AbstractCommand<Item<?, ?>> {
     }
 
     @Override
-    public Item<?, ?> execute(User actor) {
-        Item<?, ?> newItem = item.copyBuilder().withOwner(newOwner).build();
+    public I execute(User actor) {
+        I newItem = item.copyBuilder().withOwner(newOwner).build();
         return repository.save(newItem);
     }
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.CHOWN, new Input(item, newOwner), actor);
+        Input input = Input.builder(item)
+                .withUser(newOwner)
+                .build();
+        return new Error(CommandType.CHOWN, input, actor);
     }
 }

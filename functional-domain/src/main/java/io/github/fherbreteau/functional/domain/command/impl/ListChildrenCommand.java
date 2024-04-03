@@ -11,7 +11,8 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.util.List;
 
-public class ListChildrenCommand extends AbstractCommand<List<Item<?, ?>>> {
+@SuppressWarnings("rawtypes")
+public class ListChildrenCommand extends AbstractCommand<List<Item>> {
 
     private final Folder folder;
 
@@ -26,13 +27,14 @@ public class ListChildrenCommand extends AbstractCommand<List<Item<?, ?>>> {
     }
 
     @Override
-    public List<Item<?, ?>> execute(User actor) {
+    public List<Item> execute(User actor) {
         return repository.findByParentAndUser(folder, actor);
     }
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.LIST, new Input(folder), actor);
+        Input input = Input.builder(folder).build();
+        return new Error(CommandType.LIST, input, actor);
     }
 
 }

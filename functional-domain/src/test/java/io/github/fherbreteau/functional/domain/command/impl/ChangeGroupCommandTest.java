@@ -20,8 +20,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(MockitoExtension.class)
-public class ChangeGroupCommandTest {
+class ChangeGroupCommandTest {
     private ChangeGroupCommand command;
     @Mock
     private FileRepository repository;
@@ -33,13 +34,13 @@ public class ChangeGroupCommandTest {
     private User actor;
 
     @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
+    private ArgumentCaptor<Item> itemCaptor;
 
     @BeforeEach
     public void setup() {
         item = File.builder().withName("name").withOwner(User.user("user")).build();
         group = Group.group("group");
-        command = new ChangeGroupCommand(repository, accessChecker, item, group);
+        command = new ChangeGroupCommand<>(repository, accessChecker, item, group);
     }
 
     @Test

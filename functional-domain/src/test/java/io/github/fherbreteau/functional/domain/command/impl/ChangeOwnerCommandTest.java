@@ -17,9 +17,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(MockitoExtension.class)
-public class ChangeOwnerCommandTest {
-    private ChangeOwnerCommand command;
+class ChangeOwnerCommandTest {
+    private ChangeOwnerCommand<File> command;
     @Mock
     private FileRepository repository;
     @Mock
@@ -31,7 +32,7 @@ public class ChangeOwnerCommandTest {
     private User actor;
 
     @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
+    private ArgumentCaptor<Item> itemCaptor;
 
     @BeforeEach
     public void setup() {
@@ -42,7 +43,7 @@ public class ChangeOwnerCommandTest {
                 .withGroup(group)
                 .build();
         newUser = User.user("newUser");
-        command = new ChangeOwnerCommand(repository, accessChecker, item, newUser);
+        command = new ChangeOwnerCommand<>(repository, accessChecker, item, newUser);
     }
 
     @Test
