@@ -32,6 +32,10 @@
         <checkstyle-maven.version>3.3.1</checkstyle-maven.version>
         <checkstyle.version>10.12.5</checkstyle.version>
         <surefire.version>3.2.3</surefire.version>
+
+        <!-- Sonar configuration properties -->
+        <sonar.organization>fherbreteau</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencyManagement>
