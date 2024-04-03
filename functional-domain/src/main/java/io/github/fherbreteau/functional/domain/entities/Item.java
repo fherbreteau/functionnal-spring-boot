@@ -25,7 +25,7 @@ public interface Item<T extends Item<T, B>, B extends AbstractBuilder<T, B>> {
 
     LocalDateTime getLastAccessed();
 
-    Item<?, ?> getParent();
+    Folder getParent();
 
     boolean isFolder();
 

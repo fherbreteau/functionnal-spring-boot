@@ -17,8 +17,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(MockitoExtension.class)
-public class ChangeModeCommandTest {
+class ChangeModeCommandTest {
     private ChangeModeCommand command;
     @Mock
     private FileRepository repository;
@@ -32,7 +33,7 @@ public class ChangeModeCommandTest {
     private User actor;
 
     @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
+    private ArgumentCaptor<Item> itemCaptor;
 
     @BeforeEach
     public void setup() {
@@ -44,7 +45,7 @@ public class ChangeModeCommandTest {
         ownerAccess = AccessRight.full();
         groupAccess = AccessRight.full();
         otherAccess = AccessRight.full();
-        command = new ChangeModeCommand(repository, accessChecker, item, ownerAccess, groupAccess, otherAccess);
+        command = new ChangeModeCommand<>(repository, accessChecker, item, ownerAccess, groupAccess, otherAccess);
     }
 
     @Test

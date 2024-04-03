@@ -9,14 +9,14 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class UploadCommandFactory implements CommandFactory {
+public class UploadCommandFactory implements CommandFactory<Void> {
     @Override
     public boolean supports(CommandType type, Input input) {
         return type == CommandType.UPLOAD && input.getItem() instanceof File && input.getContent() != null;
     }
 
     @Override
-    public Command<?> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command<Void> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
         return new UploadCommand(repository, accessChecker, (File) input.getItem(), input.getContent());
     }
 }

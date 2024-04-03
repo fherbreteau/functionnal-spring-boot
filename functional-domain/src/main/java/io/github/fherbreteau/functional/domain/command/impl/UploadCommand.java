@@ -31,6 +31,7 @@ public class UploadCommand extends AbstractCommand<Void> {
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.UPLOAD, new Input(item, content), actor);
+        Input input = Input.builder(item).withContent(content).build();
+        return new Error(CommandType.UPLOAD, input, actor);
     }
 }

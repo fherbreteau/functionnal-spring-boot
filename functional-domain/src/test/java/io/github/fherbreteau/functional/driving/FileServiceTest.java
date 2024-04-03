@@ -149,7 +149,7 @@ class FileServiceTest {
         given(command.canExecute(actor)).willReturn(true);
         given(command.execute(actor)).willReturn(new Object());
         // When
-        Output result = fileService.processCommand(CommandType.TOUCH, actor, new Input(item));
+        Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
@@ -172,7 +172,7 @@ class FileServiceTest {
         given(command.canExecute(actor)).willReturn(false);
         given(command.handleError(actor)).willReturn(new Error("message"));
         // When
-        Output result = fileService.processCommand(CommandType.TOUCH, actor, new Input(item));
+        Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)

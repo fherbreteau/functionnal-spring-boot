@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class DownloadCommandFactory implements CommandFactory {
+public class DownloadCommandFactory implements CommandFactory<byte[]> {
     @Override
     public boolean supports(CommandType type, Input input) {
         return type == CommandType.DOWNLOAD && input.getItem() instanceof File;

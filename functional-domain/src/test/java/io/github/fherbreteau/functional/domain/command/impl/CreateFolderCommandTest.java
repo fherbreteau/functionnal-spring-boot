@@ -18,7 +18,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateFolderCommandTest {
+class CreateFolderCommandTest {
     private CreateFolderCommand command;
     @Mock
     private FileRepository repository;
@@ -28,7 +28,7 @@ public class CreateFolderCommandTest {
     private User actor;
 
     @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
+    private ArgumentCaptor<Folder> itemCaptor;
 
     @BeforeEach
     public void setup() {

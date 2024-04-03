@@ -2,25 +2,21 @@ package io.github.fherbreteau.functional.domain.command.impl;
 
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class UploadCommandTest {
+class UploadCommandTest {
     private UploadCommand command;
     @Mock
     private FileRepository repository;
@@ -28,9 +24,6 @@ public class UploadCommandTest {
     private AccessChecker accessChecker;
     private File file;
     private User actor;
-
-    @Captor
-    private ArgumentCaptor<Item<?, ?>> itemCaptor;
 
     @BeforeEach
     public void setup() {

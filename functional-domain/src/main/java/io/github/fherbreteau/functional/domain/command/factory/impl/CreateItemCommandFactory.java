@@ -10,6 +10,7 @@ import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+@SuppressWarnings({"rawtypes"})
 public class CreateItemCommandFactory implements CommandFactory {
 
     @Override
@@ -22,7 +23,7 @@ public class CreateItemCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<?> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
         if (type == CommandType.TOUCH) {
             return new CreateFileCommand(repository, accessChecker, input.getName(), (Folder) input.getItem());
         }

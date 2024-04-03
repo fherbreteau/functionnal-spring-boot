@@ -10,9 +10,9 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeModeCommand extends AbstractCommand<Item<?, ?>> {
+public class ChangeModeCommand<I extends Item<I, ?>> extends AbstractCommand<I> {
 
-    private final Item<?, ?> item;
+    private final I item;
 
     private final AccessRight ownerAccess;
 
@@ -20,8 +20,8 @@ public class ChangeModeCommand extends AbstractCommand<Item<?, ?>> {
 
     private final AccessRight otherAccess;
 
-    public ChangeModeCommand(FileRepository repository, AccessChecker accessChecker, Item<?, ?> item,
-                             AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
+    public ChangeModeCommand(FileRepository repository, AccessChecker accessChecker, I item, AccessRight ownerAccess,
+                             AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessChecker);
         this.item = item;
         this.ownerAccess = ownerAccess;
@@ -35,8 +35,8 @@ public class ChangeModeCommand extends AbstractCommand<Item<?, ?>> {
     }
 
     @Override
-    public Item<?, ?> execute(User actor) {
-        AbstractBuilder<? extends Item<?, ?>, ?> builder = item.copyBuilder();
+    public I execute(User actor) {
+        AbstractBuilder<I, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);
         }
@@ -51,6 +51,11 @@ public class ChangeModeCommand extends AbstractCommand<Item<?, ?>> {
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.CHMOD, new Input(item, ownerAccess, groupAccess, otherAccess), actor);
+        Input input = Input.builder(item)
+                .withOwnerAccess(ownerAccess)
+                .withGroupAccess(groupAccess)
+                .withOtherAccess(otherAccess)
+                .build();
+        return new Error(CommandType.CHMOD, input, actor);
     }
 }

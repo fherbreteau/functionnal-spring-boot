@@ -6,9 +6,9 @@ import io.github.fherbreteau.functional.domain.command.Input;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public interface CommandFactory {
+public interface CommandFactory<T> {
 
     boolean supports(CommandType type, Input input);
 
-    Command<?> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input);
+    Command<T> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input);
 }

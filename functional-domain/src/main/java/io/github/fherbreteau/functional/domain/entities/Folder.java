@@ -8,7 +8,7 @@ public final class Folder extends AbstractItem<Folder, Folder.Builder> {
         super(builder);
     }
 
-    public static Item<?, ?> getRoot() {
+    public static Folder getRoot() {
         return ROOT;
     }
 
@@ -33,8 +33,7 @@ public final class Folder extends AbstractItem<Folder, Folder.Builder> {
 
     public static final class Builder extends AbstractBuilder<Folder, Builder> {
 
-        private Builder() {
-        }
+        private Builder() { }
 
         @Override
         public Folder build() {

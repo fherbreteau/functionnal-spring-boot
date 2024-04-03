@@ -29,6 +29,6 @@ public class DownloadCommand extends AbstractCommand<byte[]> {
 
     @Override
     public Error handleError(User actor) {
-        return new Error(CommandType.DOWNLOAD, new Input(item), actor);
+        return new Error(CommandType.DOWNLOAD, Input.builder(item).build(), actor);
     }
 }
