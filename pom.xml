@@ -27,7 +27,7 @@
         <mockito.version>5.8.0</mockito.version>
 
         <!-- Tools dependencies -->
-        <compiler.version>3.11.0</compiler.version>
+        <compiler.version>3.13.0</compiler.version>
         <jacoco.version>0.8.12</jacoco.version>
         <checkstyle-maven.version>3.3.1</checkstyle-maven.version>
         <checkstyle.version>10.12.5</checkstyle.version>
