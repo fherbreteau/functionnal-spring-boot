@@ -3,8 +3,9 @@ package io.github.fherbreteau.functional.domain.command.impl;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.CommandType;
 import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.exception.UnsupportedCommandException;
 
 public class UnsupportedCommand implements Command<Void> {
     private final CommandType type;
@@ -22,7 +23,7 @@ public class UnsupportedCommand implements Command<Void> {
 
     @Override
     public Void execute(User actor) {
-        return null;
+        throw new UnsupportedCommandException(type, input, actor);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-public class AccessRight {
+public final class AccessRight {
 
     private final boolean read;
 

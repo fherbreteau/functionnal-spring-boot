@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.command.Input;
 public class Error {
 
     private final String message;
+
     public Error(CommandType type, Input input, User actor) {
         this(String.format("%s with arguments %s failed for %s", type, input, actor));
     }

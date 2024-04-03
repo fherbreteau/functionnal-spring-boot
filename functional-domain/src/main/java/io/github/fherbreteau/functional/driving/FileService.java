@@ -6,8 +6,6 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.Path;
 import io.github.fherbreteau.functional.domain.path.PathFactory;
 
-import java.util.Objects;
-
 public class FileService {
 
     private final CompositeFactory commandFactory;
@@ -19,7 +17,6 @@ public class FileService {
         this.pathFactory = pathFactory;
     }
 
-
     public Path getPath(String path, User currentUser) {
         Path current = pathFactory.getRoot();
         String[] elements = path.split("/");
@@ -28,11 +25,11 @@ public class FileService {
             if (element.isEmpty()) {
                 continue;
             }
-            current = pathFactory.resolve(current, elements[index], currentUser);
+            current = pathFactory.resolve(current, element, currentUser);
             if (current.isError()) {
                 return current;
             }
-            if ((index < elements.length - 1) && !current.isItemFolder()) {
+            if (index < elements.length - 1 && !current.isItemFolder()) {
                 return Path.error(new Error(current.getItem()));
             }
         }

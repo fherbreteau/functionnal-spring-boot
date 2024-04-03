@@ -1,10 +1,13 @@
 package io.github.fherbreteau.functional.domain.command;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 
 public class Input {
 
-    private final Item<?,?> item;
+    private final Item<?, ?> item;
     private final String name;
     private final User user;
     private final Group group;
@@ -21,19 +24,19 @@ public class Input {
         this(item, name, null, null, null, null, null, null);
     }
 
-    public Input(Item<?,?> item, User user) {
+    public Input(Item<?, ?> item, User user) {
         this(item, null, user, null, null, null, null, null);
     }
 
-    public Input(Item<?,?> item, Group group) {
+    public Input(Item<?, ?> item, Group group) {
         this(item, null, null, group, null, null, null, null);
     }
 
-    public Input(Item<?,?> item, byte[] content) {
+    public Input(Item<?, ?> item, byte[] content) {
         this(item, null, null, null, null, null, null, content);
     }
 
-    public Input(Item<?,?> item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
+    public Input(Item<?, ?> item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
         this(item, null, null, null, ownerAccess, groupAccess, otherAccess, null);
     }
 
@@ -48,7 +51,7 @@ public class Input {
         this.content = content;
     }
 
-    public Item<?,?> getItem() {
+    public Item<?, ?> getItem() {
         return item;
     }
 
@@ -65,7 +68,7 @@ public class Input {
     }
 
     public AccessRight[] getAccesses() {
-        return new AccessRight[] { ownerAccess, groupAccess, otherAccess };
+        return new AccessRight[]{ownerAccess, groupAccess, otherAccess};
     }
 
     public AccessRight getOwnerAccess() {
@@ -82,5 +85,19 @@ public class Input {
 
     public byte[] getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        return "Input{" +
+                "item=" + item +
+                ", name='" + name + '\'' +
+                ", user=" + user +
+                ", group=" + group +
+                ", ownerAccess=" + ownerAccess +
+                ", groupAccess=" + groupAccess +
+                ", otherAccess=" + otherAccess +
+                ", content=<redacted>" +
+                '}';
     }
 }

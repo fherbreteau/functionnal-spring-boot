@@ -1,8 +1,10 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
+
 import java.time.LocalDateTime;
 
-public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.Builder<T, B>> implements Item<T, B> {
+public abstract class AbstractItem<T extends Item<T, B>, B extends AbstractBuilder<T, B>> implements Item<T, B> {
 
     private final String name;
 
@@ -24,8 +26,7 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
 
     private final Folder parent;
 
-
-    protected AbstractItem(Builder<T, B> builder) {
+    protected AbstractItem(AbstractBuilder<T, B> builder) {
         this.name = builder.name;
         this.owner = builder.owner;
         this.group = builder.group;
@@ -55,7 +56,7 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
 
     @Override
     public AccessRight getOwnerAccess() {
-        return null;
+        return ownerAccess;
     }
 
     @Override
@@ -88,17 +89,20 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
         return parent;
     }
 
-
     @Override
     public String getPath() {
-        if (parent == null)
+        if (parent == null) {
             return name;
+        }
         return String.format("%s/%s", parent.getPath(), name);
     }
 
     @Override
     public String toString() {
-        return "'" + name + " " + owner + ":" + group + " " + ownerAccess + groupAccess +otherAccess + " " + parent.getPath() + "'";
+        return "'" + name +
+                " " + owner + ":" + group +
+                " " + ownerAccess + groupAccess + otherAccess +
+                " " + (parent == null ? "null" : parent.getPath()) + "'";
     }
 
     protected B copy(B builder) {
@@ -117,7 +121,7 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
     }
 
     @SuppressWarnings("unchecked")
-    public static abstract class Builder<I extends Item<I,B>, B extends Builder<I,B>> {
+    public abstract static class AbstractBuilder<I extends Item<I, B>, B extends AbstractBuilder<I, B>> {
 
         private String name;
 
@@ -139,7 +143,8 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
 
         private Folder parent;
 
-        protected Builder() {}
+        protected AbstractBuilder() {
+        }
 
         public B withName(String name) {
             this.name = name;
@@ -148,7 +153,7 @@ public abstract class AbstractItem<T extends Item<T,B>, B extends AbstractItem.B
 
         public B withOwner(User owner) {
             this.owner = owner;
-            if (group == null) {
+            if (group == null && owner != null) {
                 this.group = owner.getGroup();
             }
             return (B) this;

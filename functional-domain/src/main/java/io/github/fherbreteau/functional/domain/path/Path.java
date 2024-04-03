@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 
-public class Path {
+public final class Path {
 
     public static final Path ROOT = success(Item.ROOT, Folder.getRoot());
 
@@ -20,10 +20,19 @@ public class Path {
         this.error = error;
     }
 
+    public static Path success(String path, Item<?, ?> item) {
+        return new Path(path, item, null);
+    }
+
+    public static Path error(Error error) {
+        return new Path(null, null, error);
+    }
+
     public String getName() {
         return name;
     }
 
+    @SuppressWarnings("rawtypes")
     public Item getItem() {
         return item;
     }
@@ -42,13 +51,5 @@ public class Path {
 
     public boolean isError() {
         return error != null;
-    }
-
-    public static Path success(String path, Item<?,?> item) {
-        return new Path(path, item, null);
-    }
-
-    public static Path error(Error error) {
-        return new Path(null, null, error);
     }
 }

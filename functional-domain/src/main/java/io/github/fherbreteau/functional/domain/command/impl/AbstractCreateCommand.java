@@ -16,13 +16,4 @@ public abstract class AbstractCreateCommand<I extends Item<?, ?>> extends Abstra
         this.name = name;
         this.parent = parent;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public Folder getParent() {
-        return parent;
-    }
-
 }

@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command;
 
-import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.User;
 
 public interface Command<R> {
 

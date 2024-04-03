@@ -1,9 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl;
 
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,18 +15,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ListChildrenCommandTest {
-    private ListChildrenCommand command;
+public class DownloadCommandTest {
+    private DownloadCommand command;
     @Mock
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
-    private Folder parent;
+    private File file;
     private User actor;
 
     @Captor
@@ -36,17 +32,17 @@ public class ListChildrenCommandTest {
 
     @BeforeEach
     public void setup() {
-        parent = Folder.builder()
-                .withName("parent")
+        file = File.builder()
+                .withName("file")
                 .build();
         actor = User.user("actor");
-        command = new ListChildrenCommand(repository, accessChecker, parent);
+        command = new DownloadCommand(repository, accessChecker, file);
     }
 
     @Test
-    void shouldCheckChangeGroupAccessToFileWhenCheckingCommand() {
+    void shouldCheckReadAccessToFileWhenCheckingCommand() {
         // GIVEN
-        given(accessChecker.canRead(parent, actor)).willReturn(true);
+        given(accessChecker.canRead(file, actor)).willReturn(true);
         // WHEN
         boolean result = command.canExecute(actor);
         // THEN
@@ -54,11 +50,11 @@ public class ListChildrenCommandTest {
     }
 
     @Test
-    void shouldEditGroupWhenExecutingCommand() {
+    void shouldReadContentWhenExecutingCommand() {
         // GIVEN
-        given(repository.findByParentAndUser(parent, actor)).willReturn(List.of());
+        given(repository.readContent(file)).willReturn(new byte[0]);
         // WHEN
-        List<Item<?, ?>> result = command.execute(actor);
+        byte[] result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull().isEmpty();
     }
@@ -71,6 +67,6 @@ public class ListChildrenCommandTest {
         //THEN
         assertThat(error).isNotNull()
                 .extracting(Error::getMessage)
-                .isEqualTo("LIST with arguments Input{item='parent null:null --------- null', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
+                .isEqualTo("DOWNLOAD with arguments Input{item='file null:null --------- null', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

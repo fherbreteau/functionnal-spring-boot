@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl;
 
-import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +18,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateFileCommandTest {
-    private CreateFileCommand command;
+public class CreateFolderCommandTest {
+    private CreateFolderCommand command;
     @Mock
     private FileRepository repository;
     @Mock
@@ -33,14 +33,14 @@ public class CreateFileCommandTest {
     @BeforeEach
     public void setup() {
         parent = Folder.builder()
-                .withName("folder")
+                .withName("parent")
                 .build();
         actor = User.user("actor");
-        command = new CreateFileCommand(repository, accessChecker, "file", parent);
+        command = new CreateFolderCommand(repository, accessChecker, "folder", parent);
     }
 
     @Test
-    void shouldCheckChangeGroupAccessToFileWhenCheckingCommand() {
+    void shouldCheckWriteAccessToFolderWhenCheckingCommand() {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(true);
         // WHEN
@@ -50,22 +50,21 @@ public class CreateFileCommandTest {
     }
 
     @Test
-    void shouldEditGroupWhenExecutingCommand() {
+    void shouldCreateFolderWhenExecutingCommand() {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(actor.getGroup()).willReturn(Group.group("actor"));
         // WHEN
         Item<?, ?> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull();
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
-                .isInstanceOf(File.class)
+                .isInstanceOf(Folder.class)
                 .extracting(Item::getParent)
                 .isEqualTo(parent);
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getName)
-                .isEqualTo("file");
+                .isEqualTo("folder");
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getOwner)
                 .isEqualTo(actor);
@@ -82,6 +81,6 @@ public class CreateFileCommandTest {
         //THEN
         assertThat(error).isNotNull()
                 .extracting(Error::getMessage)
-                .isEqualTo("TOUCH with arguments Input{item='folder null:null --------- null', name='file', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
+                .isEqualTo("MKDIR with arguments Input{item='parent null:null --------- null', name='folder', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

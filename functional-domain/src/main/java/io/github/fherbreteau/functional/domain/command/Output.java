@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.domain.command;
 
 import io.github.fherbreteau.functional.domain.entities.Error;
+
 public class Output {
 
     private final Object value;

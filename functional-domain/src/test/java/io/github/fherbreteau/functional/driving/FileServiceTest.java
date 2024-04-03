@@ -1,12 +1,8 @@
 package io.github.fherbreteau.functional.driving;
 
 import io.github.fherbreteau.functional.domain.command.*;
-import io.github.fherbreteau.functional.domain.command.impl.UnsupportedCommand;
 import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.Path;
 import io.github.fherbreteau.functional.domain.path.PathFactory;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -49,8 +45,7 @@ class FileServiceTest {
         // THEN
         assertThat(path).isNotNull()
                 .satisfies(p -> assertThat(path.isError()).isFalse())
-                .satisfies(p -> assertThat(path.getItem()).isEqualTo(Folder.getRoot()))
-        ;
+                .satisfies(p -> assertThat(path.getItem()).isEqualTo(Folder.getRoot()));
     }
 
     @Test
@@ -159,9 +154,15 @@ class FileServiceTest {
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
+        assertThat(result)
+                .extracting(Output::getValue)
+                .isNotNull();
         assertThat(result).extracting(Output::isError)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isFalse();
+        assertThat(result)
+                .extracting(Output::getError)
+                .isNull();
     }
 
     @Test
@@ -176,10 +177,15 @@ class FileServiceTest {
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isFalse();
+        assertThat(result)
+                .extracting(Output::getValue)
+                .isNull();
         assertThat(result).extracting(Output::isError)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-
+        assertThat(result)
+                .extracting(Output::getError)
+                .isNotNull();
     }
 
     private Item<?, ?> createFolder(Folder parent, String element) {

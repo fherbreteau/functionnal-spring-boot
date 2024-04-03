@@ -18,14 +18,16 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ChangeOwnerCommandTest {
-    private ChangeOwnerCommand command;
+public class ChangeModeCommandTest {
+    private ChangeModeCommand command;
     @Mock
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
     private File item;
-    private User user;
+    private AccessRight ownerAccess;
+    private AccessRight groupAccess;
+    private AccessRight otherAccess;
     @Mock
     private User actor;
 
@@ -39,14 +41,16 @@ public class ChangeOwnerCommandTest {
                 .withOwner(User.user("user"))
                 .withGroup(Group.group("group"))
                 .build();
-        user = User.user("newUser");
-        command = new ChangeOwnerCommand(repository, accessChecker, item, user);
+        ownerAccess = AccessRight.full();
+        groupAccess = AccessRight.full();
+        otherAccess = AccessRight.full();
+        command = new ChangeModeCommand(repository, accessChecker, item, ownerAccess, groupAccess, otherAccess);
     }
 
     @Test
-    void shouldCheckChangeGroupAccessToFileWhenCheckingCommand() {
+    void shouldCheckChangeModeAccessToItemWhenCheckingCommand() {
         // GIVEN
-        given(accessChecker.canChangeOwner(item, actor)).willReturn(true);
+        given(accessChecker.canChangeMode(item, actor)).willReturn(true);
         // WHEN
         boolean result = command.canExecute(actor);
         // THEN
@@ -54,7 +58,7 @@ public class ChangeOwnerCommandTest {
     }
 
     @Test
-    void shouldEditGroupWhenExecutingCommand() {
+    void shouldEditModeWhenExecutingCommand() {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
@@ -63,8 +67,14 @@ public class ChangeOwnerCommandTest {
         assertThat(result).isNotNull();
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
-                .extracting(Item::getOwner)
-                .isEqualTo(user);
+                .extracting(Item::getOwnerAccess)
+                .isEqualTo(ownerAccess);
+        assertThat(itemCaptor.getValue())
+                .extracting(Item::getGroupAccess)
+                .isEqualTo(groupAccess);
+        assertThat(itemCaptor.getValue())
+                .extracting(Item::getOtherAccess)
+                .isEqualTo(otherAccess);
     }
 
     @Test
@@ -75,6 +85,6 @@ public class ChangeOwnerCommandTest {
         //THEN
         assertThat(error).isNotNull()
                 .extracting(Error::getMessage)
-                .isEqualTo("CHOWN with arguments Input{item='name user:group --------- null', name='null', user=newUser, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
+                .isEqualTo("CHMOD with arguments Input{item='name user:group --------- null', name='null', user=null, group=null, ownerAccess=rwx, groupAccess=rwx, otherAccess=rwx, content=<redacted>} failed for actor");
     }
 }

@@ -1,7 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl;
 
-import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,14 +14,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DownloadCommandTest {
-    private DownloadCommand command;
+public class UploadCommandTest {
+    private UploadCommand command;
     @Mock
     private FileRepository repository;
     @Mock
@@ -36,13 +38,13 @@ public class DownloadCommandTest {
                 .withName("file")
                 .build();
         actor = User.user("actor");
-        command = new DownloadCommand(repository, accessChecker, file);
+        command = new UploadCommand(repository, accessChecker, file, new byte[0]);
     }
 
     @Test
-    void shouldCheckChangeGroupAccessToFileWhenCheckingCommand() {
+    void shouldCheckWriteAccessToFileWhenCheckingCommand() {
         // GIVEN
-        given(accessChecker.canRead(file, actor)).willReturn(true);
+        given(accessChecker.canWrite(file, actor)).willReturn(true);
         // WHEN
         boolean result = command.canExecute(actor);
         // THEN
@@ -50,13 +52,12 @@ public class DownloadCommandTest {
     }
 
     @Test
-    void shouldEditGroupWhenExecutingCommand() {
+    void shouldWriteContentWhenExecutingCommand() {
         // GIVEN
-        given(repository.readContent(file)).willReturn(new byte[0]);
         // WHEN
-        byte[] result = command.execute(actor);
+        command.execute(actor);
         //THEN
-        assertThat(result).isNotNull().isEmpty();
+        verify(repository).writeContent(file, new byte[0]);
     }
 
     @Test
@@ -67,6 +68,6 @@ public class DownloadCommandTest {
         //THEN
         assertThat(error).isNotNull()
                 .extracting(Error::getMessage)
-                .isEqualTo("DOWNLOAD with arguments Input{item='file null:null --------- null', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
+                .isEqualTo("UPLOAD with arguments Input{item='file null:null --------- null', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

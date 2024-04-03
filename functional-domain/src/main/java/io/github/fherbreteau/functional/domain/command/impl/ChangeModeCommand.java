@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl;
 
 import io.github.fherbreteau.functional.domain.command.CommandType;
 import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.entities.AbstractItem.Builder;
+import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -36,7 +36,7 @@ public class ChangeModeCommand extends AbstractCommand<Item<?, ?>> {
 
     @Override
     public Item<?, ?> execute(User actor) {
-        Builder<? extends Item<?, ?>, ?> builder = item.copyBuilder();
+        AbstractBuilder<? extends Item<?, ?>, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);
         }

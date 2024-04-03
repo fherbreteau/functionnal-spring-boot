@@ -1,8 +1,9 @@
 package io.github.fherbreteau.functional.domain.entities;
 
 import java.time.LocalDateTime;
+import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 
-public interface Item<T extends Item<T,B>, B extends AbstractItem.Builder<T, B>> {
+public interface Item<T extends Item<T, B>, B extends AbstractBuilder<T, B>> {
 
     String ROOT = "";
 
@@ -24,7 +25,7 @@ public interface Item<T extends Item<T,B>, B extends AbstractItem.Builder<T, B>>
 
     LocalDateTime getLastAccessed();
 
-    Item<? , ?> getParent();
+    Item<?, ?> getParent();
 
     boolean isFolder();
 

@@ -1,7 +1,6 @@
 package io.github.fherbreteau.functional.domain.path;
 
 import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
@@ -18,8 +17,9 @@ public class PathFactory {
     }
 
     public Path resolve(Path current, String segment, User currentUser) {
-        if (! accessChecker.canExecute(current.getItem(), currentUser))
+        if (!accessChecker.canExecute(current.getItem(), currentUser)) {
             return Path.error(new Error(current.getItem(), currentUser));
+        }
         return Path.success(segment, repository.findByNameAndParentAndUser(segment, current.getItemAsFolder(), currentUser));
     }
 

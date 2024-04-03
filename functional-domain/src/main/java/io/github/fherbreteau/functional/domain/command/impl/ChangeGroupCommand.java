@@ -11,7 +11,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class ChangeGroupCommand extends AbstractCommand<Item<?, ?>> {
 
-    private final Item<? , ?> item;
+    private final Item<?, ?> item;
 
     private final Group newGroup;
 

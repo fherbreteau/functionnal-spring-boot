@@ -10,7 +10,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class ChangeOwnerCommand extends AbstractCommand<Item<?, ?>> {
 
-    private final Item<? , ?> item;
+    private final Item<?, ?> item;
 
     private final User newOwner;
 

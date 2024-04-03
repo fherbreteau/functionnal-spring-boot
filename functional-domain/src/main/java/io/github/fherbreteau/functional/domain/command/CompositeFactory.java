@@ -1,10 +1,6 @@
 package io.github.fherbreteau.functional.domain.command;
 
-import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.command.impl.UnsupportedCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
@@ -30,9 +26,5 @@ public class CompositeFactory {
                 .map(f -> f.createCommand(repository, accessChecker, type, input))
                 .findFirst()
                 .orElseThrow();
-    }
-
-    private Command<?> unsupportedCommand(CommandType type, Input input) {
-        return new UnsupportedCommand(type, input);
     }
 }

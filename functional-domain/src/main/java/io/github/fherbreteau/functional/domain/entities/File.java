@@ -1,12 +1,16 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-public class File extends AbstractItem<File, File.Builder> {
+public final class File extends AbstractItem<File, File.Builder> {
 
     private final byte[] content;
 
     private File(Builder builder) {
         super(builder);
         this.content = builder.content;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -25,19 +29,16 @@ public class File extends AbstractItem<File, File.Builder> {
 
     @Override
     public Builder copyBuilder() {
-        return copy(new Builder())
+        return copy(builder())
                 .withContent(content);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder extends AbstractItem.Builder<File, Builder> {
+    public static final class Builder extends AbstractBuilder<File, Builder> {
 
         private byte[] content = new byte[0];
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder withContent(byte[] content) {
             this.content = content;

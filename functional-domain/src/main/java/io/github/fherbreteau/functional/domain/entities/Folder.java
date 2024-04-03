@@ -1,15 +1,19 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-public class Folder extends AbstractItem<Folder, Folder.Builder> {
+public final class Folder extends AbstractItem<Folder, Folder.Builder> {
 
     private static final Folder ROOT = builder().withName("").withOtherAccess(AccessRight.full()).build();
 
-    protected Folder(Builder builder) {
+    private Folder(Builder builder) {
         super(builder);
     }
 
-    public static Item<?,?> getRoot() {
+    public static Item<?, ?> getRoot() {
         return ROOT;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -24,16 +28,13 @@ public class Folder extends AbstractItem<Folder, Folder.Builder> {
 
     @Override
     public Builder copyBuilder() {
-        return copy(new Builder());
+        return copy(builder());
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static final class Builder extends AbstractBuilder<Folder, Builder> {
 
-    public static class Builder extends AbstractItem.Builder<Folder, Builder> {
-
-        private Builder() {}
+        private Builder() {
+        }
 
         @Override
         public Folder build() {

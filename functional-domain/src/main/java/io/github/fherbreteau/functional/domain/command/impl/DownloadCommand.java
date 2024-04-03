@@ -10,7 +10,6 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class DownloadCommand extends AbstractCommand<byte[]> {
 
-
     private final File item;
 
     public DownloadCommand(FileRepository repository, AccessChecker accessChecker, File item) {
@@ -25,7 +24,7 @@ public class DownloadCommand extends AbstractCommand<byte[]> {
 
     @Override
     public byte[] execute(User actor) {
-        return repository.getContent(item);
+        return repository.readContent(item);
     }
 
     @Override
