@@ -21,5 +21,5 @@ public interface FileRepository {
 
     void writeContent(File item, byte[] content);
 
-    Item getItem(String root);
+    Item getItem(String path);
 }
