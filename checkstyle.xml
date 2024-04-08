@@ -73,4 +73,8 @@
         </module>
     </module>
     <module name="SuppressWarningsFilter"/>
+    <module name="SuppressionFilter">
+        <property name="file" value="checkstyle.suppression.xml"/>
+        <property name="optional" value="false"/>
+    </module>
 </module>

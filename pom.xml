@@ -12,6 +12,7 @@
         <module>functional-domain</module>
         <module>functional-infra</module>
         <module>functional-app</module>
+        <module>functional-check</module>
     </modules>
 
     <properties>
@@ -47,6 +48,22 @@
                 <version>${spring.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- Project Dependencies -->
+            <dependency>
+                <groupId>io.github.fherbreteau</groupId>
+                <artifactId>functional-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.fherbreteau</groupId>
+                <artifactId>functional-infra</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.fherbreteau</groupId>
+                <artifactId>functional-check</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -194,6 +211,7 @@
 
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
+                    <suppressionsLocation>checkstyle.suppression.xml</suppressionsLocation>
                 </configuration>
                 <executions>
                     <execution>
