@@ -1,12 +1,12 @@
-package io.github.fherbreteau.functional.domain.command.impl;
+package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.command.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +26,6 @@ class ChangeGroupCommandTest {
     private ChangeGroupCommand command;
     @Mock
     private FileRepository repository;
-    @Mock
-    private AccessChecker accessChecker;
-    private File item;
     private Group group;
     @Mock
     private User actor;
@@ -38,19 +35,9 @@ class ChangeGroupCommandTest {
 
     @BeforeEach
     public void setup() {
-        item = File.builder().withName("name").withOwner(User.user("user")).build();
+        Item item = File.builder().withName("name").withOwner(User.user("user")).build();
         group = Group.group("group");
-        command = new ChangeGroupCommand<>(repository, accessChecker, item, group);
-    }
-
-    @Test
-    void shouldCheckChangeGroupAccessToItemWhenCheckingCommand() {
-        // GIVEN
-        given(accessChecker.canChangeGroup(item, actor)).willReturn(true);
-        // WHEN
-        boolean result = command.canExecute(actor);
-        // THEN
-        assertThat(result).isTrue();
+        command = new ChangeGroupCommand(repository, item, group);
     }
 
     @Test
@@ -58,23 +45,14 @@ class ChangeGroupCommandTest {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Item<?, ?> result = command.execute(actor);
+        Output result = command.execute(actor);
         //THEN
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull()
+                .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
+                .isTrue();
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getGroup)
                 .isEqualTo(group);
-    }
-
-    @Test
-    void shouldGenerateAndErrorWhenExecutingErrorHandling() {
-        // GIVEN
-        // WHEN
-        Error error = command.handleError(actor);
-        //THEN
-        assertThat(error).isNotNull()
-                .extracting(Error::getMessage)
-                .isEqualTo("CHGRP with arguments Input{item='name user:user --------- null', name='null', user=null, group=group, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

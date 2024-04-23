@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command;
 
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.impl.*;
-import io.github.fherbreteau.functional.domain.command.impl.UnsupportedCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
@@ -81,7 +81,7 @@ class CompositeFactoryTest {
     void testCommandCreatedForSpecificTypeAndValidInput(CommandType type, Input input) {
         Command<?> command = factory.createCommand(type, input);
 
-        assertThat(command).isNotNull().isNotInstanceOf(UnsupportedCommand.class);
+        assertThat(command).isNotNull().isNotInstanceOf(CheckUnsupportedCommand.class);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is not supported")
@@ -89,6 +89,6 @@ class CompositeFactoryTest {
     void testCommandCreatedForSpecificTypeAndInvalidInput(CommandType type, Input input) {
         Command<?> command = factory.createCommand(type, input);
 
-        assertThat(command).isNotNull().isInstanceOf(UnsupportedCommand.class);
+        assertThat(command).isNotNull().isInstanceOf(CheckUnsupportedCommand.class);
     }
 }

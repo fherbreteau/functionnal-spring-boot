@@ -1,9 +1,12 @@
-package io.github.fherbreteau.functional.domain.command.impl;
+package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +25,6 @@ class CreateFileCommandTest {
     private CreateFileCommand command;
     @Mock
     private FileRepository repository;
-    @Mock
-    private AccessChecker accessChecker;
     private Folder parent;
     private User actor;
 
@@ -36,17 +37,7 @@ class CreateFileCommandTest {
                 .withName("parent")
                 .build();
         actor = User.user("actor");
-        command = new CreateFileCommand(repository, accessChecker, "file", parent);
-    }
-
-    @Test
-    void shouldCheckWriteAccessToFolderWhenCheckingCommand() {
-        // GIVEN
-        given(accessChecker.canWrite(parent, actor)).willReturn(true);
-        // WHEN
-        boolean result = command.canExecute(actor);
-        // THEN
-        assertThat(result).isTrue();
+        command = new CreateFileCommand(repository, "file", parent);
     }
 
     @Test
@@ -54,9 +45,11 @@ class CreateFileCommandTest {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Item<?, ?> result = command.execute(actor);
+        Output result = command.execute(actor);
         //THEN
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull()
+                .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
+                .isTrue();
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .isInstanceOf(File.class)
@@ -71,16 +64,5 @@ class CreateFileCommandTest {
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getGroup)
                 .isEqualTo(actor.getGroup());
-    }
-
-    @Test
-    void shouldGenerateAndErrorWhenExecutingErrorHandling() {
-        // GIVEN
-        // WHEN
-        Error error = command.handleError(actor);
-        //THEN
-        assertThat(error).isNotNull()
-                .extracting(Error::getMessage)
-                .isEqualTo("TOUCH with arguments Input{item='parent null:null --------- null', name='file', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

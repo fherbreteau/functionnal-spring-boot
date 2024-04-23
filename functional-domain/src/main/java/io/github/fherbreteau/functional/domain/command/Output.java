@@ -30,7 +30,7 @@ public class Output {
     }
 
     public boolean isSuccess() {
-        return value != null;
+        return error == null;
     }
 
     public boolean isError() {

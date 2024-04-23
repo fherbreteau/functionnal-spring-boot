@@ -1,9 +1,12 @@
-package io.github.fherbreteau.functional.domain.command.impl;
+package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,12 +23,9 @@ import static org.mockito.Mockito.verify;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(MockitoExtension.class)
 class ChangeOwnerCommandTest {
-    private ChangeOwnerCommand<File> command;
+    private ChangeOwnerCommand command;
     @Mock
     private FileRepository repository;
-    @Mock
-    private AccessChecker accessChecker;
-    private File item;
     private User newUser;
     private Group group;
     @Mock
@@ -37,23 +37,13 @@ class ChangeOwnerCommandTest {
     @BeforeEach
     public void setup() {
         group = Group.group("group");
-        item = File.builder()
+        Item item = File.builder()
                 .withName("name")
                 .withOwner(User.user("user"))
                 .withGroup(group)
                 .build();
         newUser = User.user("newUser");
-        command = new ChangeOwnerCommand<>(repository, accessChecker, item, newUser);
-    }
-
-    @Test
-    void shouldCheckChangeOwnerAccessToFileWhenCheckingCommand() {
-        // GIVEN
-        given(accessChecker.canChangeOwner(item, actor)).willReturn(true);
-        // WHEN
-        boolean result = command.canExecute(actor);
-        // THEN
-        assertThat(result).isTrue();
+        command = new ChangeOwnerCommand(repository, item, newUser);
     }
 
     @Test
@@ -61,9 +51,11 @@ class ChangeOwnerCommandTest {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Item<?, ?> result = command.execute(actor);
+        Output result = command.execute(actor);
         //THEN
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull()
+                .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
+                .isTrue();
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getOwner)
@@ -71,16 +63,5 @@ class ChangeOwnerCommandTest {
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getGroup)
                 .isEqualTo(group);
-    }
-
-    @Test
-    void shouldGenerateAndErrorWhenExecutingErrorHandling() {
-        // GIVEN
-        // WHEN
-        Error error = command.handleError(actor);
-        //THEN
-        assertThat(error).isNotNull()
-                .extracting(Error::getMessage)
-                .isEqualTo("CHOWN with arguments Input{item='name user:group --------- null', name='null', user=newUser, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
     }
 }

@@ -1,6 +1,9 @@
-package io.github.fherbreteau.functional.domain.command.impl;
+package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
@@ -13,11 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class UploadCommandTest {
-    private UploadCommand command;
+class CheckUploadCommandTest {
+    private CheckUploadCommand command;
     @Mock
     private FileRepository repository;
     @Mock
@@ -31,36 +33,26 @@ class UploadCommandTest {
                 .withName("file")
                 .build();
         actor = User.user("actor");
-        command = new UploadCommand(repository, accessChecker, file, new byte[0]);
+        command = new CheckUploadCommand(repository, accessChecker, file, new byte[0]);
     }
 
     @Test
-    void shouldCheckWriteAccessToFileWhenCheckingCommand() {
+    void shouldGenerateUploadCommandWhenCheckingSucceed() {
         // GIVEN
         given(accessChecker.canWrite(file, actor)).willReturn(true);
         // WHEN
-        boolean result = command.canExecute(actor);
+        Command<Output> result = command.execute(actor);
         // THEN
-        assertThat(result).isTrue();
+        assertThat(result).isInstanceOf(UploadCommand.class);
     }
 
     @Test
-    void shouldWriteContentWhenExecutingCommand() {
+    void shouldGenerateErrorCommandWhenCheckingFails() {
         // GIVEN
+        given(accessChecker.canWrite(file, actor)).willReturn(false);
         // WHEN
-        command.execute(actor);
+        Command<Output> result = command.execute(actor);
         //THEN
-        verify(repository).writeContent(file, new byte[0]);
-    }
-
-    @Test
-    void shouldGenerateAndErrorWhenExecutingErrorHandling() {
-        // GIVEN
-        // WHEN
-        Error error = command.handleError(actor);
-        //THEN
-        assertThat(error).isNotNull()
-                .extracting(Error::getMessage)
-                .isEqualTo("UPLOAD with arguments Input{item='file null:null --------- null', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>} failed for actor");
+        assertThat(result).isInstanceOf(ErrorCommand.class);
     }
 }

@@ -1,18 +1,19 @@
-package io.github.fherbreteau.functional.domain.command.impl;
+package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.CommandType;
 import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
+import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.success.ChangeModeCommand;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeModeCommand<I extends Item<I, ?>> extends AbstractCommand<I> {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class CheckChangeModeCommand extends AbstractCheckCommand<ChangeModeCommand> {
 
-    private final I item;
+    private final Item item;
 
     private final AccessRight ownerAccess;
 
@@ -20,8 +21,8 @@ public class ChangeModeCommand<I extends Item<I, ?>> extends AbstractCommand<I> 
 
     private final AccessRight otherAccess;
 
-    public ChangeModeCommand(FileRepository repository, AccessChecker accessChecker, I item, AccessRight ownerAccess,
-                             AccessRight groupAccess, AccessRight otherAccess) {
+    public CheckChangeModeCommand(FileRepository repository, AccessChecker accessChecker, Item item,
+                                     AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessChecker);
         this.item = item;
         this.ownerAccess = ownerAccess;
@@ -30,32 +31,22 @@ public class ChangeModeCommand<I extends Item<I, ?>> extends AbstractCommand<I> 
     }
 
     @Override
-    public boolean canExecute(User actor) {
+    protected boolean checkAccess(User actor) {
         return accessChecker.canChangeMode(item, actor);
     }
 
     @Override
-    public I execute(User actor) {
-        AbstractBuilder<I, ?> builder = item.copyBuilder();
-        if (ownerAccess != null) {
-            builder.withOwnerAccess(ownerAccess);
-        }
-        if (groupAccess != null) {
-            builder.withGroupAccess(groupAccess);
-        }
-        if (otherAccess != null) {
-            builder.withOtherAccess(otherAccess);
-        }
-        return repository.save(builder.build());
+    protected ChangeModeCommand createSuccess() {
+        return new ChangeModeCommand(repository, item, ownerAccess, groupAccess, otherAccess);
     }
 
     @Override
-    public Error handleError(User actor) {
+    protected ErrorCommand createError() {
         Input input = Input.builder(item)
                 .withOwnerAccess(ownerAccess)
                 .withGroupAccess(groupAccess)
                 .withOtherAccess(otherAccess)
                 .build();
-        return new Error(CommandType.CHMOD, input, actor);
+        return new ErrorCommand(CommandType.CHMOD, input);
     }
 }
