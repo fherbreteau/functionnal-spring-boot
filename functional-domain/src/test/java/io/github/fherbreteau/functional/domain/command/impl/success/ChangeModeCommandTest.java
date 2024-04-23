@@ -7,10 +7,15 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,34 +25,35 @@ import static org.mockito.Mockito.verify;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(MockitoExtension.class)
 class ChangeModeCommandTest {
-    private ChangeModeCommand command;
     @Mock
     private FileRepository repository;
-    private AccessRight ownerAccess;
-    private AccessRight groupAccess;
-    private AccessRight otherAccess;
     @Mock
     private User actor;
 
     @Captor
     private ArgumentCaptor<Item> itemCaptor;
 
-    @BeforeEach
-    public void setup() {
+    public static Stream<Arguments> shouldEditModeWhenExecutingCommand() {
+        return Stream.of(
+                Arguments.of(AccessRight.full(), null, null),
+                Arguments.of(null, AccessRight.full(), null),
+                Arguments.of(null, null, AccessRight.full())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void shouldEditModeWhenExecutingCommand(AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
+        // GIVEN
         File item = File.builder()
                 .withName("name")
                 .withOwner(User.user("user"))
                 .withGroup(Group.group("group"))
+                .withOwnerAccess(null)
+                .withGroupAccess(null)
+                .withOtherAccess(null)
                 .build();
-        ownerAccess = AccessRight.full();
-        groupAccess = AccessRight.full();
-        otherAccess = AccessRight.full();
-        command = new ChangeModeCommand(repository, item, ownerAccess, groupAccess, otherAccess);
-    }
-
-    @Test
-    void shouldEditModeWhenExecutingCommand() {
-        // GIVEN
+        ChangeModeCommand command = new ChangeModeCommand(repository, item, ownerAccess, groupAccess, otherAccess);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
         Output result = command.execute(actor);

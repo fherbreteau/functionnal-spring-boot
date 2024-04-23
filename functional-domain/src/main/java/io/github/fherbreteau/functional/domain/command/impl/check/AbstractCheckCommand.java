@@ -27,5 +27,7 @@ public abstract class AbstractCheckCommand<C extends Command<Output>> implements
 
     protected abstract C createSuccess();
 
-    protected abstract ErrorCommand createError();
+    protected ErrorCommand createError() {
+        throw new UnsupportedOperationException("Unsupported Command always succeed");
+    }
 }

@@ -28,9 +28,4 @@ public class CheckUnsupportedCommand extends AbstractCheckCommand<ErrorCommand> 
     protected ErrorCommand createSuccess() {
         return new ErrorCommand(commandType, input);
     }
-
-    @Override
-    protected ErrorCommand createError() {
-        throw new UnsupportedOperationException("Unsupported Command always succeed");
-    }
 }
