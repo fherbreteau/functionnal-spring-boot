@@ -14,32 +14,60 @@ public final class AccessRight {
         this.execute = execute;
     }
 
-    public static AccessRight read(boolean read) {
-        return readWrite(read, false);
+    public boolean isRead() {
+        return read;
     }
 
-    public static AccessRight write(boolean write) {
-        return readWrite(false, write);
+    public boolean isWrite() {
+        return write;
     }
 
-    public static AccessRight execute(boolean execute) {
-        return accessRight(false, false, execute);
+    public boolean isExecute() {
+        return execute;
     }
 
-    public static AccessRight readWrite(boolean read, boolean write) {
-        return accessRight(read, write, false);
+    public AccessRight read() {
+        return new AccessRight(true, this.write, this.execute);
     }
 
-    public static AccessRight accessRight(boolean read, boolean write, boolean execute) {
-        return new AccessRight(read, write, execute);
+    public AccessRight write() {
+        return new AccessRight(this.read, true, this.execute);
+    }
+
+    public AccessRight execute() {
+        return new AccessRight(this.read, this.write, true);
+    }
+
+    public static AccessRight readOnly() {
+        return none().read();
+    }
+
+    public static AccessRight readWrite() {
+        return readOnly().write();
+    }
+
+    public static AccessRight readExecute() {
+        return readOnly().execute();
+    }
+
+    public static AccessRight writeOnly() {
+        return none().write();
+    }
+
+    public static AccessRight writeExecute() {
+        return writeOnly().execute();
+    }
+
+    public static AccessRight executeOnly() {
+        return none().execute();
     }
 
     public static AccessRight full() {
-        return accessRight(true, true, true);
+        return readWrite().execute();
     }
 
     public static AccessRight none() {
-        return accessRight(false, false, false);
+        return new AccessRight(false, false, false);
     }
 
     @Override

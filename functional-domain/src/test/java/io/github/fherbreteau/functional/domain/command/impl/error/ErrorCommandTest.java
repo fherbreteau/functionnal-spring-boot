@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class ErrorCommandTest {
+class ErrorCommandTest {
 
     @Mock
     private User actor;

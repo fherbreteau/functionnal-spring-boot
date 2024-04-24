@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class TestCommandTest {
+class TestCommandTest {
 
     @Test
     void shouldThrowAnExceptionWhenCheckFailed() {

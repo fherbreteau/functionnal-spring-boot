@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.Arrays;
+
 public final class File extends AbstractItem<File, File.Builder> {
 
     private final byte[] content;
@@ -31,6 +33,27 @@ public final class File extends AbstractItem<File, File.Builder> {
     public Builder copyBuilder() {
         return copy(builder())
                 .withContent(content);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof File file)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        return Arrays.equals(content, file.content);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Arrays.hashCode(content);
+        return result;
     }
 
     public static final class Builder extends AbstractBuilder<File, Builder> {

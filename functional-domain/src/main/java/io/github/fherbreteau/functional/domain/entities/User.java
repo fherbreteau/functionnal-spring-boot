@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class User {
@@ -18,20 +19,16 @@ public final class User {
         this.group = group;
     }
 
+    public static User root() {
+        return user(ROOT, "root", Group.root());
+    }
+
     public static User user(String name) {
         return user(UUID.randomUUID(), name);
     }
 
     public static User user(UUID userId, String name) {
-        return user(userId, name, userId);
-    }
-
-    public static User user(String name, UUID groupId) {
-        return user(name, Group.group(groupId, name));
-    }
-
-    public static User user(UUID userId, String name, UUID groupId) {
-        return user(userId, name, Group.group(groupId, name));
+        return user(userId, name, Group.group(userId, name));
     }
 
     public static User user(String name, Group group) {
@@ -61,5 +58,21 @@ public final class User {
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User user)) {
+            return false;
+        }
+        return Objects.equals(userId, user.userId) && Objects.equals(name, user.name) && Objects.equals(group, user.group);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, group);
     }
 }

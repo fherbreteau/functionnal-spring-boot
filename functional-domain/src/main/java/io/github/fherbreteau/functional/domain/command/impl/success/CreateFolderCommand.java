@@ -23,9 +23,9 @@ public class CreateFolderCommand extends AbstractSuccessCommand {
                 .withName(name)
                 .withParent(parent)
                 .withOwner(actor)
-                .withOwnerAccess(AccessRight.accessRight(true, true, true))
-                .withGroupAccess(AccessRight.accessRight(true, false, true))
-                .withOtherAccess(AccessRight.accessRight(true, false, true))
+                .withOwnerAccess(AccessRight.full())
+                .withGroupAccess(AccessRight.readExecute())
+                .withOtherAccess(AccessRight.none())
                 .build();
         return new Output(repository.save(newFolder));
     }

@@ -24,9 +24,9 @@ public class CreateFileCommand extends AbstractSuccessCommand {
                 .withName(name)
                 .withParent(parent)
                 .withOwner(actor)
-                .withOwnerAccess(AccessRight.accessRight(true, true, false))
-                .withGroupAccess(AccessRight.accessRight(true, false, false))
-                .withOtherAccess(AccessRight.accessRight(true, false, false))
+                .withOwnerAccess(AccessRight.readWrite())
+                .withGroupAccess(AccessRight.readOnly())
+                .withOtherAccess(AccessRight.none())
                 .build();
         return new Output(repository.save(newFolder));
     }

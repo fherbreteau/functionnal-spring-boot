@@ -63,7 +63,7 @@ class FileSystemControllerTest {
                 .withParent(Path.ROOT.getItemAsFolder())
                 .withOwner(User.user("user"))
                 .withOwnerAccess(AccessRight.full())
-                .withGroupAccess(AccessRight.read(true))
+                .withGroupAccess(AccessRight.readOnly())
                 .withOtherAccess(AccessRight.none())
                 .build();
         folder = Folder.builder()
@@ -71,7 +71,7 @@ class FileSystemControllerTest {
                 .withParent(Path.ROOT.getItemAsFolder())
                 .withOwner(User.user("user"))
                 .withOwnerAccess(AccessRight.full())
-                .withGroupAccess(AccessRight.read(true))
+                .withGroupAccess(AccessRight.readOnly())
                 .withOtherAccess(AccessRight.none())
                 .build();
     }
