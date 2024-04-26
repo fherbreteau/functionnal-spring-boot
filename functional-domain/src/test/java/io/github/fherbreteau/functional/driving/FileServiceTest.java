@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.driving;
 
 import io.github.fherbreteau.functional.domain.command.*;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.Path;
@@ -27,7 +28,9 @@ class FileServiceTest {
     @Mock
     private User actor;
     @Mock
-    private Command<Object> command;
+    private Command<Command<Output>> checkCommand;
+    @Mock
+    private Command<Output> executeCommand;
     @Mock
     private Item<File, File.Builder> item;
 
@@ -145,9 +148,9 @@ class FileServiceTest {
     @Test
     void testProcessKnownCommandShouldOutputAResult() {
         // Given
-        given(commandFactory.createCommand(any(), any())).willReturn(command);
-        given(command.canExecute(actor)).willReturn(true);
-        given(command.execute(actor)).willReturn(new Object());
+        given(commandFactory.createCommand(any(), any())).willReturn(checkCommand);
+        given(checkCommand.execute(actor)).willReturn(executeCommand);
+        given(executeCommand.execute(actor)).willReturn(new Output(new Object()));
         // When
         Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
         assertThat(result).isNotNull()
@@ -168,9 +171,12 @@ class FileServiceTest {
     @Test
     void testProcessUnknownCommandShouldOutputAResult() {
         // Given
-        given(commandFactory.createCommand(any(), any())).willReturn(command);
-        given(command.canExecute(actor)).willReturn(false);
-        given(command.handleError(actor)).willReturn(new Error("message"));
+        given(commandFactory.createCommand(any(), any()))
+                .willAnswer(invocation -> {
+                    CommandType type = invocation.getArgument(0);
+                    Input input = invocation.getArgument(1);
+                    return new CheckUnsupportedCommand(null, null, type, input);
+                });
         // When
         Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
         assertThat(result).isNotNull()
@@ -185,6 +191,8 @@ class FileServiceTest {
                 .isTrue();
         assertThat(result)
                 .extracting(Output::getError)
+                .isNotNull()
+                .extracting(Error::getMessage)
                 .isNotNull();
     }
 

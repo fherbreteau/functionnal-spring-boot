@@ -3,6 +3,7 @@ package io.github.fherbreteau.functional.domain.entities;
 import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public abstract class AbstractItem<T extends Item<T, B>, B extends AbstractBuilder<T, B>> implements Item<T, B> {
 
@@ -118,6 +119,22 @@ public abstract class AbstractItem<T extends Item<T, B>, B extends AbstractBuild
                 .withLastAccessed(lastAccessed)
                 .withParent(parent);
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AbstractItem<?, ?> that)) {
+            return false;
+        }
+        return Objects.equals(name, that.name) && Objects.equals(owner, that.owner) && Objects.equals(group, that.group) && Objects.equals(ownerAccess, that.ownerAccess) && Objects.equals(groupAccess, that.groupAccess) && Objects.equals(otherAccess, that.otherAccess) && Objects.equals(created, that.created) && Objects.equals(lastModified, that.lastModified) && Objects.equals(lastAccessed, that.lastAccessed) && Objects.equals(parent, that.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, owner, group, ownerAccess, groupAccess, otherAccess, created, lastModified, lastAccessed, parent);
     }
 
     @SuppressWarnings("unchecked")

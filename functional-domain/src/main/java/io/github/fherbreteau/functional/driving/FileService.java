@@ -37,9 +37,7 @@ public class FileService {
     }
 
     public Output processCommand(CommandType type, User currentUser, Input input) {
-        Command<?> command = commandFactory.createCommand(type, input);
-        return command.canExecute(currentUser) ?
-                new Output(command.execute(currentUser)) :
-                new Output(command.handleError(currentUser));
+        Command<Command<Output>> command = commandFactory.createCommand(type, input);
+        return command.execute(currentUser).execute(currentUser);
     }
 }
