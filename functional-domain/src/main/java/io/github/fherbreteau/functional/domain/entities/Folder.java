@@ -26,7 +26,7 @@ public final class Folder extends AbstractItem<Folder, Folder.Builder> {
         return false;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
     public Builder copyBuilder() {
         return copy(builder());
     }

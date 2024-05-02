@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
 @Repository
 public class FileRepositoryImpl implements FileRepository {
 
@@ -21,7 +20,7 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public <I extends Item<I, ?>> I save(I item) {
+    public <I extends Item> I save(I item) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -31,7 +30,7 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public <I extends Item<I, ?>> I findByNameAndParentAndUser(String name, Folder folder, User actor) {
+    public <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 

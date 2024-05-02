@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class CompositeFactoryTest {
+class CompositePathFactoryTest {
 
-    private CompositeFactory factory;
+    private CompositeCommandFactory factory;
     @Mock
     private AccessChecker accessChecker;
     @Mock
@@ -61,7 +61,6 @@ class CompositeFactoryTest {
         );
     }
 
-    @SuppressWarnings("rawtypes")
     @BeforeEach
     public void setup() {
         List<CommandFactory> factories = List.of(
@@ -73,7 +72,7 @@ class CompositeFactoryTest {
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory(),
                 new UnsupportedCommandFactory());
-        factory = new CompositeFactory(repository, accessChecker, factories);
+        factory = new CompositeCommandFactory(repository, accessChecker, factories);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")

@@ -4,8 +4,9 @@ import io.github.fherbreteau.functional.domain.command.*;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.path.Path;
-import io.github.fherbreteau.functional.domain.path.PathFactory;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.PathParser;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,15 +17,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 
     private FileService fileService;
     @Mock
-    private CompositeFactory commandFactory;
+    private CompositeCommandFactory commandFactory;
     @Mock
-    private PathFactory pathFactory;
+    private CompositePathFactory pathFactory;
     @Mock
     private User actor;
     @Mock
@@ -32,7 +34,7 @@ class FileServiceTest {
     @Mock
     private Command<Output> executeCommand;
     @Mock
-    private Item<File, File.Builder> item;
+    private Item item;
 
     @BeforeEach
     public void setup() {
@@ -40,9 +42,11 @@ class FileServiceTest {
     }
 
     @Test
-    void testAccessRootPathShouldSucceed() {
+    void testAccessExistingPathShouldSucceed() {
         // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
+        PathParser parser = mock(PathParser.class);
+        given(parser.resolve(actor)).willReturn(Path.ROOT);
+        given(pathFactory.createParser(Path.ROOT, "/")).willReturn(parser);
         // WHEN
         Path path = fileService.getPath("/", actor);
         // THEN
@@ -52,97 +56,19 @@ class FileServiceTest {
     }
 
     @Test
-    void testAccessFolderAtFirstLevelByPathShouldSucceed() {
+    void testAccessUnknownPathShouldFail() {
         // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
-        given(pathFactory.resolve(eq(Path.ROOT), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            return Path.success(element, createFolder(parent.getItemAsFolder(), element));
-        });
-        // WHEN
-        Path path = fileService.getPath("/first", actor);
-        // THEN
-        assertThat(path).isNotNull()
-                .satisfies(p -> assertThat(p.isError()).isFalse())
-                .satisfies(p -> assertThat(path.getName()).isEqualTo("first"))
-                .satisfies(p -> assertThat(path.getItem()).isInstanceOf(Folder.class));
-    }
+        Path error = Path.error(new Error(Folder.getRoot(), "unknown", actor));
+        PathParser parser = mock(PathParser.class);
+        given(parser.resolve(actor)).willReturn(error);
+        given(pathFactory.createParser(Path.ROOT, "/unknown")).willReturn(parser);
 
-    @Test
-    void testAccessFileAtFirstLevelByPathShouldSucceed() {
-        // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
-        given(pathFactory.resolve(eq(Path.ROOT), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            return Path.success(element, createFile(parent.getItemAsFolder(), element));
-        });
         // WHEN
-        Path path = fileService.getPath("/first", actor);
-        // THEN
-        assertThat(path).isNotNull()
-                .satisfies(p -> assertThat(p.isError()).isFalse())
-                .satisfies(p -> assertThat(path.getName()).isEqualTo("first"))
-                .satisfies(p -> assertThat(path.getItem()).isInstanceOf(File.class));
-    }
-
-    @Test
-    void testAccessFileAtSecondLevelByPathShouldSucceed() {
-        // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
-        given(pathFactory.resolve(eq(Path.ROOT), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            return Path.success(element, createFolder(parent.getItemAsFolder(), element));
-        });
-        given(pathFactory.resolve(argThat(arg -> arg.getItem() != Path.ROOT.getItem()), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            return Path.success(element, createFile(parent.getItemAsFolder(), element));
-        });
-        // WHEN
-        Path path = fileService.getPath("/first/second", actor);
-        // THEN
-        assertThat(path).isNotNull()
-                .satisfies(p -> assertThat(p.isError()).isFalse())
-                .satisfies(p -> assertThat(path.getName()).isEqualTo("second"))
-                .satisfies(p -> assertThat(path.getItem()).isInstanceOf(File.class));
-    }
-
-    @Test
-    void testAccessFileAtSecondLevelByPathShouldFailWhenFirstLevelIsAnError() {
-        // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
-        given(pathFactory.resolve(eq(Path.ROOT), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            User actor = invocation.getArgument(2);
-            return Path.error(new Error(createFile(parent.getItemAsFolder(), element), actor));
-        });
-        // WHEN
-        Path path = fileService.getPath("/first/second", actor);
+        Path path = fileService.getPath("/unknown", actor);
         // THEN
         assertThat(path).isNotNull()
                 .satisfies(p -> assertThat(p.isError()).isTrue())
-                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("'first null:null --------- ' is not executable for actor"));
-    }
-
-    @Test
-    void testAccessFileAtSecondLevelByPathShouldFailWhenFirstLevelIsAFile() {
-        // GIVEN
-        given(pathFactory.getRoot()).willReturn(Path.ROOT);
-        given(pathFactory.resolve(eq(Path.ROOT), anyString(), eq(actor))).willAnswer(invocation -> {
-            Path parent = invocation.getArgument(0);
-            String element = invocation.getArgument(1);
-            return Path.success(element, createFile(parent.getItemAsFolder(), element));
-        });
-        // WHEN
-        Path path = fileService.getPath("/first/second", actor);
-        // THEN
-        assertThat(path).isNotNull()
-                .satisfies(p -> assertThat(p.isError()).isTrue())
-                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("'first null:null --------- ' is not a folder"));
+                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' null:null ------rwx null' for actor"));
     }
 
     @Test
@@ -195,13 +121,4 @@ class FileServiceTest {
                 .extracting(Error::getMessage)
                 .isNotNull();
     }
-
-    private Item<?, ?> createFolder(Folder parent, String element) {
-        return Folder.builder().withName(element).withParent(parent).build();
-    }
-
-    private Item<?, ?> createFile(Folder parent, String element) {
-        return File.builder().withName(element).withParent(parent).build();
-    }
-
 }

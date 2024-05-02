@@ -1,8 +1,9 @@
 package io.github.fherbreteau.functional.config;
 
-import io.github.fherbreteau.functional.domain.command.CompositeFactory;
+import io.github.fherbreteau.functional.domain.command.CompositeCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
-import io.github.fherbreteau.functional.domain.path.PathFactory;
+import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import io.github.fherbreteau.functional.driving.FileService;
@@ -15,18 +16,17 @@ import java.util.List;
 public class DomainConfiguration {
 
     @Bean
-    public FileService fileService(CompositeFactory compositeFactory, PathFactory pathFactory) {
-        return new FileService(compositeFactory, pathFactory);
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Bean
-    public CompositeFactory compositeFactory(FileRepository fileRepository, AccessChecker accessChecker, List<CommandFactory> commandFactories) {
-        return new CompositeFactory(fileRepository, accessChecker, commandFactories);
+    public FileService fileService(CompositeCommandFactory compositeCommandFactory, CompositePathFactory compositePathFactory) {
+        return new FileService(compositeCommandFactory, compositePathFactory);
     }
 
     @Bean
-    public PathFactory pathFactory(FileRepository fileRepository, AccessChecker accessChecker) {
-        return new PathFactory(fileRepository, accessChecker);
+    public CompositeCommandFactory compositeCommandFactory(FileRepository fileRepository, AccessChecker accessChecker, List<CommandFactory> commandFactories) {
+        return new CompositeCommandFactory(fileRepository, accessChecker, commandFactories);
+    }
+
+    @Bean
+    public CompositePathFactory compositePathFactory(FileRepository fileRepository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
+        return new CompositePathFactory(fileRepository, accessChecker, pathFactories);
     }
 }

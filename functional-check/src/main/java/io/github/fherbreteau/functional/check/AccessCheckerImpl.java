@@ -11,32 +11,32 @@ public class AccessCheckerImpl implements AccessChecker {
     private static final String NOT_IMPLEMENTED = "Not Implemented Yet";
 
     @Override
-    public <T extends Item<T, ?>> boolean canRead(T item, User actor) {
+    public <T extends Item> boolean canRead(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <T extends Item<T, ?>> boolean canWrite(T item, User actor) {
+    public <T extends Item> boolean canWrite(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <T extends Item<T, ?>> boolean canExecute(T item, User actor) {
+    public <T extends Item> boolean canExecute(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <T extends Item<T, ?>> boolean canChangeMode(T item, User actor) {
+    public <T extends Item> boolean canChangeMode(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <T extends Item<T, ?>> boolean canChangeOwner(T item, User actor) {
+    public <T extends Item> boolean canChangeOwner(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <T extends Item<T, ?>> boolean canChangeGroup(T item, User actor) {
+    public <T extends Item> boolean canChangeGroup(T item, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }

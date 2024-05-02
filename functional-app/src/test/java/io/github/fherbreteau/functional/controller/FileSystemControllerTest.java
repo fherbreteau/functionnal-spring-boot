@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.controller;
 
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.path.Path;
+import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driving.FileService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +60,7 @@ class FileSystemControllerTest {
                 .build();
         file = File.builder()
                 .withName("file")
-                .withParent(Path.ROOT.getItemAsFolder())
+                .withParent(Path.ROOT.getAsFolder())
                 .withOwner(User.user("user"))
                 .withOwnerAccess(AccessRight.full())
                 .withGroupAccess(AccessRight.readOnly())
@@ -68,7 +68,7 @@ class FileSystemControllerTest {
                 .build();
         folder = Folder.builder()
                 .withName("folder")
-                .withParent(Path.ROOT.getItemAsFolder())
+                .withParent(Path.ROOT.getAsFolder())
                 .withOwner(User.user("user"))
                 .withOwnerAccess(AccessRight.full())
                 .withGroupAccess(AccessRight.readOnly())
@@ -153,7 +153,7 @@ class FileSystemControllerTest {
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         when(fileService.getPath(eq("/path"), argThat(user -> Objects.equals(user.getName(), "user"))))
-                .thenReturn(Path.success("path", null));
+                .thenReturn(Path.success(null));
         when(fileService.processCommand(eq(CommandType.MKDIR),
                 argThat(user -> Objects.equals(user.getName(), "user")),
                 argThat(input -> Objects.equals(input.getName(), "folder"))))

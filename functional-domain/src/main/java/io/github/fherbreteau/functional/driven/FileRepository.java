@@ -7,15 +7,14 @@ import io.github.fherbreteau.functional.domain.entities.User;
 
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
 public interface FileRepository {
     boolean exists(Folder parent, String name);
 
-    <I extends Item<I, ?>> I save(I item);
+    <I extends Item> I save(I item);
 
     List<Item> findByParentAndUser(Folder folder, User actor);
 
-    <I extends Item<I, ?>> I findByNameAndParentAndUser(String name, Folder folder, User actor);
+    <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor);
 
     byte[] readContent(File item);
 

@@ -1,6 +1,4 @@
-package io.github.fherbreteau.functional.domain.command;
-
-import io.github.fherbreteau.functional.domain.entities.Error;
+package io.github.fherbreteau.functional.domain.entities;
 
 public class Output {
 

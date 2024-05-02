@@ -1,11 +1,5 @@
-package io.github.fherbreteau.functional.domain.command;
+package io.github.fherbreteau.functional.domain.entities;
 
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.User;
-
-@SuppressWarnings("rawtypes")
 public final class Input {
 
     private final Item item;
@@ -93,7 +87,7 @@ public final class Input {
         private AccessRight otherAccess;
         private byte[] content;
 
-        private Builder(Item<?, ?> item) {
+        private Builder(Item item) {
             this.item = item;
         }
 

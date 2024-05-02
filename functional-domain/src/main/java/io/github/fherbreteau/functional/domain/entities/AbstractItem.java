@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBui
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public abstract class AbstractItem<T extends Item<T, B>, B extends AbstractBuilder<T, B>> implements Item<T, B> {
+public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, B>> implements Item {
 
     private final String name;
 
@@ -138,7 +138,7 @@ public abstract class AbstractItem<T extends Item<T, B>, B extends AbstractBuild
     }
 
     @SuppressWarnings("unchecked")
-    public abstract static class AbstractBuilder<I extends Item<I, B>, B extends AbstractBuilder<I, B>> {
+    public abstract static class AbstractBuilder<I extends Item, B extends AbstractBuilder<I, B>> {
 
         private String name;
 

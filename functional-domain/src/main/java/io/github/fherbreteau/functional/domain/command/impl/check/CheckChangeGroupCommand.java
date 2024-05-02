@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Input;
 import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeGroupCommand;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -10,7 +10,6 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class CheckChangeGroupCommand extends AbstractCheckCommand<ChangeGroupCommand> {
 
     private final Item item;

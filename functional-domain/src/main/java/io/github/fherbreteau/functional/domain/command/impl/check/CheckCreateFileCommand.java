@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Input;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFileCommand;
 import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;

@@ -19,7 +19,7 @@ public class EntityMapper {
     }
 
     public ItemDTO map(Object value) {
-        if (value instanceof Item<?, ?> item) {
+        if (value instanceof Item item) {
             ItemDTO dto = new ItemDTO();
             dto.setName(item.getName());
             dto.setOwner(item.getOwner().getName());

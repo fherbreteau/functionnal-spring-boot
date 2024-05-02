@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.domain.command;
+package io.github.fherbreteau.functional.domain.entities;
 
 public enum CommandType {
     MKDIR,
