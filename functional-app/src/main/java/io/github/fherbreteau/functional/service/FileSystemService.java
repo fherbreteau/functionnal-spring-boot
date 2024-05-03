@@ -1,11 +1,11 @@
 package io.github.fherbreteau.functional.service;
 
 import io.github.fherbreteau.functional.mapper.EntityMapper;
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.path.Path;
+import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.exception.CommandException;
 import io.github.fherbreteau.functional.exception.PathException;

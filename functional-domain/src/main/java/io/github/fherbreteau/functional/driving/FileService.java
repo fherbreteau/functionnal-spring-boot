@@ -1,39 +1,24 @@
 package io.github.fherbreteau.functional.driving;
 
 import io.github.fherbreteau.functional.domain.command.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.path.Path;
-import io.github.fherbreteau.functional.domain.path.PathFactory;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.PathParser;
 
 public class FileService {
 
-    private final CompositeFactory commandFactory;
+    private final CompositeCommandFactory commandFactory;
 
-    private final PathFactory pathFactory;
+    private final CompositePathFactory pathFactory;
 
-    public FileService(CompositeFactory commandFactory, PathFactory pathFactory) {
+    public FileService(CompositeCommandFactory commandFactory, CompositePathFactory pathFactory) {
         this.commandFactory = commandFactory;
         this.pathFactory = pathFactory;
     }
 
     public Path getPath(String path, User currentUser) {
-        Path current = pathFactory.getRoot();
-        String[] elements = path.split("/");
-        for (int index = 0; index < elements.length; index++) {
-            String element = elements[index];
-            if (element.isEmpty()) {
-                continue;
-            }
-            current = pathFactory.resolve(current, element, currentUser);
-            if (current.isError()) {
-                return current;
-            }
-            if (index < elements.length - 1 && !current.isItemFolder()) {
-                return Path.error(new Error(current.getItem()));
-            }
-        }
-        return current;
+        PathParser parser = pathFactory.createParser(Path.ROOT, path);
+        return parser.resolve(currentUser);
     }
 
     public Output processCommand(CommandType type, User currentUser, Input input) {

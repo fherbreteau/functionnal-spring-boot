@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.Test;
 

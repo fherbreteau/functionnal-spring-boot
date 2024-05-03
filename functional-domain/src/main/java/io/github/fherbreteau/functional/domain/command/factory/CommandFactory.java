@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.factory;
 
 import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 

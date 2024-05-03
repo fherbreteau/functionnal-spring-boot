@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.error;
 
-import io.github.fherbreteau.functional.domain.command.CommandType;
-import io.github.fherbreteau.functional.domain.command.Input;
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.CommandType;
+import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -31,7 +31,6 @@ class ErrorCommandTest {
 
     @ParameterizedTest
     @MethodSource
-    @SuppressWarnings("rawtypes")
     void shouldGenerateAnErrorWhenExecutingCommand(CommandType commandType) {
         // GIVEN
         Item item = File.builder().build();

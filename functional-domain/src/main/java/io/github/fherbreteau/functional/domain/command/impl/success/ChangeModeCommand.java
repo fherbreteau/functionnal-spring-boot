@@ -1,13 +1,12 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.command.Output;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-@SuppressWarnings({"rawtypes"})
 public class ChangeModeCommand extends AbstractSuccessCommand {
 
     private final Item item;
@@ -29,7 +28,7 @@ public class ChangeModeCommand extends AbstractSuccessCommand {
 
     @Override
     public Output execute(User actor) {
-        AbstractBuilder builder = item.copyBuilder();
+        AbstractBuilder<?, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);
         }

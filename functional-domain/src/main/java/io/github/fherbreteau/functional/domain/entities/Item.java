@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.entities;
 import java.time.LocalDateTime;
 import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 
-public interface Item<T extends Item<T, B>, B extends AbstractBuilder<T, B>> {
+public interface Item {
 
     String ROOT = "";
 
@@ -33,5 +33,5 @@ public interface Item<T extends Item<T, B>, B extends AbstractBuilder<T, B>> {
 
     String getPath();
 
-    B copyBuilder();
+    <I extends Item, B extends AbstractBuilder<I, B>> AbstractBuilder<I, B> copyBuilder();
 }

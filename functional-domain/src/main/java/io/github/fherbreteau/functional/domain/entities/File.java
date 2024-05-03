@@ -29,7 +29,7 @@ public final class File extends AbstractItem<File, File.Builder> {
         return content;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
     public Builder copyBuilder() {
         return copy(builder())
                 .withContent(content);
