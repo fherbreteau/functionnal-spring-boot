@@ -2,11 +2,12 @@ package io.github.fherbreteau.functional.domain.command;
 
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.impl.*;
-import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.*;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class CompositePathFactoryTest {
+class CompositeCommandFactoryTest {
 
     private CompositeCommandFactory factory;
     @Mock
@@ -35,14 +36,14 @@ class CompositePathFactoryTest {
         User user = mock(User.class);
         Group group = mock(Group.class);
         return Stream.of(
-                Arguments.of(CommandType.TOUCH, Input.builder(folder).withName("item").build()),
-                Arguments.of(CommandType.MKDIR, Input.builder(folder).withName("item").build()),
-                Arguments.of(CommandType.LIST, Input.builder(folder).build()),
-                Arguments.of(CommandType.CHOWN, Input.builder(file).withUser(user).build()),
-                Arguments.of(CommandType.CHGRP, Input.builder(file).withGroup(group).build()),
-                Arguments.of(CommandType.CHMOD, Input.builder(file).withOwnerAccess(AccessRight.full()).build()),
-                Arguments.of(CommandType.DOWNLOAD, Input.builder(file).build()),
-                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(new byte[0]).build())
+                Arguments.of(CommandType.TOUCH, Input.builder(folder).withName("item").build(), CheckCreateFileCommand.class),
+                Arguments.of(CommandType.MKDIR, Input.builder(folder).withName("item").build(), CheckCreateFolderCommand.class),
+                Arguments.of(CommandType.LIST, Input.builder(folder).build(), CheckListChildrenCommand.class),
+                Arguments.of(CommandType.CHOWN, Input.builder(file).withUser(user).build(), CheckChangeOwnerCommand.class),
+                Arguments.of(CommandType.CHGRP, Input.builder(file).withGroup(group).build(), CheckChangeGroupCommand.class),
+                Arguments.of(CommandType.CHMOD, Input.builder(file).withOwnerAccess(AccessRight.full()).build(), CheckChangeModeCommand.class),
+                Arguments.of(CommandType.DOWNLOAD, Input.builder(file).build(), CheckDownloadCommand.class),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(new byte[0]).build(), CheckUploadCommand.class)
         );
     }
 
@@ -77,10 +78,10 @@ class CompositePathFactoryTest {
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
     @MethodSource("validCommandArguments")
-    void testCommandCreatedForSpecificTypeAndValidInput(CommandType type, Input input) {
+    void testCommandCreatedForSpecificTypeAndValidInput(CommandType type, Input input, Class<? extends Command<Command<Output>>> expected) {
         Command<?> command = factory.createCommand(type, input);
 
-        assertThat(command).isNotNull().isNotInstanceOf(CheckUnsupportedCommand.class);
+        assertThat(command).isNotNull().isInstanceOf(expected);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is not supported")

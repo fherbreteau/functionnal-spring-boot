@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.Objects;
+
 public final class AccessRight {
 
     private final boolean read;
@@ -75,5 +77,21 @@ public final class AccessRight {
         return (read ? "r" : "-") +
                 (write ? "w" : "-") +
                 (execute ? "x" : "-");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AccessRight that)) {
+            return false;
+        }
+        return read == that.read && write == that.write && execute == that.execute;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(read, write, execute);
     }
 }

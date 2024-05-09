@@ -14,7 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SimplePathParserTest {
@@ -38,6 +42,8 @@ class SimplePathParserTest {
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isTrue();
+        verify(accessChecker, never()).canExecute(any(), eq(actor));
+        verify(repository, never()).findByNameAndParentAndUser(any(), any(), eq(actor));
     }
 
     @Test
@@ -51,6 +57,8 @@ class SimplePathParserTest {
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isTrue();
+        verify(accessChecker).canExecute(path.getItem(), actor);
+        verify(repository, never()).findByNameAndParentAndUser(any(), any(), eq(actor));
     }
 
     @Test
@@ -66,6 +74,8 @@ class SimplePathParserTest {
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isTrue();
+        verify(accessChecker).canExecute(path.getItem(), actor);
+        verify(repository).findByNameAndParentAndUser(segment, path.getAsFolder(), actor);
     }
 
     @Test
@@ -82,5 +92,7 @@ class SimplePathParserTest {
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isFalse();
         assertThat(resolved).extracting(Path::isItemFile, BOOLEAN).isTrue();
+        verify(accessChecker).canExecute(path.getItem(), actor);
+        verify(repository).findByNameAndParentAndUser(segment, path.getAsFolder(), actor);
     }
 }

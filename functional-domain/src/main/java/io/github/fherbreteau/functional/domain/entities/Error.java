@@ -12,14 +12,6 @@ public class Error {
         this(String.format("%s not found in %s for %s", segment, item, actor));
     }
 
-    public Error(Item item, User actor) {
-        this(String.format("%s is not executable for %s", item, actor));
-    }
-
-    public Error(Item item) {
-        this(String.format("%s is not a folder", item));
-    }
-
     public Error(String message) {
         this.message = message;
     }
