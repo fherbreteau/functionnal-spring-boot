@@ -10,4 +10,8 @@ public interface PathFactory {
     boolean supports(Path currentPath, String path);
 
     PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path);
+
+    default int order() {
+        return 0;
+    }
 }

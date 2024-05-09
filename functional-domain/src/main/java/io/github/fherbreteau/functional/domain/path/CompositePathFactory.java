@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.path.factory.RecursiveFactory;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class CompositePathFactory {
@@ -19,7 +20,7 @@ public class CompositePathFactory {
     public CompositePathFactory(FileRepository repository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
         this.repository = repository;
         this.accessChecker = accessChecker;
-        this.pathFactories = pathFactories;
+        this.pathFactories = pathFactories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();
     }
 
     public void configureRecursives() {

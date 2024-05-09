@@ -27,6 +27,8 @@ public class DomainConfiguration {
 
     @Bean
     public CompositePathFactory compositePathFactory(FileRepository fileRepository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
-        return new CompositePathFactory(fileRepository, accessChecker, pathFactories);
+        CompositePathFactory factory = new CompositePathFactory(fileRepository, accessChecker, pathFactories);
+        factory.configureRecursives();
+        return factory;
     }
 }

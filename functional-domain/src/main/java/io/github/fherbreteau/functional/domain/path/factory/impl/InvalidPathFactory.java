@@ -17,4 +17,9 @@ public class InvalidPathFactory implements PathFactory {
     public PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
         return new InvalidPathParser(parentPath, path);
     }
+
+    @Override
+    public int order() {
+        return Integer.MAX_VALUE;
+    }
 }
