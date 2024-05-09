@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.Objects;
+
 public final class Path {
 
     public static final Path ROOT = success(Folder.getRoot());
@@ -67,4 +69,19 @@ public final class Path {
         return item != null && item.getParent() != null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Path path)) {
+            return false;
+        }
+        return Objects.equals(item, path.item) && Objects.equals(error, path.error);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item, error);
+    }
 }

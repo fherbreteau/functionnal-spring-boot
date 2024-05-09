@@ -49,4 +49,17 @@ class AccessRightTest {
         assertThat(right).extracting(AccessRight::isWrite, BOOLEAN).isTrue();
         assertThat(right).extracting(AccessRight::isExecute, BOOLEAN).isTrue();
     }
+
+    @Test
+    void testThatHashcodeAndEqualsAreCorrectlyChecked() {
+        AccessRight right = AccessRight.none();
+
+        assertThat((Object) right).isNotEqualTo("");
+        AccessRight left = right.read();
+        assertThat(right).isNotEqualTo(left).doesNotHaveSameHashCodeAs(left);
+        left = right.write();
+        assertThat(right).isNotEqualTo(left).doesNotHaveSameHashCodeAs(left);
+        left = right.execute();
+        assertThat(right).isNotEqualTo(left).doesNotHaveSameHashCodeAs(left);
+    }
 }

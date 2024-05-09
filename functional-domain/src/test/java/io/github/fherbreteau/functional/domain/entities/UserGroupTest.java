@@ -45,4 +45,27 @@ class UserGroupTest {
         assertThat((Object) user).isNotEqualTo(group);
         assertThat((Object) group).isNotEqualTo(user);
     }
+
+    @Test
+    void shouldNotEqualsOrSameHashcode() {
+        Group group = Group.group("group");
+        User user1 = User.user("user", group);
+        User user2 = User.user("user", group);
+        assertThat(user1).isNotEqualTo(user2)
+                .doesNotHaveSameHashCodeAs(user2);
+
+        Group group1 = Group.group("group");
+        Group group2 = Group.group("group");
+        assertThat(group1).isNotEqualTo(group2)
+                .doesNotHaveSameHashCodeAs(group2);
+
+        UUID userId = UUID.randomUUID();
+        user1 = User.user(userId, "user", group1);
+        user2 = User.user(userId, "user", group2);
+        assertThat(user1).isNotEqualTo(user2);
+
+        user1 = User.user(userId, "user1", group1);
+        user2 = User.user(userId, "user2", group1);
+        assertThat(user1).isNotEqualTo(user2);
+    }
 }

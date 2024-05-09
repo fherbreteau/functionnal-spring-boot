@@ -63,7 +63,7 @@ public final class File extends AbstractItem<File, File.Builder> {
         private Builder() { }
 
         public Builder withContent(byte[] content) {
-            this.content = content;
+            this.content = content != null ? Arrays.copyOf(content, content.length) : null;
             return this;
         }
 

@@ -17,7 +17,9 @@ public class ComplexPathParser implements PathParser {
         this.parentPath = parentPath;
         int index = path.indexOf('/');
         this.segment = path.substring(0, index);
-        this.rest = (index + 1 == path.length()) ? "" : path.substring(index + 1);
+        // Increment the index to skip the path separator
+        index++;
+        this.rest = (index == path.length()) ? "" : path.substring(index);
     }
 
     @Override
