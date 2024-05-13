@@ -34,4 +34,15 @@ public class Output {
     public boolean isError() {
         return error != null;
     }
+
+    @Override
+    public String toString() {
+        String result = "Output{";
+        if (value != null) {
+            result += "value=" + value;
+        } else {
+            result += "error=" + error;
+        }
+        return result + '}';
+    }
 }

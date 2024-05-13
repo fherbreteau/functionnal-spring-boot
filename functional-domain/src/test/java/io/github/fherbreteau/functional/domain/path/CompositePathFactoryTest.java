@@ -76,7 +76,7 @@ class CompositePathFactoryTest {
                 new InvalidPathFactory()
         );
         compositePathFactory = new CompositePathFactory(repository, accessChecker, pathFactories);
-        compositePathFactory.configureRecursives();
+        compositePathFactory.configureRecursive();
     }
 
     @ParameterizedTest

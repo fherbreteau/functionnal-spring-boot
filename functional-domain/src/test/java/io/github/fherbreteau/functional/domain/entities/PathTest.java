@@ -39,4 +39,12 @@ class PathTest {
 
         assertThat((Object) path).isNotEqualTo(file);
     }
+
+    @Test
+    void testPathHasRequiredInfoInToString() {
+        Path path = Path.success(File.builder().build());
+        assertThat(path).hasToString("Path{item='null null:null --------- null'}");
+        path = Path.error(new Error("error"));
+        assertThat(path).hasToString("Path{error=Error{message='error'}}");
+    }
 }

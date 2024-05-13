@@ -11,11 +11,10 @@ class ItemsTest {
 
     @Test
     void testItemsHaveTheGoodTypes() {
-        File file = File.builder().withName("file").withContent("file".getBytes()).build();
+        File file = File.builder().withName("file").withContentType("contentType").build();
         assertThat(file).extracting(Item::isFile, BOOLEAN).isTrue();
         assertThat(file).extracting(Item::isFolder, BOOLEAN).isFalse();
-        assertThat(file).extracting("content", BYTE_ARRAY).isNotNull()
-                .satisfies(b -> assertThat(new String(b)).isEqualTo("file"));
+        assertThat(file).extracting(File::getContentType, STRING).isEqualTo("contentType");
         assertThat(file.copyBuilder().build())
                 .isEqualTo(file)
                 .hasSameHashCodeAs(file);
@@ -54,23 +53,23 @@ class ItemsTest {
                 .withName("file")
                 .withParent(Folder.getRoot())
                 .withOwner(user)
-                .withContent("test".getBytes())
+                .withContentType("test")
                 .build();
 
         File file2 = file1.copyBuilder().withOwnerAccess(AccessRight.full()).build();
         assertThat(file1).isNotEqualTo(file2).doesNotHaveSameHashCodeAs(file2);
-        file2 = file1.copyBuilder().withContent("file".getBytes()).build();
+        file2 = file1.copyBuilder().withContentType("file").build();
         assertThat(file1).isNotEqualTo(file2).doesNotHaveSameHashCodeAs(file2);
         file2 = file1.copyBuilder().build();
         assertThat(file1).isEqualTo(file2).hasSameHashCodeAs(file2);
 
         LocalDateTime time = LocalDateTime.MIN;
         File file = File.builder()
-                .withContent("file".getBytes())
+                .withContentType("file")
                 .withCreated(time)
                 .withLastAccessed(time)
                 .withLastModified(time)
                 .build();
-        assertThat(file).extracting(File::hashCode).isEqualTo(2074746537);
+        assertThat(file).extracting(File::hashCode).isEqualTo(2073823016);
     }
 }

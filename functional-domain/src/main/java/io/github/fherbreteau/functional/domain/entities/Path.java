@@ -69,6 +69,10 @@ public final class Path {
         return item != null && item.getParent() != null;
     }
 
+    public String getContentType() {
+        return isItemFolder() ? null : getAsFile().getContentType();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -83,5 +87,16 @@ public final class Path {
     @Override
     public int hashCode() {
         return Objects.hash(item, error);
+    }
+
+    @Override
+    public String toString() {
+        String result = "Path{";
+        if (item != null) {
+            result += "item=" + item;
+        } else {
+            result += "error=" + error;
+        }
+        return result + '}';
     }
 }

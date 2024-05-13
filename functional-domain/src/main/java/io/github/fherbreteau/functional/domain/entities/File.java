@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import java.util.Arrays;
+import java.util.Objects;
 
 public final class File extends AbstractItem<File, File.Builder> {
 
-    private final byte[] content;
+    private final String contentType;
 
     private File(Builder builder) {
         super(builder);
-        this.content = builder.content;
+        this.contentType = builder.contentType;
     }
 
     public static Builder builder() {
@@ -25,14 +25,14 @@ public final class File extends AbstractItem<File, File.Builder> {
         return true;
     }
 
-    public byte[] getContent() {
-        return content;
+    public String getContentType() {
+        return contentType;
     }
 
     @SuppressWarnings("unchecked")
     public Builder copyBuilder() {
         return copy(builder())
-                .withContent(content);
+                .withContentType(contentType);
     }
 
     @Override
@@ -46,24 +46,24 @@ public final class File extends AbstractItem<File, File.Builder> {
         if (!super.equals(o)) {
             return false;
         }
-        return Arrays.equals(content, file.content);
+        return Objects.equals(contentType, file.contentType);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(content);
+        result = 31 * result + Objects.hashCode(contentType);
         return result;
     }
 
     public static final class Builder extends AbstractBuilder<File, Builder> {
 
-        private byte[] content = new byte[0];
+        private String contentType = "application/octet-stream";
 
         private Builder() { }
 
-        public Builder withContent(byte[] content) {
-            this.content = content != null ? Arrays.copyOf(content, content.length) : null;
+        public Builder withContentType(String contentType) {
+            this.contentType = contentType;
             return this;
         }
 

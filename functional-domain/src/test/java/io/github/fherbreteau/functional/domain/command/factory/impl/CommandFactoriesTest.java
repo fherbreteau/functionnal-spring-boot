@@ -3,7 +3,9 @@ package io.github.fherbreteau.functional.domain.command.factory.impl;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,8 @@ class CommandFactoriesTest {
     @Mock
     private AccessChecker accessChecker;
     @Mock
+    private ContentRepository contentRepository;
+    @Mock
     private User actor;
 
     @Test
@@ -35,7 +39,8 @@ class CommandFactoriesTest {
         given(repository.exists(folder, "file")).willReturn(false);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, CommandType.TOUCH, input);
+        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
+                CommandType.TOUCH, input);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -58,7 +63,8 @@ class CommandFactoriesTest {
         given(accessChecker.canChangeMode(file, actor)).willReturn(true);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, CommandType.CHMOD, input);
+        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
+                CommandType.CHMOD, input);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -72,9 +78,39 @@ class CommandFactoriesTest {
     }
 
     @Test
+    void shouldUpdateTheContentTypeOfTheFileWithTheGivenContentType() {
+        CommandFactory factory = new UploadCommandFactory();
+        File file = File.builder().withName("file").withParent(Folder.getRoot()).withContentType("oldValue").build();
+        Input input = Input.builder(file)
+                .withContentType("newValue")
+                .build();
+
+        given(accessChecker.canWrite(file, actor)).willReturn(true);
+        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+
+        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
+                CommandType.CHMOD, input);
+        Command<Output> executor = checker.execute(actor);
+        Output output = executor.execute(actor);
+
+        assertThat(output).extracting(Output::getValue, type(File.class))
+                .isNotNull()
+                .extracting(File::getContentType)
+                .isEqualTo("newValue");
+    }
+
+    @Test
     void testInputHasRequiredInfoInToString() {
         File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
         Input input = Input.builder(file).build();
-        assertThat(input).hasToString("Input{item='file null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, content=<redacted>}");
+        assertThat(input).hasToString("Input{item='file null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null}");
+    }
+
+    @Test
+    void testOutputHasRequiredInfoInToString() {
+        Output output = new Output("success");
+        assertThat(output).hasToString("Output{value=success}");
+        output = new Output(new Error("error"));
+        assertThat(output).hasToString("Output{error=Error{message='error'}}");
     }
 }

@@ -23,7 +23,7 @@ public class CompositePathFactory {
         this.pathFactories = pathFactories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();
     }
 
-    public void configureRecursives() {
+    public void configureRecursive() {
         pathFactories.stream().filter(RecursiveFactory.class::isInstance)
                 .map(RecursiveFactory.class::cast)
                 .forEach(f -> f.setCompositePathFactory(this));
