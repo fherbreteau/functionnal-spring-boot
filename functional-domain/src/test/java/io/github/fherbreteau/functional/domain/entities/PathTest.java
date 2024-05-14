@@ -14,6 +14,16 @@ class PathTest {
         File file = File.builder().build();
         path = Path.success(file);
         assertThat(path).extracting(Path::getAsFile).isEqualTo(file);
+        assertThat(Path.success(file)).isEqualTo(path);
+
+        Error error = new Error("error");
+        path = Path.error(error);
+        assertThat(Path.error(error)).isEqualTo(path);
+        assertThat(path.getError()).isEqualTo(error).hasSameHashCodeAs(error);
+
+        assertThat(Path.error(new Error("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
+        assertThat(path.getError()).isNotEqualTo(new Object());
+        assertThat(new Error("error")).isEqualTo(error);
     }
 
     @Test

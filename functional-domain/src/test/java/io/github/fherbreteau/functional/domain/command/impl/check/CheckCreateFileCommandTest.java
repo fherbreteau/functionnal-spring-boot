@@ -55,4 +55,15 @@ class CheckCreateFileCommandTest {
         //THEN
         assertThat(result).isInstanceOf(ErrorCommand.class);
     }
+
+    @Test
+    void shouldGenerateErrorCommandWhenExistenceCheckingFails() {
+        // GIVEN
+        given(accessChecker.canWrite(parent, actor)).willReturn(true);
+        given(repository.exists(parent, "file")).willReturn(true);
+        // WHEN
+        Command<Output> result = command.execute(actor);
+        //THEN
+        assertThat(result).isInstanceOf(ErrorCommand.class);
+    }
 }

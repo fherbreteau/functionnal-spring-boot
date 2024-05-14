@@ -60,13 +60,24 @@ class CompositeCommandFactoryTest {
         InputStream stream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(CommandType.TOUCH, Input.builder(file).withName("item").build()),
+                Arguments.of(CommandType.TOUCH, Input.builder(folder).build()),
                 Arguments.of(CommandType.MKDIR, Input.builder(file).withName("item").build()),
                 Arguments.of(CommandType.LIST, Input.builder(file).build()),
                 Arguments.of(CommandType.CHOWN, Input.builder(file).build()),
                 Arguments.of(CommandType.CHGRP, Input.builder(file).build()),
                 Arguments.of(CommandType.CHMOD, Input.builder(file).build()),
                 Arguments.of(CommandType.DOWNLOAD, Input.builder(folder).build()),
-                Arguments.of(CommandType.UPLOAD, Input.builder(folder).withContent(stream).build())
+                Arguments.of(CommandType.UPLOAD, Input.builder(folder).withContent(stream).withContentType("content").build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContentType("content").build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(stream).build()),
+
+                Arguments.of(CommandType.MKDIR, Input.builder(null).withName("item").build()),
+                Arguments.of(CommandType.LIST, Input.builder(null).build()),
+                Arguments.of(CommandType.CHOWN, Input.builder(null).build()),
+                Arguments.of(CommandType.CHGRP, Input.builder(null).build()),
+                Arguments.of(CommandType.CHMOD, Input.builder(null).build()),
+                Arguments.of(CommandType.DOWNLOAD, Input.builder(null).build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(null).withContent(stream).withContentType("content").build())
         );
     }
 

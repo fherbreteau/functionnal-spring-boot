@@ -62,6 +62,22 @@ class ItemsTest {
         assertThat(file1).isNotEqualTo(file2).doesNotHaveSameHashCodeAs(file2);
         file2 = file1.copyBuilder().build();
         assertThat(file1).isEqualTo(file2).hasSameHashCodeAs(file2);
+        file2 = file1.copyBuilder().withGroupAccess(AccessRight.full()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withOtherAccess(AccessRight.full()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withParent(Folder.builder().build()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withCreated(LocalDateTime.now()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withLastModified(LocalDateTime.now()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withLastAccessed(LocalDateTime.now()).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withOwner(User.user("user")).build();
+        assertThat(file1).isNotEqualTo(file2);
+        file2 = file1.copyBuilder().withGroup(Group.group("group")).build();
+        assertThat(file1).isNotEqualTo(file2);
 
         LocalDateTime time = LocalDateTime.MIN;
         File file = File.builder()

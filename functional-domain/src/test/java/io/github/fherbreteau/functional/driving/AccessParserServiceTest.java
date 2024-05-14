@@ -86,7 +86,8 @@ public class AccessParserServiceTest {
                 Arguments.of("u", File.builder().build()),
                 Arguments.of("w", File.builder().build()),
                 Arguments.of("x", File.builder().build()),
-                Arguments.of("+rwx", null)
+                Arguments.of("+rwx", null),
+                Arguments.of("l", File.builder().build())
                 );
     }
 

@@ -1,10 +1,7 @@
 package io.github.fherbreteau.functional.domain.path;
 
-import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.impl.ListChildrenCommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedCommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.impl.UploadCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.impl.*;
 import io.github.fherbreteau.functional.domain.path.impl.InvalidPathParser;
@@ -63,11 +60,14 @@ class CompositePathFactoryTest {
     public static Stream<Arguments> invalidPathArguments() {
         Path folder = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
         Path file = Path.success(File.builder().withName("file").withParent(folder.getAsFolder()).build());
+        Path error = Path.error(new Error("error"));
         return Stream.of(
                 // Go up
                 Arguments.of(Path.ROOT, ".."),
                 // Element after file
-                Arguments.of(file, "folder")
+                Arguments.of(file, "folder"),
+                // Element after error
+                Arguments.of(error, ".")
         );
     }
 

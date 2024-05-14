@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -278,7 +279,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(post("/file").with(csrf())
                         .param("path", "/path")
@@ -286,14 +287,14 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(get("/")
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(patch("/owner").with(csrf())
                 .param("path", "/path")
@@ -301,7 +302,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(patch("/group").with(csrf())
                 .param("path", "/path")
@@ -309,7 +310,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(patch("/mode").with(csrf())
                 .param("path", "/path")
@@ -317,14 +318,14 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(get("/download").with(csrf())
                 .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
 
         mvc.perform(multipart("/upload")
                 .file("file", "content".getBytes())
@@ -333,7 +334,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value("path not found in ' null:null ------rwx null' for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
     }
 
     @WithMockUser
@@ -355,7 +356,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("MKDIR with arguments Input{item='path null:null --------- ', name='folder', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("MKDIR with arguments Input{item='path null:null --------- ', name='folder', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(post("/file").with(csrf())
                         .param("path", "/path")
@@ -363,14 +364,14 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("TOUCH with arguments Input{item='path null:null --------- ', name='file', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("TOUCH with arguments Input{item='path null:null --------- ', name='file', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(get("/")
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("LIST with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("LIST with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(patch("/owner").with(csrf())
                         .param("path", "/path")
@@ -378,7 +379,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("CHOWN with arguments Input{item='path null:null --------- ', name='null', user=user2, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("CHOWN with arguments Input{item='path null:null --------- ', name='null', user=user2, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(patch("/group").with(csrf())
                         .param("path", "/path")
@@ -386,7 +387,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("CHGRP with arguments Input{item='path null:null --------- ', name='null', user=null, group=group2, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("CHGRP with arguments Input{item='path null:null --------- ', name='null', user=null, group=group2, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(patch("/mode").with(csrf())
                         .param("path", "/path")
@@ -394,14 +395,14 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("CHMOD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=---, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("CHMOD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=---, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(get("/download").with(csrf())
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("DOWNLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("DOWNLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")));
 
         mvc.perform(multipart("/upload")
                         .file("file", "content".getBytes())
@@ -410,6 +411,6 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value("UPLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=application/octet-stream} failed for user"));
+                .andExpect(jsonPath("$.message").value(startsWith("UPLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=application/octet-stream} failed for user")));
     }
 }

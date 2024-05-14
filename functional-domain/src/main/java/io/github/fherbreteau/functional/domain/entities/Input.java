@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
+
 public final class Input {
 
     private final Item item;
@@ -77,13 +79,21 @@ public final class Input {
         return "Input{" +
                 "item=" + item +
                 ", name='" + name + '\'' +
-                ", user=" + user +
-                ", group=" + group +
+                ", user=" + getName(user) +
+                ", group=" + getName(group) +
                 ", ownerAccess=" + ownerAccess +
                 ", groupAccess=" + groupAccess +
                 ", otherAccess=" + otherAccess +
                 ", contentType=" + contentType +
                 '}';
+    }
+
+    private String getName(User user) {
+        return isNull(user) ? null : user.getName();
+    }
+
+    private String getName(Group group) {
+        return isNull(group) ? null : group.getName();
     }
 
     public static final class Builder {

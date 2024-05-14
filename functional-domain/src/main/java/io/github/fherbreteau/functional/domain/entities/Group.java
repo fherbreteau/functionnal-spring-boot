@@ -53,7 +53,7 @@ public final class Group {
 
     @Override
     public String toString() {
-        return getName();
+        return getName() + "(" + groupId + ")";
     }
 
     @Override
