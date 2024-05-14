@@ -4,7 +4,6 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static java.io.InputStream.nullInputStream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class FileRepositoryTest {
