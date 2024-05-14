@@ -1,5 +1,11 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.Objects.isNull;
+
 public final class Input {
 
     private final Item item;
@@ -9,7 +15,8 @@ public final class Input {
     private final AccessRight ownerAccess;
     private final AccessRight groupAccess;
     private final AccessRight otherAccess;
-    private final byte[] content;
+    private final InputStream inputStream;
+    private final String contentType;
 
     private Input(Builder builder) {
         this.item = builder.item;
@@ -19,7 +26,8 @@ public final class Input {
         this.ownerAccess = builder.ownerAccess;
         this.groupAccess = builder.groupAccess;
         this.otherAccess = builder.otherAccess;
-        this.content = builder.content;
+        this.inputStream = builder.inputStream;
+        this.contentType = builder.contentType;
     }
 
     public Item getItem() {
@@ -38,10 +46,6 @@ public final class Input {
         return group;
     }
 
-    public AccessRight[] getAccesses() {
-        return new AccessRight[]{ownerAccess, groupAccess, otherAccess};
-    }
-
     public AccessRight getOwnerAccess() {
         return ownerAccess;
     }
@@ -54,8 +58,16 @@ public final class Input {
         return otherAccess;
     }
 
-    public byte[] getContent() {
-        return content;
+    public boolean hasAccess() {
+        return Stream.of(ownerAccess, groupAccess, otherAccess).anyMatch(Objects::nonNull);
+    }
+
+    public InputStream getContent() {
+        return inputStream;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 
     public static Builder builder(Item item) {
@@ -67,13 +79,21 @@ public final class Input {
         return "Input{" +
                 "item=" + item +
                 ", name='" + name + '\'' +
-                ", user=" + user +
-                ", group=" + group +
+                ", user=" + getName(user) +
+                ", group=" + getName(group) +
                 ", ownerAccess=" + ownerAccess +
                 ", groupAccess=" + groupAccess +
                 ", otherAccess=" + otherAccess +
-                ", content=<redacted>" +
+                ", contentType=" + contentType +
                 '}';
+    }
+
+    private String getName(User user) {
+        return isNull(user) ? null : user.getName();
+    }
+
+    private String getName(Group group) {
+        return isNull(group) ? null : group.getName();
     }
 
     public static final class Builder {
@@ -85,7 +105,8 @@ public final class Input {
         private AccessRight ownerAccess;
         private AccessRight groupAccess;
         private AccessRight otherAccess;
-        private byte[] content;
+        private InputStream inputStream;
+        private String contentType;
 
         private Builder(Item item) {
             this.item = item;
@@ -121,8 +142,13 @@ public final class Input {
             return this;
         }
 
-        public Builder withContent(byte[] content) {
-            this.content = content;
+        public Builder withContent(InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        public Builder withContentType(String contentType) {
+            this.contentType = contentType;
             return this;
         }
 

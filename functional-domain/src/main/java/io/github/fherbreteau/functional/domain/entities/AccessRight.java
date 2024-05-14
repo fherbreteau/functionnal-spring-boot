@@ -28,48 +28,88 @@ public final class AccessRight {
         return execute;
     }
 
-    public AccessRight read() {
+    public AccessRight addRead() {
         return new AccessRight(true, this.write, this.execute);
     }
 
-    public AccessRight write() {
+    public AccessRight removeRead() {
+        return new AccessRight(false, write, execute);
+    }
+
+    public AccessRight addWrite() {
         return new AccessRight(this.read, true, this.execute);
     }
 
-    public AccessRight execute() {
+    public AccessRight removeWrite() {
+        return new AccessRight(read, false, execute);
+    }
+
+    public AccessRight addExecute() {
         return new AccessRight(this.read, this.write, true);
     }
 
+    public AccessRight removeExecute() {
+        return new AccessRight(read, write, false);
+    }
+
     public static AccessRight readOnly() {
-        return none().read();
+        return none().addRead();
     }
 
     public static AccessRight readWrite() {
-        return readOnly().write();
+        return readOnly().addWrite();
     }
 
     public static AccessRight readExecute() {
-        return readOnly().execute();
+        return readOnly().addExecute();
     }
 
     public static AccessRight writeOnly() {
-        return none().write();
+        return none().addWrite();
     }
 
     public static AccessRight writeExecute() {
-        return writeOnly().execute();
+        return writeOnly().addExecute();
     }
 
     public static AccessRight executeOnly() {
-        return none().execute();
+        return none().addExecute();
     }
 
     public static AccessRight full() {
-        return readWrite().execute();
+        return readWrite().addExecute();
     }
 
     public static AccessRight none() {
         return new AccessRight(false, false, false);
+    }
+
+    public AccessRight add(AccessRight accessRight) {
+        AccessRight newAccessRight = accessRight;
+        if (read) {
+            newAccessRight = newAccessRight.addRead();
+        }
+        if (write) {
+            newAccessRight = newAccessRight.addWrite();
+        }
+        if (execute) {
+            newAccessRight = newAccessRight.addExecute();
+        }
+        return newAccessRight;
+    }
+
+    public AccessRight remove(AccessRight accessRight) {
+        AccessRight newAccessRight = accessRight;
+        if (read) {
+            newAccessRight = newAccessRight.removeRead();
+        }
+        if (write) {
+            newAccessRight = newAccessRight.removeWrite();
+        }
+        if (execute) {
+            newAccessRight = newAccessRight.removeExecute();
+        }
+        return newAccessRight;
     }
 
     @Override

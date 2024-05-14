@@ -6,14 +6,17 @@ import io.github.fherbreteau.functional.domain.command.impl.success.DownloadComm
 import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class CheckDownloadCommand extends AbstractCheckCommand<DownloadCommand> {
-
+    private final ContentRepository contentRepository;
     private final File item;
 
-    public CheckDownloadCommand(FileRepository repository, AccessChecker accessChecker, File item) {
+    public CheckDownloadCommand(FileRepository repository, AccessChecker accessChecker,
+                                ContentRepository contentRepository, File item) {
         super(repository, accessChecker);
+        this.contentRepository = contentRepository;
         this.item = item;
     }
 
@@ -24,7 +27,7 @@ public class CheckDownloadCommand extends AbstractCheckCommand<DownloadCommand> 
 
     @Override
     protected DownloadCommand createSuccess() {
-        return new DownloadCommand(repository, item);
+        return new DownloadCommand(repository, contentRepository, item);
     }
 
     @Override

@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.command.factory.impl.*;
 import io.github.fherbreteau.functional.domain.command.impl.check.*;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,12 +33,15 @@ class CompositeCommandFactoryTest {
     private AccessChecker accessChecker;
     @Mock
     private FileRepository repository;
+    @Mock
+    private ContentRepository contentRepository;
 
     public static Stream<Arguments> validCommandArguments() {
         Folder folder = mock(Folder.class);
         File file = mock(File.class);
         User user = mock(User.class);
         Group group = mock(Group.class);
+        InputStream stream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(CommandType.TOUCH, Input.builder(folder).withName("item").build(), CheckCreateFileCommand.class),
                 Arguments.of(CommandType.MKDIR, Input.builder(folder).withName("item").build(), CheckCreateFolderCommand.class),
@@ -43,22 +50,34 @@ class CompositeCommandFactoryTest {
                 Arguments.of(CommandType.CHGRP, Input.builder(file).withGroup(group).build(), CheckChangeGroupCommand.class),
                 Arguments.of(CommandType.CHMOD, Input.builder(file).withOwnerAccess(AccessRight.full()).build(), CheckChangeModeCommand.class),
                 Arguments.of(CommandType.DOWNLOAD, Input.builder(file).build(), CheckDownloadCommand.class),
-                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(new byte[0]).build(), CheckUploadCommand.class)
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(stream).withContentType("content").build(), CheckUploadCommand.class)
         );
     }
 
     public static Stream<Arguments> invalidCommandArguments() {
         Folder folder = mock(Folder.class);
         File file = mock(File.class);
+        InputStream stream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(CommandType.TOUCH, Input.builder(file).withName("item").build()),
+                Arguments.of(CommandType.TOUCH, Input.builder(folder).build()),
                 Arguments.of(CommandType.MKDIR, Input.builder(file).withName("item").build()),
                 Arguments.of(CommandType.LIST, Input.builder(file).build()),
                 Arguments.of(CommandType.CHOWN, Input.builder(file).build()),
                 Arguments.of(CommandType.CHGRP, Input.builder(file).build()),
                 Arguments.of(CommandType.CHMOD, Input.builder(file).build()),
                 Arguments.of(CommandType.DOWNLOAD, Input.builder(folder).build()),
-                Arguments.of(CommandType.UPLOAD, Input.builder(folder).withContent(new byte[0]).build())
+                Arguments.of(CommandType.UPLOAD, Input.builder(folder).withContent(stream).withContentType("content").build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContentType("content").build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(file).withContent(stream).build()),
+
+                Arguments.of(CommandType.MKDIR, Input.builder(null).withName("item").build()),
+                Arguments.of(CommandType.LIST, Input.builder(null).build()),
+                Arguments.of(CommandType.CHOWN, Input.builder(null).build()),
+                Arguments.of(CommandType.CHGRP, Input.builder(null).build()),
+                Arguments.of(CommandType.CHMOD, Input.builder(null).build()),
+                Arguments.of(CommandType.DOWNLOAD, Input.builder(null).build()),
+                Arguments.of(CommandType.UPLOAD, Input.builder(null).withContent(stream).withContentType("content").build())
         );
     }
 
@@ -73,7 +92,7 @@ class CompositeCommandFactoryTest {
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory(),
                 new UnsupportedCommandFactory());
-        factory = new CompositeCommandFactory(repository, accessChecker, factories);
+        factory = new CompositeCommandFactory(repository, accessChecker, contentRepository, factories);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
@@ -90,5 +109,18 @@ class CompositeCommandFactoryTest {
         Command<?> command = factory.createCommand(type, input);
 
         assertThat(command).isNotNull().isInstanceOf(CheckUnsupportedCommand.class);
+    }
+
+    @Test
+    void testOrderOfCommandFactoriesIsRespected() {
+        List<CommandFactory> factories = List.of(
+                new UnsupportedCommandFactory(),
+                new ListChildrenCommandFactory(),
+                new UploadCommandFactory()
+        );
+        List<CommandFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(CommandFactory::order)).toList();
+        assertThat(sortedFactories).last(type(CommandFactory.class))
+                .isInstanceOf(UnsupportedCommandFactory.class);
+
     }
 }

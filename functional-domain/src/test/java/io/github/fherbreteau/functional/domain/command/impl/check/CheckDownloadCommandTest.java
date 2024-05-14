@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.DownloadComm
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ class CheckDownloadCommandTest {
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
+    @Mock
+    private ContentRepository contentRepository;
     private File file;
     private User actor;
 
@@ -33,7 +36,7 @@ class CheckDownloadCommandTest {
                 .withName("file")
                 .build();
         actor = User.user("actor");
-        command = new CheckDownloadCommand(repository, accessChecker, file);
+        command = new CheckDownloadCommand(repository, accessChecker, contentRepository, file);
     }
 
     @Test

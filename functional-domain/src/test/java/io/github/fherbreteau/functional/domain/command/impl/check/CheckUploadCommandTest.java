@@ -7,12 +7,15 @@ import io.github.fherbreteau.functional.domain.command.impl.success.UploadComman
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -24,6 +27,10 @@ class CheckUploadCommandTest {
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
+    @Mock
+    private ContentRepository contentRepository;
+    @Mock
+    private InputStream inputStream;
     private File file;
     private User actor;
 
@@ -33,7 +40,7 @@ class CheckUploadCommandTest {
                 .withName("file")
                 .build();
         actor = User.user("actor");
-        command = new CheckUploadCommand(repository, accessChecker, file, new byte[0]);
+        command = new CheckUploadCommand(repository, accessChecker, contentRepository, file, inputStream, "contentType");
     }
 
     @Test

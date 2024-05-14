@@ -14,6 +14,16 @@ class PathTest {
         File file = File.builder().build();
         path = Path.success(file);
         assertThat(path).extracting(Path::getAsFile).isEqualTo(file);
+        assertThat(Path.success(file)).isEqualTo(path);
+
+        Error error = new Error("error");
+        path = Path.error(error);
+        assertThat(Path.error(error)).isEqualTo(path);
+        assertThat(path.getError()).isEqualTo(error).hasSameHashCodeAs(error);
+
+        assertThat(Path.error(new Error("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
+        assertThat(path.getError()).isNotEqualTo(new Object());
+        assertThat(new Error("error")).isEqualTo(error);
     }
 
     @Test
@@ -38,5 +48,21 @@ class PathTest {
                 .doesNotHaveSameHashCodeAs(Path.ROOT);
 
         assertThat((Object) path).isNotEqualTo(file);
+    }
+
+    @Test
+    void testPathHasRequiredInfoInToString() {
+        Path path = Path.success(File.builder().build());
+        assertThat(path).hasToString("Path{item='null null:null --------- null'}");
+        path = Path.error(new Error("error"));
+        assertThat(path).hasToString("Path{error=Error{message='error'}}");
+    }
+
+    @Test
+    void testPathCanHaveAContentType() {
+        Path path = Path.success(File.builder().withContentType("Content-Type").build());
+        assertThat(path.getContentType()).isEqualTo("Content-Type");
+        path = Path.success(Folder.builder().build());
+        assertThat(path.getContentType()).isNull();
     }
 }

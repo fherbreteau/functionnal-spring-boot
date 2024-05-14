@@ -7,10 +7,8 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeModeCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
-
-import java.util.Objects;
-import java.util.stream.Stream;
 
 public class ChangeModeCommandFactory implements CommandFactory {
 
@@ -20,11 +18,12 @@ public class ChangeModeCommandFactory implements CommandFactory {
     }
 
     private boolean isValid(Input input) {
-        return input.getItem() != null && Stream.of(input.getAccesses()).anyMatch(Objects::nonNull);
+        return input.getItem() != null && input.hasAccess();
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                                  ContentRepository contentRepository, CommandType type, Input input) {
         return new CheckChangeModeCommand(repository, accessChecker, input.getItem(), input.getOwnerAccess(),
                 input.getGroupAccess(), input.getOtherAccess());
     }

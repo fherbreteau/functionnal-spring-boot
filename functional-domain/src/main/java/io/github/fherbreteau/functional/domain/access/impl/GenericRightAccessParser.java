@@ -1,0 +1,21 @@
+package io.github.fherbreteau.functional.domain.access.impl;
+
+import io.github.fherbreteau.functional.domain.access.AccessRightParser;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.Input;
+
+import java.util.function.UnaryOperator;
+
+public class GenericRightAccessParser implements AccessRightParser {
+
+    private final UnaryOperator<AccessRight> updateFunction;
+
+    public GenericRightAccessParser(UnaryOperator<AccessRight> updateFunction) {
+        this.updateFunction = updateFunction;
+    }
+
+    @Override
+    public AccessRight resolve(Input.Builder builder, AccessRight accessRight) {
+        return updateFunction.apply(accessRight);
+    }
+}

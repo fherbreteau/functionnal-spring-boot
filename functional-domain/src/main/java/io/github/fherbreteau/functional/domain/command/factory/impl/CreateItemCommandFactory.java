@@ -9,6 +9,7 @@ import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateFil
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateFolderCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class CreateItemCommandFactory implements CommandFactory {
@@ -23,7 +24,8 @@ public class CreateItemCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                                  ContentRepository contentRepository, CommandType type, Input input) {
         if (type == CommandType.TOUCH) {
             return new CheckCreateFileCommand(repository, accessChecker, input.getName(), (Folder) input.getItem());
         }

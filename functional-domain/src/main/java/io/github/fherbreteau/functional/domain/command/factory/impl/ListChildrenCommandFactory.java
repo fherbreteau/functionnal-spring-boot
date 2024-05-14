@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckListChildrenCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class ListChildrenCommandFactory implements CommandFactory {
@@ -17,7 +18,8 @@ public class ListChildrenCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                                  ContentRepository contentRepository, CommandType type, Input input) {
         return new CheckListChildrenCommand(repository, accessChecker, (Folder) input.getItem());
     }
 }

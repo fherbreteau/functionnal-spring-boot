@@ -53,7 +53,7 @@ public final class Group {
 
     @Override
     public String toString() {
-        return getName();
+        return getName() + "(" + groupId + ")";
     }
 
     @Override
@@ -64,7 +64,9 @@ public final class Group {
         if (!(o instanceof Group group)) {
             return false;
         }
-        return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(parent, group.parent);
+        return Objects.equals(groupId, group.groupId)
+                && Objects.equals(name, group.name)
+                && Objects.equals(parent, group.parent);
     }
 
     @Override

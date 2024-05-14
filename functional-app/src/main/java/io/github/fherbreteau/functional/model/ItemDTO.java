@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class ItemDTO {
@@ -11,6 +13,8 @@ public class ItemDTO {
     private LocalDateTime created;
     private LocalDateTime modified;
     private LocalDateTime accessed;
+    @JsonProperty("content-type")
+    private String contentType;
 
     public String getName() {
         return name;
@@ -66,5 +70,13 @@ public class ItemDTO {
 
     public void setAccessed(LocalDateTime accessed) {
         this.accessed = accessed;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

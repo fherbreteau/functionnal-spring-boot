@@ -37,7 +37,7 @@ class CheckCreateFolderCommandTest {
     }
 
     @Test
-    void shouldGenerateCreateFileCommandWhenCheckingSucceed() {
+    void shouldGenerateCreateFolderCommandWhenCheckingSucceed() {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(true);
         // WHEN
@@ -50,6 +50,17 @@ class CheckCreateFolderCommandTest {
     void shouldGenerateErrorCommandWhenCheckingFails() {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(false);
+        // WHEN
+        Command<Output> result = command.execute(actor);
+        //THEN
+        assertThat(result).isInstanceOf(ErrorCommand.class);
+    }
+
+    @Test
+    void shouldGenerateErrorCommandWhenExistenceCheckingFails() {
+        // GIVEN
+        given(accessChecker.canWrite(parent, actor)).willReturn(true);
+        given(repository.exists(parent, "folder")).willReturn(true);
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN

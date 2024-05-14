@@ -7,18 +7,24 @@ import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.io.InputStream;
+
 public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
-
+    private final ContentRepository contentRepository;
     private final File item;
+    private final InputStream content;
+    private final String contentType;
 
-    private final byte[] content;
-
-    public CheckUploadCommand(FileRepository repository, AccessChecker accessChecker, File item, byte[] content) {
+    public CheckUploadCommand(FileRepository repository, AccessChecker accessChecker,
+                              ContentRepository contentRepository, File item, InputStream content, String contentType) {
         super(repository, accessChecker);
+        this.contentRepository = contentRepository;
         this.item = item;
         this.content = content;
+        this.contentType = contentType;
     }
 
     @Override
@@ -28,7 +34,7 @@ public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
 
     @Override
     protected UploadCommand createSuccess() {
-        return new UploadCommand(repository, item, content);
+        return new UploadCommand(repository, contentRepository, item, content, contentType);
     }
 
     @Override

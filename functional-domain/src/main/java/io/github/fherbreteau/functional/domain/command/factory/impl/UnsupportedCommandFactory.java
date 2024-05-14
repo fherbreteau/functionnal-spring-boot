@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class UnsupportedCommandFactory implements CommandFactory {
@@ -16,7 +17,13 @@ public class UnsupportedCommandFactory implements CommandFactory {
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker, CommandType type, Input input) {
+    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                                  ContentRepository contentRepository, CommandType type, Input input) {
         return new CheckUnsupportedCommand(repository, accessChecker, type, input);
+    }
+
+    @Override
+    public int order() {
+        return Integer.MAX_VALUE;
     }
 }

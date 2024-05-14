@@ -37,6 +37,11 @@
         <checkstyle-maven.version>3.3.1</checkstyle-maven.version>
         <checkstyle.version>10.16.0</checkstyle.version>
         <surefire.version>3.2.5</surefire.version>
+        <pitest.version>1.16.1</pitest.version>
+        <pitest-junit5.version>1.2.1</pitest-junit5.version>
+
+        <!-- Mutation Testing configuration -->
+        <pitest.fail-when-no-mutations>true</pitest.fail-when-no-mutations>
 
         <!-- Sonar configuration properties -->
         <sonar.organization>fherbreteau</sonar.organization>
@@ -110,6 +115,7 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                             <formats>
                                 <format>XML</format>
+                                <format>HTML</format>
                             </formats>
                         </configuration>
                     </execution>
@@ -140,6 +146,34 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${pitest-junit5.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>pit-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>mutationCoverage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mutationThreshold>80</mutationThreshold>
+                    <failWhenNoMutations>${pitest.fail-when-no-mutations}</failWhenNoMutations>
+                    <excludedClasses>
+                        <class>io.github.fherbreteau.functional.config.*</class>
+                    </excludedClasses>
+                </configuration>
             </plugin>
 
             <plugin>
