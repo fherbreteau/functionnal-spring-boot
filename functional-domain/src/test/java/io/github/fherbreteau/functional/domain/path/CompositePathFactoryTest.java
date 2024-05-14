@@ -1,5 +1,9 @@
 package io.github.fherbreteau.functional.domain.path;
 
+import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ListChildrenCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UploadCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.impl.*;
@@ -15,11 +19,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -141,5 +147,18 @@ class CompositePathFactoryTest {
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isFalse();
         assertThat(resolved).extracting(Path::isItemFolder, BOOLEAN).isTrue();
         assertThat(resolved).extracting(Path::getItem).isEqualTo(folder2);
+    }
+
+    @Test
+    void testOrderOfPathFactoriesIsRespected() {
+        List<PathFactory> factories = List.of(
+                new InvalidPathFactory(),
+                new CurrentSegmentPathFactory(),
+                new SingleSegmentPathFactory()
+        );
+        List<PathFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();
+        assertThat(sortedFactories).last(type(PathFactory.class))
+                .isInstanceOf(InvalidPathFactory.class);
+
     }
 }

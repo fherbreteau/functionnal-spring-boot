@@ -4,13 +4,15 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.springframework.stereotype.Repository;
 
+import java.io.InputStream;
 import java.util.List;
 
 @Repository
-public class FileRepositoryImpl implements FileRepository {
+public class FileRepositoryImpl implements FileRepository, ContentRepository {
 
     private static final String NOT_IMPLEMENTED = "Not Implemented Yet";
 
@@ -35,12 +37,12 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public byte[] readContent(File item) {
+    public InputStream readContent(File item) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void writeContent(File item, byte[] content) {
+    public void writeContent(File item, InputStream content) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 

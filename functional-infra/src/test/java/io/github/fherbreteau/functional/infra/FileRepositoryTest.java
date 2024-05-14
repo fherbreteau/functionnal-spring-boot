@@ -4,6 +4,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static java.io.InputStream.nullInputStream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class FileRepositoryTest {
@@ -24,10 +25,6 @@ class FileRepositoryTest {
         assertThatThrownBy(() -> repository.findByParentAndUser(null, null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.findByNameAndParentAndUser(null, null, null))
-                .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.readContent(null))
-                .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.writeContent(null, new byte[0]))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.getItem(null))
                 .isInstanceOf(UnsupportedOperationException.class);

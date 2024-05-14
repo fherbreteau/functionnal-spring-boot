@@ -47,4 +47,12 @@ class PathTest {
         path = Path.error(new Error("error"));
         assertThat(path).hasToString("Path{error=Error{message='error'}}");
     }
+
+    @Test
+    void testPathCanHaveAContentType() {
+        Path path = Path.success(File.builder().withContentType("Content-Type").build());
+        assertThat(path.getContentType()).isEqualTo("Content-Type");
+        path = Path.success(Folder.builder().build());
+        assertThat(path.getContentType()).isNull();
+    }
 }

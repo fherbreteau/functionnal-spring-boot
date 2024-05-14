@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,10 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,5 +98,18 @@ class CompositeCommandFactoryTest {
         Command<?> command = factory.createCommand(type, input);
 
         assertThat(command).isNotNull().isInstanceOf(CheckUnsupportedCommand.class);
+    }
+
+    @Test
+    void testOrderOfCommandFactoriesIsRespected() {
+        List<CommandFactory> factories = List.of(
+                new UnsupportedCommandFactory(),
+                new ListChildrenCommandFactory(),
+                new UploadCommandFactory()
+        );
+        List<CommandFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(CommandFactory::order)).toList();
+        assertThat(sortedFactories).last(type(CommandFactory.class))
+                .isInstanceOf(UnsupportedCommandFactory.class);
+
     }
 }
