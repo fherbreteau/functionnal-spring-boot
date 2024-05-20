@@ -1,13 +1,9 @@
 package io.github.fherbreteau.functional.controller;
 
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +47,10 @@ class FileSystemControllerTest {
     private AccessChecker accessChecker;
     @MockBean
     private ContentRepository contentRepository;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private GroupRepository groupRepository;
 
     private MockMvc mvc;
 
@@ -88,6 +88,7 @@ class FileSystemControllerTest {
                 .withGroupAccess(AccessRight.readOnly())
                 .withOtherAccess(AccessRight.none())
                 .build();
+        given(userRepository.findByName("user")).willReturn(User.builder("user").build());
     }
 
     @WithMockUser
@@ -174,6 +175,7 @@ class FileSystemControllerTest {
                 .willReturn(true);
         given(fileRepository.save(any()))
                 .willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.findByName("user2")).willReturn(User.builder("user2").build());
 
         mvc.perform(patch("/owner").with(csrf())
                         .param("path", "/folder")
@@ -194,6 +196,7 @@ class FileSystemControllerTest {
                 .willReturn(true);
         given(fileRepository.save(any()))
                 .willAnswer(invocation -> invocation.getArgument(0));
+        given(groupRepository.findByName("group2")).willReturn(Group.builder("group2").build());
 
         mvc.perform(patch("/group").with(csrf())
                         .param("path", "/folder")
@@ -263,6 +266,75 @@ class FileSystemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content-type").value(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnAnErrorWhenUserDoesNotExists() throws Exception {
+        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+
+        mvc.perform(post("/folder").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "folder"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(post("/file").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "file"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(get("/")
+                        .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(patch("/owner").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "user2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(patch("/group").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "group2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(patch("/mode").with(csrf())
+                        .param("path", "/path")
+                        .param("right", "-wx"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(get("/download").with(csrf())
+                        .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(multipart("/upload")
+                        .file("file", "content".getBytes())
+                        .with(csrf())
+                        .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
     }
 
     @WithMockUser
@@ -339,6 +411,35 @@ class FileSystemControllerTest {
 
     @WithMockUser
     @Test
+    void shouldReturnAnErrorWhenParamDoesNotExists() throws Exception {
+        given(accessChecker.canExecute(eq(Folder.getRoot()), argThat(user -> Objects.equals(user.getName(), "user"))))
+                .willReturn(true);
+        Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
+        given(fileRepository.findByNameAndParentAndUser(eq("path"), eq(Folder.getRoot()), argThat(user -> Objects.equals(user.getName(), "user"))))
+                .willReturn(path);
+        given(userRepository.findByName("user2")).willThrow(new NotFoundException("user2"));
+        given(groupRepository.findByName("group2")).willThrow(new NotFoundException("group2"));
+
+        mvc.perform(patch("/owner").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "user2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user2 not found"));
+
+        mvc.perform(patch("/group").with(csrf())
+                        .param("path", "/path")
+                        .param("name", "group2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("GroupException"))
+                .andExpect(jsonPath("$.message").value("group2 not found"));
+
+    }
+
+    @WithMockUser
+    @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(accessChecker.canExecute(eq(Folder.getRoot()), argThat(user -> Objects.equals(user.getName(), "user"))))
                 .willReturn(true);
@@ -349,6 +450,8 @@ class FileSystemControllerTest {
                 .willReturn(false);
         given(accessChecker.canRead(eq(folder), argThat(user -> Objects.equals(user.getName(), "user"))))
                 .willReturn(false);
+        given(userRepository.findByName("user2")).willReturn(User.builder("user2").build());
+        given(groupRepository.findByName("group2")).willReturn(Group.builder("group2").build());
 
         mvc.perform(post("/folder").with(csrf())
                         .param("path", "/path")
