@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.ListChildrenCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CheckListChildrenCommand extends AbstractCheckCommand<ListChildrenCommand> {
+public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChildrenCommand> {
 
     private final Folder item;
 
@@ -29,8 +29,8 @@ public class CheckListChildrenCommand extends AbstractCheckCommand<ListChildrenC
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item).build();
-        return new ErrorCommand(CommandType.LIST, input);
+    protected ItemErrorCommand createError() {
+        ItemInput itemInput = ItemInput.builder(item).build();
+        return new ItemErrorCommand(ItemCommandType.LIST, itemInput);
     }
 }

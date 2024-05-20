@@ -45,9 +45,4 @@ public class FileRepositoryImpl implements FileRepository, ContentRepository {
     public void writeContent(File item, InputStream content) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
-
-    @Override
-    public Item getItem(String root) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-    }
 }

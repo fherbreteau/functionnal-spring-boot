@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 
-public final class Input {
+public final class ItemInput {
 
     private final Item item;
     private final String name;
@@ -18,7 +18,7 @@ public final class Input {
     private final InputStream inputStream;
     private final String contentType;
 
-    private Input(Builder builder) {
+    private ItemInput(Builder builder) {
         this.item = builder.item;
         this.name = builder.name;
         this.user = builder.user;
@@ -152,8 +152,8 @@ public final class Input {
             return this;
         }
 
-        public Input build() {
-            return new Input(this);
+        public ItemInput build() {
+            return new ItemInput(this);
         }
     }
 }

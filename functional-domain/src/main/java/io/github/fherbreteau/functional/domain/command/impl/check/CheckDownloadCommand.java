@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.DownloadCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CheckDownloadCommand extends AbstractCheckCommand<DownloadCommand> {
+public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
 
@@ -31,8 +31,8 @@ public class CheckDownloadCommand extends AbstractCheckCommand<DownloadCommand> 
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item).build();
-        return new ErrorCommand(CommandType.DOWNLOAD, input);
+    protected ItemErrorCommand createError() {
+        ItemInput itemInput = ItemInput.builder(item).build();
+        return new ItemErrorCommand(ItemCommandType.DOWNLOAD, itemInput);
     }
 }

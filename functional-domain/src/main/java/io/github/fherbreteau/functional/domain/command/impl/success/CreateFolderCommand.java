@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CreateFolderCommand extends AbstractSuccessCommand {
+public class CreateFolderCommand extends AbstractSuccessItemCommand {
 
     private final String name;
     private final Folder parent;

@@ -60,7 +60,7 @@ public final class Path {
             return Path.success(item.getParent());
         }
         if (ROOT.equals(this)) {
-            return Path.error(new Error("Root path has no parent"));
+            return Path.error(Error.error("Root path has no parent"));
         }
         return this;
     }

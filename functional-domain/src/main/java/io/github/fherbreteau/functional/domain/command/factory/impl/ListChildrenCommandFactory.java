@@ -1,25 +1,25 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
-import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.command.CheckCommand;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckListChildrenCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ListChildrenCommandFactory implements CommandFactory {
+public class ListChildrenCommandFactory implements ItemCommandFactory {
     @Override
-    public boolean supports(CommandType type, Input input) {
-        return type == CommandType.LIST && input.getItem() instanceof Folder;
+    public boolean supports(ItemCommandType type, ItemInput itemInput) {
+        return type == ItemCommandType.LIST && itemInput.getItem() instanceof Folder;
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
-                                                  ContentRepository contentRepository, CommandType type, Input input) {
-        return new CheckListChildrenCommand(repository, accessChecker, (Folder) input.getItem());
+    public CheckCommand<Output> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                      ContentRepository contentRepository, ItemCommandType type, ItemInput itemInput) {
+        return new CheckListChildrenCommand(repository, accessChecker, (Folder) itemInput.getItem());
     }
 }

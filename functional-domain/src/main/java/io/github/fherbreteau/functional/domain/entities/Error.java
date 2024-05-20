@@ -2,19 +2,15 @@ package io.github.fherbreteau.functional.domain.entities;
 
 import java.util.Objects;
 
-public class Error {
+public final class Error {
 
     private final String message;
 
-    public Error(CommandType type, Input input, User actor) {
-        this(String.format("%s with arguments %s failed for %s", type, input, actor));
+    public static Error error(String message) {
+        return new Error(message);
     }
 
-    public Error(Item item, String segment, User actor) {
-        this(String.format("%s not found in %s for %s", segment, item, actor));
-    }
-
-    public Error(String message) {
+    private Error(String message) {
         this.message = message;
     }
 

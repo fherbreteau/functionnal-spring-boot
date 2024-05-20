@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeOwnerCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -31,13 +31,13 @@ class CheckChangeOwnerCommandTest {
 
     @BeforeEach
     public void setup() {
-        Group group = Group.group("group");
+        Group group = Group.builder("group").build();
         item = File.builder()
                 .withName("name")
-                .withOwner(User.user("user"))
+                .withOwner(User.builder("user").build())
                 .withGroup(group)
                 .build();
-        User newUser = User.user("newUser");
+        User newUser = User.builder("newUser").build();
         command = new CheckChangeOwnerCommand(repository, accessChecker, item, newUser);
     }
 
@@ -58,6 +58,6 @@ class CheckChangeOwnerCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

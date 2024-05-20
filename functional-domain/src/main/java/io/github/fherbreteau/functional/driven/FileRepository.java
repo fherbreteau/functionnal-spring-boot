@@ -3,6 +3,7 @@ package io.github.fherbreteau.functional.driven;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.exception.NotFoundException;
 
 import java.util.List;
 
@@ -13,7 +14,5 @@ public interface FileRepository {
 
     List<Item> findByParentAndUser(Folder folder, User actor);
 
-    <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor);
-
-    Item getItem(String path);
+    <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor) throws NotFoundException;
 }

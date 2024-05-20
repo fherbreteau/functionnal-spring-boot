@@ -2,8 +2,8 @@ package io.github.fherbreteau.functional.config;
 
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
-import io.github.fherbreteau.functional.domain.command.CompositeCommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
+import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.driven.AccessChecker;
@@ -20,9 +20,9 @@ import java.util.List;
 public class DomainConfiguration {
 
     @Bean
-    public FileService fileService(CompositeCommandFactory compositeCommandFactory,
+    public FileService fileService(CompositeItemCommandFactory compositeItemCommandFactory,
                                    CompositePathFactory compositePathFactory) {
-        return new FileService(compositeCommandFactory, compositePathFactory);
+        return new FileService(compositeItemCommandFactory, compositePathFactory);
     }
 
     @Bean
@@ -31,11 +31,11 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CompositeCommandFactory compositeCommandFactory(FileRepository fileRepository,
-                                                           AccessChecker accessChecker,
-                                                           ContentRepository contentRepository,
-                                                           List<CommandFactory> commandFactories) {
-        return new CompositeCommandFactory(fileRepository, accessChecker, contentRepository, commandFactories);
+    public CompositeItemCommandFactory compositeCommandFactory(FileRepository fileRepository,
+                                                               AccessChecker accessChecker,
+                                                               ContentRepository contentRepository,
+                                                               List<ItemCommandFactory> commandFactories) {
+        return new CompositeItemCommandFactory(fileRepository, accessChecker, contentRepository, commandFactories);
     }
 
     @Bean

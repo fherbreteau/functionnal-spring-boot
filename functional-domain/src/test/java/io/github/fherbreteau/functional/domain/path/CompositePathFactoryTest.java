@@ -60,7 +60,7 @@ class CompositePathFactoryTest {
     public static Stream<Arguments> invalidPathArguments() {
         Path folder = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
         Path file = Path.success(File.builder().withName("file").withParent(folder.getAsFolder()).build());
-        Path error = Path.error(new Error("error"));
+        Path error = Path.error(Error.error("error"));
         return Stream.of(
                 // Go up
                 Arguments.of(Path.ROOT, ".."),

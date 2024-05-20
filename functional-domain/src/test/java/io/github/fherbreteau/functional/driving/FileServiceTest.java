@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.driving;
 
 import io.github.fherbreteau.functional.domain.command.*;
-import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedItemCommand;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Path;
@@ -24,13 +24,13 @@ class FileServiceTest {
 
     private FileService fileService;
     @Mock
-    private CompositeCommandFactory commandFactory;
+    private CompositeItemCommandFactory commandFactory;
     @Mock
     private CompositePathFactory pathFactory;
     @Mock
     private User actor;
     @Mock
-    private Command<Command<Output>> checkCommand;
+    private CheckCommand<Output> checkCommand;
     @Mock
     private Command<Output> executeCommand;
     @Mock
@@ -58,7 +58,7 @@ class FileServiceTest {
     @Test
     void testAccessUnknownPathShouldFail() {
         // GIVEN
-        Path error = Path.error(new Error(Folder.getRoot(), "unknown", actor));
+        Path error = Path.error(Error.error(String.format("%s not found in %s for %s", "unknown", Folder.getRoot(), actor)));
         PathParser parser = mock(PathParser.class);
         given(parser.resolve(actor)).willReturn(error);
         given(pathFactory.createParser(Path.ROOT, "/unknown")).willReturn(parser);
@@ -78,7 +78,7 @@ class FileServiceTest {
         given(checkCommand.execute(actor)).willReturn(executeCommand);
         given(executeCommand.execute(actor)).willReturn(new Output(new Object()));
         // When
-        Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
+        Output result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
@@ -99,12 +99,12 @@ class FileServiceTest {
         // Given
         given(commandFactory.createCommand(any(), any()))
                 .willAnswer(invocation -> {
-                    CommandType type = invocation.getArgument(0);
-                    Input input = invocation.getArgument(1);
-                    return new CheckUnsupportedCommand(null, null, type, input);
+                    ItemCommandType type = invocation.getArgument(0);
+                    ItemInput itemInput = invocation.getArgument(1);
+                    return new CheckUnsupportedItemCommand(null, null, type, itemInput);
                 });
         // When
-        Output result = fileService.processCommand(CommandType.TOUCH, actor, Input.builder(item).build());
+        Output result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)

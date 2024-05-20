@@ -1,28 +1,29 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
-import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.command.CheckCommand;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeOwnerCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeOwnerCommandFactory implements CommandFactory {
+public class ChangeOwnerCommandFactory implements ItemCommandFactory {
     @Override
-    public boolean supports(CommandType commandType, Input input) {
-        return commandType == CommandType.CHOWN && isValid(input);
+    public boolean supports(ItemCommandType type, ItemInput itemInput) {
+        return type == ItemCommandType.CHOWN && isValid(itemInput);
     }
 
-    private boolean isValid(Input input) {
-        return input.getItem() != null && input.getUser() != null;
+    private boolean isValid(ItemInput itemInput) {
+        return itemInput.getItem() != null && itemInput.getUser() != null;
     }
 
     @Override
-    public Command<Command<Output>> createCommand(FileRepository repository, AccessChecker accessChecker,
-                                                  ContentRepository contentRepository, CommandType type, Input input) {
-        return new CheckChangeOwnerCommand(repository, accessChecker, input.getItem(), input.getUser());
+    public CheckCommand<Output> createCommand(FileRepository repository, AccessChecker accessChecker,
+                                              ContentRepository contentRepository, ItemCommandType type,
+                                              ItemInput itemInput) {
+        return new CheckChangeOwnerCommand(repository, accessChecker, itemInput.getItem(), itemInput.getUser());
     }
 }

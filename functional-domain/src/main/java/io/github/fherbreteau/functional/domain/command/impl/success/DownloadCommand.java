@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class DownloadCommand extends AbstractSuccessCommand {
+public class DownloadCommand extends AbstractSuccessItemCommand {
 
     private final ContentRepository contentRepository;
     private final File item;

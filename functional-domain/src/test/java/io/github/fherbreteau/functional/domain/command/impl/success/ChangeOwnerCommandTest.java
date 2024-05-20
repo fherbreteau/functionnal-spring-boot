@@ -35,13 +35,13 @@ class ChangeOwnerCommandTest {
 
     @BeforeEach
     public void setup() {
-        group = Group.group("group");
+        group = Group.builder("group").build();
         Item item = File.builder()
                 .withName("name")
-                .withOwner(User.user("user"))
+                .withOwner(User.builder("user").build())
                 .withGroup(group)
                 .build();
-        newUser = User.user("newUser");
+        newUser = User.builder("newUser").build();
         command = new ChangeOwnerCommand(repository, item, newUser);
     }
 

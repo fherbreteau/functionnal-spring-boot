@@ -47,8 +47,8 @@ class ItemsTest {
 
     @Test
     void testThatHashcodeIsCorrectlyChecked() {
-        Group group = Group.group("group");
-        User user = User.user("user", group);
+        Group group = Group.builder("group").build();
+        User user = User.builder("user").withGroup(group).build();
         File file1 = File.builder()
                 .withName("file")
                 .withParent(Folder.getRoot())
@@ -74,9 +74,9 @@ class ItemsTest {
         assertThat(file1).isNotEqualTo(file2);
         file2 = file1.copyBuilder().withLastAccessed(LocalDateTime.now()).build();
         assertThat(file1).isNotEqualTo(file2);
-        file2 = file1.copyBuilder().withOwner(User.user("user")).build();
+        file2 = file1.copyBuilder().withOwner(User.builder("user").build()).build();
         assertThat(file1).isNotEqualTo(file2);
-        file2 = file1.copyBuilder().withGroup(Group.group("group")).build();
+        file2 = file1.copyBuilder().withGroup(Group.builder("group").build()).build();
         assertThat(file1).isNotEqualTo(file2);
 
         LocalDateTime time = LocalDateTime.MIN;

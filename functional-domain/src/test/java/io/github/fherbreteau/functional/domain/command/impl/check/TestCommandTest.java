@@ -10,12 +10,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class TestCommandTest {
 
     @Test
-    void shouldThrowAnExceptionWhenCheckFailed() {
+    void shouldThrowAnExceptionWhenItemCheckFailed() {
         // GIVEN
-        AbstractCheckCommand<Command<Output>> command = new AbstractCheckCommand<>(null, null) {
+        AbstractCheckItemCommand<Command<Output>> command = new AbstractCheckItemCommand<>(null, null) {
             @Override
             protected boolean checkAccess(User actor) {
-                return false;
+                return actor != null;
             }
 
             @Override
@@ -27,5 +27,33 @@ class TestCommandTest {
         assertThatThrownBy(() -> command.execute(null))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("Unsupported Command always succeed");
+        User actor = User.builder("actor").build();
+        assertThatThrownBy(() -> command.execute(actor))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("Should never be called");
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenUserCheckFailed() {
+        // GIVEN
+        AbstractCheckUserCommand<Command<Output>> command = new AbstractCheckUserCommand<>(null, null, null) {
+            @Override
+            protected boolean checkAccess(User actor) {
+                return actor != null;
+            }
+
+            @Override
+            protected Command<Output> createSuccess() {
+                throw new UnsupportedOperationException("Should never be called");
+            }
+        };
+        // WHEN
+        assertThatThrownBy(() -> command.execute(null))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("Unsupported Command always succeed");
+        User actor = User.builder("actor").build();
+        assertThatThrownBy(() -> command.execute(actor))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("Should never be called");
     }
 }

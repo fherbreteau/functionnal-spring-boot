@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFolderCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -32,7 +32,7 @@ class CheckCreateFolderCommandTest {
         parent = Folder.builder()
                 .withName("parent")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new CheckCreateFolderCommand(repository, accessChecker, "folder", parent);
     }
 
@@ -53,7 +53,7 @@ class CheckCreateFolderCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 
     @Test
@@ -64,6 +64,6 @@ class CheckCreateFolderCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

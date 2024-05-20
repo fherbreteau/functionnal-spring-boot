@@ -4,11 +4,11 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public abstract class AbstractSuccessCommand implements Command<Output> {
+public abstract class AbstractSuccessItemCommand implements Command<Output> {
 
     protected final FileRepository repository;
 
-    protected AbstractSuccessCommand(FileRepository repository) {
+    protected AbstractSuccessItemCommand(FileRepository repository) {
         this.repository = repository;
     }
 }

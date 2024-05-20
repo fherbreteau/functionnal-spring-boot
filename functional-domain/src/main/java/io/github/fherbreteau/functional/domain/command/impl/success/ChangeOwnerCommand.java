@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeOwnerCommand extends AbstractSuccessCommand {
+public class ChangeOwnerCommand extends AbstractSuccessItemCommand {
 
     private final Item item;
 

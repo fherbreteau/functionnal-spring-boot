@@ -38,8 +38,8 @@ public class CommandFactoryConfiguration {
     }
 
     @Bean
-    public UnsupportedCommandFactory unsupportedCommandFactory() {
-        return new UnsupportedCommandFactory();
+    public UnsupportedItemCommandFactory unsupportedCommandFactory() {
+        return new UnsupportedItemCommandFactory();
     }
 
     @Bean

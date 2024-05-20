@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-public enum CommandType {
+public enum ItemCommandType {
     MKDIR,
     TOUCH,
     CHMOD,

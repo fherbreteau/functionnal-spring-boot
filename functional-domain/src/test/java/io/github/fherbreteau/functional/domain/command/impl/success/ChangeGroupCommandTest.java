@@ -34,8 +34,8 @@ class ChangeGroupCommandTest {
 
     @BeforeEach
     public void setup() {
-        Item item = File.builder().withName("name").withOwner(User.user("user")).build();
-        group = Group.group("group");
+        Item item = File.builder().withName("name").withOwner(User.builder("user").build()).build();
+        group = Group.builder("group").build();
         command = new ChangeGroupCommand(repository, item, group);
     }
 

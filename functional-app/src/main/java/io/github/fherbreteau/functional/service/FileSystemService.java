@@ -22,9 +22,7 @@ import java.util.Optional;
 public class FileSystemService {
 
     private final FileService fileService;
-
     private final EntityMapper entityMapper;
-
     private final AccessParserService accessParserService;
 
     public FileSystemService(FileService fileService, EntityMapper entityMapper, AccessParserService accessParserService) {
@@ -34,13 +32,13 @@ public class FileSystemService {
     }
 
     public List<ItemDTO> listItems(String path, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Input input = Input.builder(itemPath.getItem()).build();
-        Output output = fileService.processCommand(CommandType.LIST, actor, input);
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
+        Output output = fileService.processCommand(ItemCommandType.LIST, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -48,13 +46,13 @@ public class FileSystemService {
     }
 
     public ItemDTO createFile(String path, String name, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Input input = Input.builder(itemPath.getItem()).withName(name).build();
-        Output output = fileService.processCommand(CommandType.TOUCH, actor, input);
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
+        Output output = fileService.processCommand(ItemCommandType.TOUCH, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -63,13 +61,13 @@ public class FileSystemService {
     }
 
     public ItemDTO createFolder(String path, String name, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Input input = Input.builder(itemPath.getItem()).withName(name).build();
-        Output output = fileService.processCommand(CommandType.MKDIR, actor, input);
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
+        Output output = fileService.processCommand(ItemCommandType.MKDIR, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -77,14 +75,14 @@ public class FileSystemService {
     }
 
     public ItemDTO changeOwner(String path, String name, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        User owner = User.user(name);
-        Input input = Input.builder(itemPath.getItem()).withUser(owner).build();
-        Output output = fileService.processCommand(CommandType.CHOWN, actor, input);
+        User owner = User.builder(name).build();
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withUser(owner).build();
+        Output output = fileService.processCommand(ItemCommandType.CHOWN, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -92,14 +90,14 @@ public class FileSystemService {
     }
 
     public ItemDTO changeGroup(String path, String name, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Group group = Group.group(name);
-        Input input = Input.builder(itemPath.getItem()).withGroup(group).build();
-        Output output = fileService.processCommand(CommandType.CHGRP, actor, input);
+        Group group = Group.builder(name).build();
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withGroup(group).build();
+        Output output = fileService.processCommand(ItemCommandType.CHGRP, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -107,13 +105,13 @@ public class FileSystemService {
     }
 
     public ItemDTO changeMode(String path, String right, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Input input = accessParserService.parseAccessRights(right, itemPath.getItem());
-        Output output = fileService.processCommand(CommandType.CHMOD, actor, input);
+        ItemInput itemInput = accessParserService.parseAccessRights(right, itemPath.getItem());
+        Output output = fileService.processCommand(ItemCommandType.CHMOD, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
@@ -122,7 +120,7 @@ public class FileSystemService {
 
     public ItemDTO upload(String path, MultipartFile file, String username) {
         try (InputStream content = file.getInputStream()) {
-            User actor = User.user(username);
+            User actor = User.builder(username).build();
             Path itemPath = fileService.getPath(path, actor);
             if (itemPath.isError()) {
                 throw new PathException(itemPath.getError());
@@ -130,11 +128,11 @@ public class FileSystemService {
             String contentType = Optional.of(file)
                     .map(MultipartFile::getContentType)
                     .orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            Input input = Input.builder(itemPath.getItem())
+            ItemInput itemInput = ItemInput.builder(itemPath.getItem())
                     .withContent(content)
                     .withContentType(contentType)
                     .build();
-            Output output = fileService.processCommand(CommandType.UPLOAD, actor, input);
+            Output output = fileService.processCommand(ItemCommandType.UPLOAD, actor, itemInput);
             if (output.isError()) {
                 throw new CommandException(output.getError());
             }
@@ -145,18 +143,18 @@ public class FileSystemService {
     }
 
     public ResponseEntity<InputStreamResource> download(String path, String username) {
-        User actor = User.user(username);
+        User actor = User.builder(username).build();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        Input input = Input.builder(itemPath.getItem())
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem())
                 .withContentType(itemPath.getContentType())
                 .build();
-        Output output = fileService.processCommand(CommandType.DOWNLOAD, actor, input);
+        Output output = fileService.processCommand(ItemCommandType.DOWNLOAD, actor, itemInput);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.mapStream(output.getValue(), input.getContentType());
+        return entityMapper.mapStream(output.getValue(), itemInput.getContentType());
     }
 }

@@ -34,7 +34,7 @@ class DownloadCommandTest {
         file = File.builder()
                 .withName("file")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new DownloadCommand(repository, contentRepository, file);
     }
 

@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,14 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class CheckUnsupportedCommandTest {
-    private CheckUnsupportedCommand command;
+class CheckUnsupportedItemCommandTest {
+    private CheckUnsupportedItemCommand command;
     private User actor;
 
     @BeforeEach
     public void setup() {
-        actor = User.user("actor");
-        command = new CheckUnsupportedCommand(null, null, null, null);
+        actor = User.builder("actor").build();
+        command = new CheckUnsupportedItemCommand(null, null, null, null);
     }
 
     @Test
@@ -28,6 +28,6 @@ class CheckUnsupportedCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

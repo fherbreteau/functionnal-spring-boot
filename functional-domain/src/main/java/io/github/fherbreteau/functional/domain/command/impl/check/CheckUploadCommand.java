@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
@@ -12,7 +12,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.io.InputStream;
 
-public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
+public class CheckUploadCommand extends AbstractCheckItemCommand<UploadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
     private final InputStream content;
@@ -38,8 +38,8 @@ public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item).withContent(content).build();
-        return new ErrorCommand(CommandType.UPLOAD, input);
+    protected ItemErrorCommand createError() {
+        ItemInput itemInput = ItemInput.builder(item).withContent(content).build();
+        return new ItemErrorCommand(ItemCommandType.UPLOAD, itemInput);
     }
 }

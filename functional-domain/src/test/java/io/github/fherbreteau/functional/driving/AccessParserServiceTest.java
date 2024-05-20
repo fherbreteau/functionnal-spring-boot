@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactor
 import io.github.fherbreteau.functional.domain.access.factory.impl.*;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -117,10 +117,10 @@ public class AccessParserServiceTest {
     @ParameterizedTest(name = "{0} should be parsed to {2}{3}{4}")
     @MethodSource
     void shouldMapAnAccessStringToRequiredAccessRight(String right, Item itemToUpdate, AccessRight owner, AccessRight group, AccessRight other) {
-        Input input = accessParserService.parseAccessRights(right, itemToUpdate);
-        assertThat(input.getOwnerAccess()).isEqualTo(owner);
-        assertThat(input.getGroupAccess()).isEqualTo(group);
-        assertThat(input.getOtherAccess()).isEqualTo(other);
+        ItemInput itemInput = accessParserService.parseAccessRights(right, itemToUpdate);
+        assertThat(itemInput.getOwnerAccess()).isEqualTo(owner);
+        assertThat(itemInput.getGroupAccess()).isEqualTo(group);
+        assertThat(itemInput.getOtherAccess()).isEqualTo(other);
     }
 
     @ParameterizedTest(name = "{0} should not be parsable")

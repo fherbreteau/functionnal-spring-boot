@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFolderCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CheckCreateFolderCommand extends AbstractCheckCommand<CreateFolderCommand> {
+public class CheckCreateFolderCommand extends AbstractCheckItemCommand<CreateFolderCommand> {
     private final String name;
     private final Folder parent;
 
@@ -30,10 +30,10 @@ public class CheckCreateFolderCommand extends AbstractCheckCommand<CreateFolderC
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(parent)
+    protected ItemErrorCommand createError() {
+        ItemInput itemInput = ItemInput.builder(parent)
                 .withName(name)
                 .build();
-        return new ErrorCommand(CommandType.MKDIR, input);
+        return new ItemErrorCommand(ItemCommandType.MKDIR, itemInput);
     }
 }

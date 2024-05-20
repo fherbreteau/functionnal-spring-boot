@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.access.impl;
 import io.github.fherbreteau.functional.domain.access.AccessRightContext;
 import io.github.fherbreteau.functional.domain.access.AccessRightParser;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
 
 import java.util.function.BiConsumer;
@@ -13,12 +13,12 @@ public class GenericAttributionAccessParser implements AccessRightParser {
 
     private final AccessRightContext context;
     private final Item item;
-    private final BiConsumer<Input.Builder, AccessRight> attributionFunction;
+    private final BiConsumer<ItemInput.Builder, AccessRight> attributionFunction;
     private final Function<Item, AccessRight> itemAccessRightExtractor;
 
     public GenericAttributionAccessParser(AccessRightContext context,
                                           Item item,
-                                          BiConsumer<Input.Builder, AccessRight> attributionFunction,
+                                          BiConsumer<ItemInput.Builder, AccessRight> attributionFunction,
                                           Function<Item, AccessRight> itemAccessRightExtractor) {
         this.context = context;
         this.item = item;
@@ -27,7 +27,7 @@ public class GenericAttributionAccessParser implements AccessRightParser {
     }
 
     @Override
-    public AccessRight resolve(Input.Builder builder, AccessRight accessRight) {
+    public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
         AccessRight itemAccess = itemAccessRightExtractor.apply(item);
         AccessRight newAccess = context.applyMergeFunction(accessRight, itemAccess);
         attributionFunction.accept(builder, newAccess);

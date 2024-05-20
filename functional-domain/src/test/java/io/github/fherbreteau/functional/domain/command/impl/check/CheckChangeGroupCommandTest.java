@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeGroupCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -31,8 +31,8 @@ class CheckChangeGroupCommandTest {
 
     @BeforeEach
     public void setup() {
-        item = File.builder().withName("name").withOwner(User.user("user")).build();
-        Group group = Group.group("group");
+        item = File.builder().withName("name").withOwner(User.builder("user").build()).build();
+        Group group = Group.builder("group").build();
         command = new CheckChangeGroupCommand(repository, accessChecker, item, group);
     }
 
@@ -53,6 +53,6 @@ class CheckChangeGroupCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

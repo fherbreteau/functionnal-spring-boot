@@ -36,7 +36,9 @@ class EntityMapperTest {
 
     @Test
     void shouldReturnASingleElementListWhenValueIsAnItem() {
-        List<ItemDTO> dtos = mapper.mapToList(File.builder().withName("name").withOwner(User.user("user")).build());
+        List<ItemDTO> dtos = mapper.mapToList(File.builder()
+                .withName("name")
+                .withOwner(User.builder("user").build()).build());
         assertThat(dtos).hasSize(1);
     }
 

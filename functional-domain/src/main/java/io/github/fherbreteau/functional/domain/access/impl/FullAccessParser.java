@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.access.AccessRightContext;
 import io.github.fherbreteau.functional.domain.access.AccessRightParser;
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
 
 import java.util.regex.Matcher;
@@ -28,7 +28,7 @@ public class FullAccessParser implements AccessRightParser {
     }
 
     @Override
-    public AccessRight resolve(Input.Builder builder, AccessRight accessRight) {
+    public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
         Matcher matcher = ACCESS_RIGHT_PATTERN.matcher(rights);
         if (!matcher.matches()) {
             return null;

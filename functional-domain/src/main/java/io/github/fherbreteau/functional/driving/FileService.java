@@ -7,11 +7,11 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 
 public class FileService {
 
-    private final CompositeCommandFactory commandFactory;
+    private final CompositeItemCommandFactory commandFactory;
 
     private final CompositePathFactory pathFactory;
 
-    public FileService(CompositeCommandFactory commandFactory, CompositePathFactory pathFactory) {
+    public FileService(CompositeItemCommandFactory commandFactory, CompositePathFactory pathFactory) {
         this.commandFactory = commandFactory;
         this.pathFactory = pathFactory;
     }
@@ -21,8 +21,8 @@ public class FileService {
         return parser.resolve(currentUser);
     }
 
-    public Output processCommand(CommandType type, User currentUser, Input input) {
-        Command<Command<Output>> command = commandFactory.createCommand(type, input);
+    public Output processCommand(ItemCommandType type, User currentUser, ItemInput itemInput) {
+        Command<Command<Output>> command = commandFactory.createCommand(type, itemInput);
         return command.execute(currentUser).execute(currentUser);
     }
 }

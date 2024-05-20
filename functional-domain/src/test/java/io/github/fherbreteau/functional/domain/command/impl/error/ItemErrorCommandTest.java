@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.error;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -19,22 +19,22 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class ErrorCommandTest {
+class ItemErrorCommandTest {
 
     @Mock
     private User actor;
 
     public static Stream<Arguments> shouldGenerateAnErrorWhenExecutingCommand() {
-        return Stream.of(CommandType.values())
+        return Stream.of(ItemCommandType.values())
                 .map(Arguments::of);
     }
 
     @ParameterizedTest
     @MethodSource
-    void shouldGenerateAnErrorWhenExecutingCommand(CommandType commandType) {
+    void shouldGenerateAnErrorWhenExecutingCommand(ItemCommandType itemCommandType) {
         // GIVEN
         Item item = File.builder().build();
-        ErrorCommand command = new ErrorCommand(commandType, Input.builder(item).build());
+        ItemErrorCommand command = new ItemErrorCommand(itemCommandType, ItemInput.builder(item).build());
         // WHEN
         Output result = command.execute(actor);
         //THEN

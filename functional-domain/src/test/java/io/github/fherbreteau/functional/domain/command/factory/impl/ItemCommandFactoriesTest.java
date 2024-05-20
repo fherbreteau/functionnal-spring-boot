@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
 import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.command.factory.CommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driven.AccessChecker;
@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class CommandFactoriesTest {
+class ItemCommandFactoriesTest {
 
     @Mock
     private FileRepository repository;
@@ -31,16 +31,16 @@ class CommandFactoriesTest {
 
     @Test
     void shouldCreateAFileWithTheGivenName() {
-        CommandFactory factory = new CreateItemCommandFactory();
+        ItemCommandFactory factory = new CreateItemCommandFactory();
         Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        Input input = Input.builder(folder).withName("file").build();
+        ItemInput itemInput = ItemInput.builder(folder).withName("file").build();
 
         given(accessChecker.canWrite(folder, actor)).willReturn(true);
         given(repository.exists(folder, "file")).willReturn(false);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                CommandType.TOUCH, input);
+                ItemCommandType.TOUCH, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -52,9 +52,9 @@ class CommandFactoriesTest {
 
     @Test
     void shouldChangeTheAccessOfTheFileWithTheGivenAccessRight() {
-        CommandFactory factory = new ChangeModeCommandFactory();
+        ItemCommandFactory factory = new ChangeModeCommandFactory();
         File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
-        Input input = Input.builder(file)
+        ItemInput itemInput = ItemInput.builder(file)
                 .withOwnerAccess(AccessRight.full())
                 .withGroupAccess(AccessRight.readExecute())
                 .withOtherAccess(AccessRight.executeOnly())
@@ -64,7 +64,7 @@ class CommandFactoriesTest {
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                CommandType.CHMOD, input);
+                ItemCommandType.CHMOD, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -79,9 +79,9 @@ class CommandFactoriesTest {
 
     @Test
     void shouldUpdateTheContentTypeOfTheFileWithTheGivenContentType() {
-        CommandFactory factory = new UploadCommandFactory();
+        ItemCommandFactory factory = new UploadCommandFactory();
         File file = File.builder().withName("file").withParent(Folder.getRoot()).withContentType("oldValue").build();
-        Input input = Input.builder(file)
+        ItemInput itemInput = ItemInput.builder(file)
                 .withContentType("newValue")
                 .build();
 
@@ -89,7 +89,7 @@ class CommandFactoriesTest {
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                CommandType.CHMOD, input);
+                ItemCommandType.CHMOD, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -102,15 +102,15 @@ class CommandFactoriesTest {
     @Test
     void testInputHasRequiredInfoInToString() {
         File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
-        Input input = Input.builder(file).build();
-        assertThat(input).hasToString("Input{item='file null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null}");
+        ItemInput itemInput = ItemInput.builder(file).build();
+        assertThat(itemInput).hasToString("Input{item='file null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null}");
     }
 
     @Test
     void testOutputHasRequiredInfoInToString() {
         Output output = new Output("success");
         assertThat(output).hasToString("Output{value=success}");
-        output = new Output(new Error("error"));
+        output = new Output(Error.error("error"));
         assertThat(output).hasToString("Output{error=Error{message='error'}}");
     }
 }

@@ -16,14 +16,14 @@ class PathTest {
         assertThat(path).extracting(Path::getAsFile).isEqualTo(file);
         assertThat(Path.success(file)).isEqualTo(path);
 
-        Error error = new Error("error");
+        Error error = Error.error("error");
         path = Path.error(error);
         assertThat(Path.error(error)).isEqualTo(path);
         assertThat(path.getError()).isEqualTo(error).hasSameHashCodeAs(error);
 
-        assertThat(Path.error(new Error("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
+        assertThat(Path.error(Error.error("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
         assertThat(path.getError()).isNotEqualTo(new Object());
-        assertThat(new Error("error")).isEqualTo(error);
+        assertThat(Error.error("error")).isEqualTo(error);
     }
 
     @Test
@@ -40,7 +40,7 @@ class PathTest {
                 .extracting(Error::getMessage)
                 .isEqualTo("Root path has no parent");
 
-        path = Path.error(new Error("error"));
+        path = Path.error(Error.error("error"));
         assertThat(path.getParent())
                 .isEqualTo(path)
                 .hasSameHashCodeAs(path)
@@ -54,7 +54,7 @@ class PathTest {
     void testPathHasRequiredInfoInToString() {
         Path path = Path.success(File.builder().build());
         assertThat(path).hasToString("Path{item='null null:null --------- null'}");
-        path = Path.error(new Error("error"));
+        path = Path.error(Error.error("error"));
         assertThat(path).hasToString("Path{error=Error{message='error'}}");
     }
 
