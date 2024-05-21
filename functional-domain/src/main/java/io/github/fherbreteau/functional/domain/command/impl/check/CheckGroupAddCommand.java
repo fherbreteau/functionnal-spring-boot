@@ -50,6 +50,6 @@ public class CheckGroupAddCommand extends AbstractCheckUserCommand<GroupAddComma
     @Override
     protected UserErrorCommand createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).withGroupId(groupId).build();
-        return new UserErrorCommand(UserCommandType.USERADD, userInput, reasons);
+        return new UserErrorCommand(UserCommandType.GROUPADD, userInput, reasons);
     }
 }

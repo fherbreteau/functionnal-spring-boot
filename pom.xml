@@ -136,6 +136,7 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                             <formats>
                                 <format>XML</format>
+                                <format>HTML</format>
                             </formats>
                         </configuration>
                     </execution>
@@ -152,7 +153,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
+                                            <minimum>90%</minimum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>

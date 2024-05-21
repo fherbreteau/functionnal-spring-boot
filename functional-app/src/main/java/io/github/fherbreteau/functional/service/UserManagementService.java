@@ -8,9 +8,8 @@ import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.exception.CommandException;
 import io.github.fherbreteau.functional.exception.UserException;
 import io.github.fherbreteau.functional.mapper.EntityMapper;
-import io.github.fherbreteau.functional.model.CreateUserDTO;
+import io.github.fherbreteau.functional.model.InputUserDTO;
 import io.github.fherbreteau.functional.model.GroupDTO;
-import io.github.fherbreteau.functional.model.ModifyUserDTO;
 import io.github.fherbreteau.functional.model.UserDTO;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class UserManagementService {
         this.entityMapper = entityMapper;
     }
 
-    public UserDTO createUser(CreateUserDTO userDTO, String username) {
+    public UserDTO createUser(InputUserDTO userDTO, String username) {
         Output output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
@@ -43,7 +42,7 @@ public class UserManagementService {
         return entityMapper.mapToUser(output.getValue());
     }
 
-    public UserDTO modifyUser(String name, ModifyUserDTO userDTO, boolean append, String username) {
+    public UserDTO modifyUser(String name, InputUserDTO userDTO, boolean append, String username) {
         Output output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());

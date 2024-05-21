@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.exception.NotFoundException;
 import io.github.fherbreteau.functional.model.GroupDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -125,5 +127,66 @@ class GroupControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("group"))
                 .andExpect(jsonPath("$.gid").value(groupId.toString()));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
+        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+
+        GroupDTO dto = GroupDTO.builder()
+                .withName("group")
+                .build();
+        mvc.perform(post("/groups").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(patch("/groups/group").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(delete("/groups/group").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnAnErrorWhenCommandFails() throws Exception {
+        given(userRepository.exists("user1")).willReturn(true, false);
+        GroupDTO dto = GroupDTO.builder()
+                .withName("group")
+                .build();
+        mvc.perform(post("/groups").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("GROUPADD with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+
+        mvc.perform(patch("/groups/group").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("GROUPMOD with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='group', force=false, append=false} failed for ")));
+
+        mvc.perform(delete("/groups/group").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("GROUPDEL with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
     }
 }

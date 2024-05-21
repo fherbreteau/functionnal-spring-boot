@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.List;
 import java.util.UUID;
 
-@JsonDeserialize(builder = CreateUserDTO.Builder.class)
-public final class CreateUserDTO {
+@JsonDeserialize(builder = InputUserDTO.Builder.class)
+public final class InputUserDTO {
     private final UUID uid;
     private final String name;
     private final UUID gid;
     private final List<String> groups;
     private final String password;
 
-    private CreateUserDTO(Builder builder) {
+    private InputUserDTO(Builder builder) {
         this.uid = builder.uid;
         this.name = builder.name;
         this.gid = builder.gid;
@@ -80,11 +80,11 @@ public final class CreateUserDTO {
             return this;
         }
 
-        public CreateUserDTO build() {
+        public InputUserDTO build() {
             if (groups == null) {
                 this.groups = List.of();
             }
-            return new CreateUserDTO(this);
+            return new InputUserDTO(this);
         }
     }
 }

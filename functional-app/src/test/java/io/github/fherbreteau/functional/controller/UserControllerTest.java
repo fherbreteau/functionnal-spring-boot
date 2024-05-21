@@ -7,8 +7,8 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.model.CreateUserDTO;
-import io.github.fherbreteau.functional.model.ModifyUserDTO;
+import io.github.fherbreteau.functional.exception.NotFoundException;
+import io.github.fherbreteau.functional.model.InputUserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -80,7 +81,7 @@ class UserControllerTest {
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateUserDTO dto = CreateUserDTO.builder()
+        InputUserDTO dto = InputUserDTO.builder()
                 .withName("user1")
                 .build();
         mvc.perform(post("/users").with(csrf())
@@ -107,7 +108,7 @@ class UserControllerTest {
         given(groupRepository.findById(groupId)).willReturn(group);
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        ModifyUserDTO dto = ModifyUserDTO.builder()
+        InputUserDTO dto = InputUserDTO.builder()
                 .withGid(groupId)
                 .build();
         mvc.perform(patch("/users/user1").with(csrf())
@@ -162,5 +163,82 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.groups").isArray())
                 .andExpect(jsonPath("$.groups", hasSize(1)))
                 .andExpect(jsonPath("$.groups[0].name").value("user1"));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
+        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+
+        InputUserDTO dto = InputUserDTO.builder()
+                .withName("user1")
+                .build();
+        mvc.perform(post("/users").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(patch("/users/user1").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(put("/users/user1/password").with(csrf())
+                        .content("Pa$sw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
+        mvc.perform(delete("/users/user1").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnAnErrorWhenCommandFails() throws Exception {
+        given(userRepository.exists("user1")).willReturn(true, false);
+        InputUserDTO dto = InputUserDTO.builder()
+                .withName("user1")
+                .build();
+        mvc.perform(post("/users").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("USERADD with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+
+        mvc.perform(patch("/users/user1").with(csrf())
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("USERMOD with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='user1', force=false, append=false} failed for ")));
+
+        mvc.perform(put("/users/user1/password").with(csrf())
+                        .content("Pa$sw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("PASSWD with arguments UserInput{userId=null, name='user1', password='Pa$sw0rd', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+
+        mvc.perform(delete("/users/user1").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value(startsWith("USERDEL with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
     }
 }

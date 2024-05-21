@@ -34,6 +34,6 @@ public class UserModifyCommandFactory implements UserCommandFactory {
     public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
                                               UserChecker userChecker, PasswordProtector passwordProtector,
                                               UserCommandType type, UserInput userInput) {
-        return new CheckUserModifyCommand(repository, groupRepository, userChecker, passwordProtector, userInput);
+        return new CheckUserModifyCommand(repository, groupRepository, userChecker, passwordProtector, type, userInput);
     }
 }

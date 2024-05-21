@@ -23,10 +23,12 @@ public class CheckUserModifyCommand extends AbstractCheckUserCommand<UserModifyC
     private final List<String> groups;
     private final String newName;
     private final String password;
+    private final UserCommandType type;
     private final UserInput input;
 
     public CheckUserModifyCommand(UserRepository userRepository, GroupRepository groupRepository,
-                                  UserChecker userChecker, PasswordProtector passwordProtector, UserInput input) {
+                                  UserChecker userChecker, PasswordProtector passwordProtector, UserCommandType type,
+                                  UserInput input) {
         super(userRepository, groupRepository, userChecker, passwordProtector);
         this.name = input.getName();
         this.userId = input.getUserId();
@@ -34,6 +36,7 @@ public class CheckUserModifyCommand extends AbstractCheckUserCommand<UserModifyC
         this.groups = input.getGroups();
         this.newName = input.getNewName();
         this.password = input.getPassword();
+        this.type = type;
         this.input = input;
     }
 
@@ -71,6 +74,6 @@ public class CheckUserModifyCommand extends AbstractCheckUserCommand<UserModifyC
 
     @Override
     protected UserErrorCommand createError(List<String> reasons) {
-        return new UserErrorCommand(UserCommandType.USERMOD, input, reasons);
+        return new UserErrorCommand(type, input, reasons);
     }
 }

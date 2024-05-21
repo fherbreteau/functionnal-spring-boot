@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFolderCommand;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +55,10 @@ class CheckCreateFolderCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ItemErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class)
+                .extracting("reasons", list(String.class))
+                .hasSize(1)
+                .first().matches(s -> s.endsWith(" can't create folder in 'parent null:null --------- null'"));
     }
 
     @Test
@@ -64,6 +69,11 @@ class CheckCreateFolderCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ItemErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class)
+                .extracting("reasons", list(String.class))
+                .hasSize(1)
+                .first().isEqualTo("folder already exists in  'parent null:null --------- null'");
+        assertThat(result).extracting("type")
+                .isEqualTo(ItemCommandType.MKDIR);
     }
 }

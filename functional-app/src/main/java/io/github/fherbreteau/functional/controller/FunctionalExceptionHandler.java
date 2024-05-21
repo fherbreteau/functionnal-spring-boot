@@ -37,6 +37,7 @@ public class FunctionalExceptionHandler {
         ErrorDTO error = ErrorDTO.builder()
                 .withType(e.getClass().getSimpleName())
                 .withMessage(e.getMessage())
+                .withReasons(e.getReasons())
                 .build();
         return ResponseEntity.badRequest().body(error);
     }
@@ -46,6 +47,7 @@ public class FunctionalExceptionHandler {
         ErrorDTO error = ErrorDTO.builder()
                 .withType(e.getClass().getSimpleName())
                 .withMessage(e.getMessage())
+                .withReasons(e.getReasons())
                 .build();
         return ResponseEntity.badRequest().body(error);
     }

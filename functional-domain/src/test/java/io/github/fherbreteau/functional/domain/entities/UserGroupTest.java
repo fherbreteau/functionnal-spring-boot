@@ -113,4 +113,20 @@ class UserGroupTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("name must not be empty");
     }
+
+    @Test
+    void shouldHandleGroupUpdateProperly() {
+        UUID groupId1 = UUID.randomUUID();
+        Group group1 = Group.builder("group1").withGroupId(groupId1).build();
+        UUID groupId2 = UUID.randomUUID();
+        Group group2 = Group.builder("group2").withGroupId(groupId2).build();
+        UUID groupId3 = UUID.randomUUID();
+        Group group3 = Group.builder("group3").withGroupId(groupId3).build();
+
+        User user = User.builder("user").withGroups(List.of(group1, group2)).build();
+        user = user.addGroups(List.of(group2, group3));
+
+        assertThat(user).extracting(User::getGroups, list(Group.class))
+                .containsExactly(group1, group2, group3);
+    }
 }

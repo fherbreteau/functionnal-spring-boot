@@ -1,7 +1,6 @@
 package io.github.fherbreteau.functional.controller;
 
-import io.github.fherbreteau.functional.model.CreateUserDTO;
-import io.github.fherbreteau.functional.model.ModifyUserDTO;
+import io.github.fherbreteau.functional.model.InputUserDTO;
 import io.github.fherbreteau.functional.model.UserDTO;
 import io.github.fherbreteau.functional.service.UserManagementService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO userDTO, Principal user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody InputUserDTO userDTO, Principal user) {
         UserDTO response = userManagementService.createUser(userDTO, user.getName());
         return ResponseEntity.ok(response);
     }
@@ -28,7 +27,7 @@ public class UserController {
     @PatchMapping("/{name}")
     public ResponseEntity<UserDTO> modifyUser(@PathVariable("name") String name,
                                               @RequestParam(value = "append", required = false, defaultValue = "false") boolean append,
-                                              @RequestBody ModifyUserDTO userDTO, Principal user) {
+                                              @RequestBody InputUserDTO userDTO, Principal user) {
         UserDTO response = userManagementService.modifyUser(name, userDTO, append, user.getName());
         return ResponseEntity.ok(response);
     }

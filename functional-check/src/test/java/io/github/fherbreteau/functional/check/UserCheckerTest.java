@@ -27,7 +27,7 @@ class UserCheckerTest {
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> userChecker.canUpdateGroup(null, null))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> userChecker.canDeleteUser(null, null))
+        assertThatThrownBy(() -> userChecker.canDeleteGroup(null, null))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 

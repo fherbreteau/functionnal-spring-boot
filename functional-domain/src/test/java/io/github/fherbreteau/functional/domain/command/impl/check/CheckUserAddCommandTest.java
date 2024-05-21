@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,6 +55,21 @@ class CheckUserAddCommandTest {
     }
 
     @Test
+    void shouldGenerateCreateUserWithGroupsCommandWhenCheckingSucceed() {
+        // GIVEN
+        given(userChecker.canCreateUser("user", actor)).willReturn(true);
+        given(userRepository.exists("user")).willReturn(false);
+        given(userRepository.exists("user")).willReturn(false);
+        given(groupRepository.exists("group")).willReturn(true);
+        // WHEN
+        UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
+        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
+        Command<Output> result = command.execute(actor);
+        // THEN
+        assertThat(result).isInstanceOf(UserAddCommand.class);
+    }
+
+    @Test
     void shouldGenerateErrorCommandWhenCheckingFails() {
         // GIVEN
         given(userChecker.canCreateUser("user", actor)).willReturn(false);
@@ -75,7 +91,7 @@ class CheckUserAddCommandTest {
     }
 
     @Test
-    void shouldGenerateErrorCommandWhenGroupNameExists() {
+    void shouldGenerateErrorCommandWhenUserNameExistsAsGroup() {
         // GIVEN
         given(userChecker.canCreateUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(false);
@@ -96,6 +112,22 @@ class CheckUserAddCommandTest {
         given(userRepository.exists(userId)).willReturn(true);
         // WHEN
         UserInput input = UserInput.builder("user").withUserId(userId).withGroupId(groupId).build();
+        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
+        Command<Output> result = command.execute(actor);
+        //THEN
+        assertThat(result).isInstanceOf(UserErrorCommand.class);
+    }
+
+    @Test
+    void shouldGenerateErrorCommandWhenGroupNameExists() {
+        // GIVEN
+        UUID userId = UUID.randomUUID();
+        given(userChecker.canCreateUser("user", actor)).willReturn(true);
+        given(userRepository.exists("user")).willReturn(false);
+        given(userRepository.exists(userId)).willReturn(true);
+        given(groupRepository.exists("group1")).willReturn(false);
+        // WHEN
+        UserInput input = UserInput.builder("user").withUserId(userId).withGroups(List.of("group1")).build();
         command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
