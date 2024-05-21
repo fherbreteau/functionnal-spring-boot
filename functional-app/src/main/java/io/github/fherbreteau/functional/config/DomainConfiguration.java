@@ -69,7 +69,9 @@ public class DomainConfiguration {
     public CompositeUserCommandFactory compositeUserCommandFactory(UserRepository userRepository,
                                                                    GroupRepository groupRepository,
                                                                    UserChecker userChecker,
+                                                                   PasswordProtector passwordProtector,
                                                                    List<UserCommandFactory> userFactories) {
-        return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, userFactories);
+        return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, passwordProtector,
+                userFactories);
     }
 }

@@ -51,7 +51,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.mapToList(output.getValue());
+        return entityMapper.mapToItemList(output.getValue());
     }
 
     public ItemDTO createFile(String path, String name, String username) {
@@ -69,7 +69,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.map(output.getValue());
+        return entityMapper.mapToItem(output.getValue());
 
     }
 
@@ -88,7 +88,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.map(output.getValue());
+        return entityMapper.mapToItem(output.getValue());
     }
 
     public ItemDTO changeOwner(String path, String name, String username) {
@@ -111,7 +111,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.map(output.getValue());
+        return entityMapper.mapToItem(output.getValue());
     }
 
     public ItemDTO changeGroup(String path, String name, String username) {
@@ -134,7 +134,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.map(output.getValue());
+        return entityMapper.mapToItem(output.getValue());
     }
 
     public ItemDTO changeMode(String path, String right, String username) {
@@ -152,7 +152,7 @@ public class FileSystemService {
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.map(output.getValue());
+        return entityMapper.mapToItem(output.getValue());
     }
 
     public ItemDTO upload(String path, MultipartFile file, String username) {
@@ -177,7 +177,7 @@ public class FileSystemService {
             if (output.isError()) {
                 throw new CommandException(output.getError());
             }
-            return entityMapper.map(output.getValue());
+            return entityMapper.mapToItem(output.getValue());
         } catch (IOException e) {
             throw new CommandException(e);
         }

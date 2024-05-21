@@ -4,6 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
 import java.util.UUID;
@@ -15,8 +16,9 @@ public class GroupModifyCommand extends AbstractSuccessUserCommand {
     private final UUID groupId;
     private final String newName;
 
-    public GroupModifyCommand(UserRepository userRepository, GroupRepository groupRepository, String name, UUID groupId, String newName) {
-        super(userRepository, groupRepository);
+    public GroupModifyCommand(UserRepository userRepository, GroupRepository groupRepository,
+                              PasswordProtector passwordProtector, String name, UUID groupId, String newName) {
+        super(userRepository, groupRepository, passwordProtector);
         this.name = name;
         this.groupId = groupId;
         this.newName = newName;

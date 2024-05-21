@@ -11,6 +11,8 @@ import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckUploadCommand extends AbstractCheckItemCommand<UploadCommand> {
     private final ContentRepository contentRepository;
@@ -28,8 +30,12 @@ public class CheckUploadCommand extends AbstractCheckItemCommand<UploadCommand> 
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canWrite(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canWrite(item, actor)) {
+            reasons.add(String.format("%s can't write %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -38,8 +44,8 @@ public class CheckUploadCommand extends AbstractCheckItemCommand<UploadCommand> 
     }
 
     @Override
-    protected ItemErrorCommand createError() {
+    protected ItemErrorCommand createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).withContent(content).build();
-        return new ItemErrorCommand(ItemCommandType.UPLOAD, itemInput);
+        return new ItemErrorCommand(ItemCommandType.UPLOAD, itemInput, reasons);
     }
 }

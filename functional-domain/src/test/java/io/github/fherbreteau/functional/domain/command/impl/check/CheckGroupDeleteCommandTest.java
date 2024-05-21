@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.GroupDeleteC
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,13 +26,16 @@ class CheckGroupDeleteCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckGroupDeleteCommand command;
     @Mock
     private User actor;
 
     @BeforeEach
     public void setup() {
-        command = new CheckGroupDeleteCommand(userRepository, groupRepository, userChecker, "group", false);
+        command = new CheckGroupDeleteCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", false);
     }
 
     @Test
@@ -51,9 +55,9 @@ class CheckGroupDeleteCommandTest {
         // GIVEN
         given(userChecker.canDeleteGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(true);
-        given(userRepository.hasUserWithGroup("group")).willReturn(true);
         // WHEN
-        command = new CheckGroupDeleteCommand(userRepository, groupRepository, userChecker, "group", true);
+        command = new CheckGroupDeleteCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", true);
         Command<Output> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GroupDeleteCommand.class);

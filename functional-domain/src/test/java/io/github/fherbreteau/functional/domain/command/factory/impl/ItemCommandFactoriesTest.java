@@ -111,6 +111,6 @@ class ItemCommandFactoriesTest {
         Output output = new Output("success");
         assertThat(output).hasToString("Output{value=success}");
         output = new Output(Error.error("error"));
-        assertThat(output).hasToString("Output{error=Error{message='error'}}");
+        assertThat(output).hasToString("Output{error=Error{message='error', reasons=[]}}");
     }
 }

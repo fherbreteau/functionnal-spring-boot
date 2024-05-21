@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.UserDeleteCo
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,13 +26,15 @@ class CheckUserDeleteCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckUserDeleteCommand command;
     @Mock
     private User actor;
 
     @BeforeEach
     public void setup() {
-        command = new CheckUserDeleteCommand(userRepository, groupRepository, userChecker, "user");
+        command = new CheckUserDeleteCommand(userRepository, groupRepository, userChecker, passwordProtector, "user");
     }
 
     @Test

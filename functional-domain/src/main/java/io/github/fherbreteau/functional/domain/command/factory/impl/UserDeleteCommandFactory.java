@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
@@ -24,7 +25,9 @@ public class UserDeleteCommandFactory implements UserCommandFactory {
 
     @Override
     public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                              UserChecker userChecker, UserCommandType type, UserInput userInput) {
-        return new CheckUserDeleteCommand(repository, groupRepository, userChecker, userInput.getName());
+                                              UserChecker userChecker, PasswordProtector passwordProtector,
+                                              UserCommandType type, UserInput userInput) {
+        return new CheckUserDeleteCommand(repository, groupRepository, userChecker, passwordProtector,
+                userInput.getName());
     }
 }

@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -51,11 +52,15 @@ public final class User {
     }
 
     public User withGroup(Group group) {
-        return withGroups(List.of(group));
+        return User.builder(name).withUserId(userId).withGroups(groups).withGroup(group).build();
     }
 
     public User withGroups(List<Group> groups) {
         return User.builder(name).withUserId(userId).withGroups(groups).build();
+    }
+
+    public User addGroups(List<Group> groups) {
+        return User.builder(name).withUserId(userId).withGroups(this.groups).addGroups(groups).build();
     }
 
     @Override
@@ -105,12 +110,30 @@ public final class User {
         }
 
         public Builder withGroup(Group group) {
-            return withGroups(List.of(group));
+            List<Group> newGroups = copyGroups();
+            newGroups.remove(group);
+            if (newGroups.isEmpty()) {
+                newGroups.add(group);
+            } else {
+                newGroups.set(0, group);
+            }
+            return withGroups(List.copyOf(newGroups));
         }
 
         public Builder withGroups(List<Group> groups) {
             this.groups = groups;
             return this;
+        }
+
+        public Builder addGroups(List<Group> groups) {
+            List<Group> newGroups = copyGroups();
+            newGroups.addAll(groups.stream().filter(g -> !newGroups.contains(g)).toList());
+            this.groups = List.copyOf(newGroups);
+            return this;
+        }
+
+        private List<Group> copyGroups() {
+            return this.groups != null ? new ArrayList<>(groups) : new ArrayList<>();
         }
 
         public User build() {

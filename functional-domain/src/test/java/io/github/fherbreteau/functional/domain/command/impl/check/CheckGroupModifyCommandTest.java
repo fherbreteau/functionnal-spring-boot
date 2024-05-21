@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.GroupModifyC
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +28,16 @@ class CheckGroupModifyCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckGroupModifyCommand command;
     @Mock
     private User actor;
 
     @BeforeEach
     public void setup() {
-        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, "group", null, "group1");
+        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", null, "group1");
     }
 
     @Test
@@ -56,7 +60,8 @@ class CheckGroupModifyCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(groupRepository.exists(groupId)).willReturn(false);
         // WHEN
-        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, "group", groupId, null);
+        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", groupId, null);
         Command<Output> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GroupModifyCommand.class);
@@ -103,7 +108,8 @@ class CheckGroupModifyCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(groupRepository.exists(groupId)).willReturn(true);
         // WHEN
-        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, "group", groupId, null);
+        command = new CheckGroupModifyCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", groupId, null);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);

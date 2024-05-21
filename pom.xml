@@ -31,6 +31,12 @@
         <!-- Test Dependencies versions -->
         <mockito.version>5.8.0</mockito.version>
 
+        <!-- Database dependencies -->
+        <liquibase.version>4.27.0</liquibase.version>
+
+        <!-- Password validity Checker -->
+        <passay.version>1.6.4</passay.version>
+
         <!-- Tools dependencies -->
         <compiler.version>3.13.0</compiler.version>
         <jacoco.version>0.8.12</jacoco.version>
@@ -73,6 +79,21 @@
                 <groupId>io.github.fherbreteau</groupId>
                 <artifactId>functional-check</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!-- Other dependencies -->
+            <dependency>
+                <groupId>org.passay</groupId>
+                <artifactId>passay</artifactId>
+                <version>${passay.version}</version>
+            </dependency>
+
+
+            <!-- Liquibase -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class UserInput {
@@ -8,18 +9,20 @@ public final class UserInput {
     private final String name;
     private final String password;
     private final UUID groupId;
-    private final String groupName;
+    private final List<String> groups;
     private final String newName;
     private final boolean force;
+    private final boolean append;
 
     private UserInput(Builder builder) {
         userId = builder.userId;
         name = builder.name;
         password = builder.password;
         groupId = builder.groupId;
-        groupName = builder.groupName;
+        groups = builder.groups;
         newName = builder.newName;
         force = builder.force;
+        append = builder.append;
     }
 
     public UUID getUserId() {
@@ -38,8 +41,8 @@ public final class UserInput {
         return groupId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public List<String> getGroups() {
+        return groups;
     }
 
     public String getNewName() {
@@ -50,6 +53,10 @@ public final class UserInput {
         return force;
     }
 
+    public boolean isAppend() {
+        return append;
+    }
+
     @Override
     public String toString() {
         return "UserInput{" +
@@ -57,9 +64,10 @@ public final class UserInput {
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", groupId=" + groupId +
-                ", groupName='" + groupName + '\'' +
+                ", groups='" + groups + '\'' +
                 ", newName='" + newName + '\'' +
                 ", force=" + force +
+                ", append=" + append +
                 '}';
     }
 
@@ -72,9 +80,10 @@ public final class UserInput {
         private UUID userId;
         private String password;
         private UUID groupId;
-        private String groupName;
+        private List<String> groups = List.of();
         private String newName;
         private boolean force;
+        private boolean append;
 
         private Builder(String name) {
             this.name = name;
@@ -95,18 +104,23 @@ public final class UserInput {
             return this;
         }
 
-        public Builder withGroupName(String name) {
-            groupName = name;
+        public Builder withGroups(List<String> names) {
+            groups = names;
             return this;
         }
 
-        public Builder withNewName(String newName) {
-            this.newName = newName;
+        public Builder withNewName(String name) {
+            newName = name;
             return this;
         }
 
         public Builder withForce(boolean force) {
             this.force = force;
+            return this;
+        }
+
+        public Builder withAppend(boolean append) {
+            this.append = append;
             return this;
         }
 

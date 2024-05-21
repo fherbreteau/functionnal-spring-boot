@@ -4,14 +4,16 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
 public class GroupDeleteCommand extends AbstractSuccessUserCommand {
     private final String name;
     private final boolean force;
 
-    public GroupDeleteCommand(UserRepository userRepository, GroupRepository groupRepository, String name, boolean force) {
-        super(userRepository, groupRepository);
+    public GroupDeleteCommand(UserRepository userRepository, GroupRepository groupRepository,
+                              PasswordProtector passwordProtector, String name, boolean force) {
+        super(userRepository, groupRepository, passwordProtector);
         this.name = name;
         this.force = force;
     }

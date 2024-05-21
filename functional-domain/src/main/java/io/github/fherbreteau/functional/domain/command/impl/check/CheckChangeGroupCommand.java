@@ -10,6 +10,9 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGroupCommand> {
 
     private final Item item;
@@ -23,8 +26,12 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGrou
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canChangeGroup(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canChangeGroup(item, actor)) {
+            reasons.add(String.format("%s can't change group of %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -33,8 +40,8 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGrou
     }
 
     @Override
-    protected ItemErrorCommand createError() {
+    protected ItemErrorCommand createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).withGroup(newGroup).build();
-        return new ItemErrorCommand(ItemCommandType.CHGRP, itemInput);
+        return new ItemErrorCommand(ItemCommandType.CHGRP, itemInput, reasons);
     }
 }

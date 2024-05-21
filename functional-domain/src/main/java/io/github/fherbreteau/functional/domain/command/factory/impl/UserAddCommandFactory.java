@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
@@ -24,8 +25,8 @@ public class UserAddCommandFactory implements UserCommandFactory {
 
     @Override
     public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                              UserChecker userChecker, UserCommandType type, UserInput userInput) {
-        return new CheckUserAddCommand(repository, groupRepository, userChecker, userInput.getName(),
-                userInput.getUserId(), userInput.getGroupId(), userInput.getPassword());
+                                              UserChecker userChecker, PasswordProtector passwordProtector,
+                                              UserCommandType type, UserInput userInput) {
+        return new CheckUserAddCommand(repository, groupRepository, userChecker, passwordProtector, userInput);
     }
 }

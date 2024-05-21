@@ -9,6 +9,9 @@ import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
@@ -21,8 +24,12 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadComma
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canRead(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canRead(item, actor)) {
+            reasons.add(String.format("%s can't read %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -31,8 +38,8 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadComma
     }
 
     @Override
-    protected ItemErrorCommand createError() {
+    protected ItemErrorCommand createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.DOWNLOAD, itemInput);
+        return new ItemErrorCommand(ItemCommandType.DOWNLOAD, itemInput, reasons);
     }
 }

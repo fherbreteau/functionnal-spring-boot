@@ -5,7 +5,9 @@ import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorComma
 import io.github.fherbreteau.functional.domain.command.impl.success.UserAddCommand;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +29,16 @@ class CheckUserAddCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckUserAddCommand command;
     @Mock
     private User actor;
 
     @BeforeEach
     public void setup() {
-        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, "user", null, null, null);
+        UserInput input = UserInput.builder("user").build();
+        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
     }
 
     @Test
@@ -90,7 +95,8 @@ class CheckUserAddCommandTest {
         given(userRepository.exists("user")).willReturn(false);
         given(userRepository.exists(userId)).willReturn(true);
         // WHEN
-        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, "user", userId, groupId, null);
+        UserInput input = UserInput.builder("user").withUserId(userId).withGroupId(groupId).build();
+        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
@@ -106,7 +112,8 @@ class CheckUserAddCommandTest {
         given(userRepository.exists(userId)).willReturn(false);
         given(groupRepository.exists(groupId)).willReturn(false);
         // WHEN
-        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, "user", userId, groupId, null);
+        UserInput input = UserInput.builder("user").withUserId(userId).withGroupId(groupId).build();
+        command = new CheckUserAddCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);

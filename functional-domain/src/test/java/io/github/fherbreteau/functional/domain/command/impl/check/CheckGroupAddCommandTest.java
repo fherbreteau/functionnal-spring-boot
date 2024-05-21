@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.GroupAddComm
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +28,16 @@ class CheckGroupAddCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckGroupAddCommand command;
     @Mock
     private User actor;
 
     @BeforeEach
     public void setup() {
-        command = new CheckGroupAddCommand(userRepository, groupRepository, userChecker, "group", null);
+        command = new CheckGroupAddCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", null);
     }
 
     @Test
@@ -76,7 +80,8 @@ class CheckGroupAddCommandTest {
         given(groupRepository.exists("group")).willReturn(false);
         given(groupRepository.exists(groupId)).willReturn(true);
         // WHEN
-        command = new CheckGroupAddCommand(userRepository, groupRepository, userChecker, "group", groupId);
+        command = new CheckGroupAddCommand(userRepository, groupRepository, userChecker, passwordProtector,
+                "group", groupId);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);

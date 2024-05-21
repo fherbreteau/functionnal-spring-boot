@@ -19,17 +19,13 @@ class GroupRepositoryTest {
 
     @Test
     void fakeCoverage() {
-        assertThatThrownBy(() -> repository.exists(""))
+        assertThatThrownBy(() -> repository.exists((String) null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.findByName(null))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.exists(UUID.randomUUID()))
+        assertThatThrownBy(() -> repository.exists((UUID) null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.findById(null))
-                .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.exists(null, null))
-                .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.findByNameAndId(null, null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.save(null))
                 .isInstanceOf(UnsupportedOperationException.class);

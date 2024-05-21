@@ -24,19 +24,19 @@ class EntityMapperTest {
 
     @Test
     void shouldReturnNullWhenValueIsNotAnItem() {
-        ItemDTO dto = mapper.map(new Object());
+        ItemDTO dto = mapper.mapToItem(new Object());
         assertThat(dto).isNull();
     }
 
     @Test
     void shouldReturnAnEmptyListWhenValueIsNotAnItemNorACollection() {
-        List<ItemDTO> dtos = mapper.mapToList(new Object());
+        List<ItemDTO> dtos = mapper.mapToItemList(new Object());
         assertThat(dtos).isEmpty();
     }
 
     @Test
     void shouldReturnASingleElementListWhenValueIsAnItem() {
-        List<ItemDTO> dtos = mapper.mapToList(File.builder()
+        List<ItemDTO> dtos = mapper.mapToItemList(File.builder()
                 .withName("name")
                 .withOwner(User.builder("user").build()).build());
         assertThat(dtos).hasSize(1);

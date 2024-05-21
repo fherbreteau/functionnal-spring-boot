@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +30,8 @@ class CheckUserModifyCommandTest {
     private GroupRepository groupRepository;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private PasswordProtector passwordProtector;
     private CheckUserModifyCommand command;
     @Mock
     private User actor;
@@ -35,7 +39,7 @@ class CheckUserModifyCommandTest {
     @BeforeEach
     public void setup() {
         UserInput input = UserInput.builder("user").withNewName("user1").build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
     }
 
     @Test
@@ -56,10 +60,11 @@ class CheckUserModifyCommandTest {
         UUID groupId = UUID.randomUUID();
         given(userChecker.canUpdateUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(true);
-        given(groupRepository.exists(groupId, "group")).willReturn(true);
+        given(groupRepository.exists(groupId)).willReturn(true);
+        given(groupRepository.exists("group")).willReturn(true);
         // WHEN
-        UserInput input = UserInput.builder("user").withGroupName("group").withGroupId(groupId).build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        UserInput input = UserInput.builder("user").withGroups(List.of("group")).withGroupId(groupId).build();
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UserModifyCommand.class);
@@ -107,7 +112,7 @@ class CheckUserModifyCommandTest {
         given(userRepository.exists(userId)).willReturn(true);
         // WHEN
         UserInput input = UserInput.builder("user").withUserId(userId).build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
@@ -119,10 +124,11 @@ class CheckUserModifyCommandTest {
         UUID groupId = UUID.randomUUID();
         given(userChecker.canUpdateUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(true);
-        given(groupRepository.exists(groupId, "group")).willReturn(false);
+        given(groupRepository.exists(groupId)).willReturn(true);
+        given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        UserInput input = UserInput.builder("user").withGroupName("group").withGroupId(groupId).build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        UserInput input = UserInput.builder("user").withGroups(List.of("group")).withGroupId(groupId).build();
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
@@ -137,7 +143,7 @@ class CheckUserModifyCommandTest {
         given(groupRepository.exists(groupId)).willReturn(false);
         // WHEN
         UserInput input = UserInput.builder("user").withGroupId(groupId).build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
@@ -150,8 +156,8 @@ class CheckUserModifyCommandTest {
         given(userRepository.exists("user")).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        UserInput input = UserInput.builder("user").withGroupName("group").build();
-        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, input);
+        UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
+        command = new CheckUserModifyCommand(userRepository, groupRepository, userChecker, passwordProtector, input);
         Command<Output> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);

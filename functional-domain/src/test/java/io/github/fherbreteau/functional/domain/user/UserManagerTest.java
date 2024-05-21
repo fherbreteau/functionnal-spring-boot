@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.user;
 
+import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import io.github.fherbreteau.functional.exception.NotFoundException;
@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,9 +59,13 @@ class UserManagerTest {
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         assertThat(result)
-                .extracting(Output::getError, type(Error.class))
+                .extracting(Output::getError)
                 .extracting(Error::getMessage)
                 .isEqualTo("user not found");
+        assertThat(result)
+                .extracting(Output::getError)
+                .extracting(Error::getReasons, list(String.class))
+                .isEmpty();
     }
 
     @Test
@@ -91,9 +95,13 @@ class UserManagerTest {
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         assertThat(result)
-                .extracting(Output::getError, type(Error.class))
+                .extracting(Output::getError)
                 .extracting(Error::getMessage)
                 .isEqualTo("group not found");
+        assertThat(result)
+                .extracting(Output::getError)
+                .extracting(Error::getReasons, list(String.class))
+                .isEmpty();
     }
 
     @Test

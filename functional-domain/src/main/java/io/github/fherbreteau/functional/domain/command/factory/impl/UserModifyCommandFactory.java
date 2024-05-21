@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
@@ -22,7 +23,7 @@ public class UserModifyCommandFactory implements UserCommandFactory {
     private boolean isValidModify(UserInput userInput) {
         return nonNull(userInput.getName()) && (nonNull(userInput.getUserId()) || nonNull(userInput.getNewName()) ||
                 nonNull(userInput.getPassword()) || nonNull(userInput.getGroupId()) ||
-                nonNull(userInput.getGroupName()));
+                !userInput.getGroups().isEmpty());
     }
 
     private boolean isValidPasswd(UserInput userInput) {
@@ -31,7 +32,8 @@ public class UserModifyCommandFactory implements UserCommandFactory {
 
     @Override
     public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                              UserChecker userChecker, UserCommandType type, UserInput userInput) {
-        return new CheckUserModifyCommand(repository, groupRepository, userChecker, userInput);
+                                              UserChecker userChecker, PasswordProtector passwordProtector,
+                                              UserCommandType type, UserInput userInput) {
+        return new CheckUserModifyCommand(repository, groupRepository, userChecker, passwordProtector, userInput);
     }
 }

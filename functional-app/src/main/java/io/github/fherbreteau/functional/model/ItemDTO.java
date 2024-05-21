@@ -1,82 +1,125 @@
 package io.github.fherbreteau.functional.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.LocalDateTime;
 
-public class ItemDTO {
+@JsonDeserialize(builder = ItemDTO.Builder.class)
+public final class ItemDTO {
 
-    private String name;
-    private String owner;
-    private String group;
-    private String access;
-    private LocalDateTime created;
-    private LocalDateTime modified;
-    private LocalDateTime accessed;
+    private final String name;
+    private final String owner;
+    private final String group;
+    private final String access;
+    private final LocalDateTime created;
+    private final LocalDateTime modified;
+    private final LocalDateTime accessed;
     @JsonProperty("content-type")
-    private String contentType;
+    private final String contentType;
+
+    private ItemDTO(Builder builder) {
+        name = builder.name;
+        owner = builder.owner;
+        group = builder.group;
+        access = builder.access;
+        created = builder.created;
+        modified = builder.modified;
+        accessed = builder.accessed;
+        contentType = builder.contentType;
+    }
+
+    public static Builder buidler() {
+        return new Builder();
+    }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
     public String getGroup() {
         return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
     }
 
     public String getAccess() {
         return access;
     }
 
-    public void setAccess(String access) {
-        this.access = access;
-    }
-
     public LocalDateTime getCreated() {
         return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
     }
 
     public LocalDateTime getModified() {
         return modified;
     }
 
-    public void setModified(LocalDateTime modified) {
-        this.modified = modified;
-    }
-
     public LocalDateTime getAccessed() {
         return accessed;
-    }
-
-    public void setAccessed(LocalDateTime accessed) {
-        this.accessed = accessed;
     }
 
     public String getContentType() {
         return contentType;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public static final class Builder {
+        private String name;
+        private String owner;
+        private String group;
+        private String access;
+        private LocalDateTime created;
+        private LocalDateTime modified;
+        private LocalDateTime accessed;
+        private String contentType;
+
+        private Builder() {
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withOwner(String owner) {
+            this.owner = owner;
+            return this;
+        }
+
+        public Builder withGroup(String group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder withAccess(String access) {
+            this.access = access;
+            return this;
+        }
+
+        public Builder withCreated(LocalDateTime created) {
+            this.created = created;
+            return this;
+        }
+
+        public Builder withModified(LocalDateTime modified) {
+            this.modified = modified;
+            return this;
+        }
+
+        public Builder withAccessed(LocalDateTime accessed) {
+            this.accessed = accessed;
+            return this;
+        }
+
+        public Builder withContentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public ItemDTO build() {
+            return new ItemDTO(this);
+        }
     }
 }

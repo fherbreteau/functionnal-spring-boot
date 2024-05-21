@@ -14,10 +14,6 @@ public interface GroupRepository {
 
     Group findById(UUID groupId);
 
-    boolean exists(UUID groupId, String name);
-
-    Group findByNameAndId(String groupName, UUID groupId);
-
     Group save(Group group);
 
     Group delete(Group group);

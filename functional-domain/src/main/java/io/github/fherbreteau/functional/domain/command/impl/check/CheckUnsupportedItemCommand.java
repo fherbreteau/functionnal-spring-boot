@@ -7,6 +7,8 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.util.List;
+
 public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<ItemErrorCommand> {
 
     private final ItemCommandType itemCommandType;
@@ -20,8 +22,8 @@ public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<ItemEr
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return true;
+    protected List<String> checkAccess(User actor) {
+        return List.of();
     }
 
     @Override

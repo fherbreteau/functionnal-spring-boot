@@ -55,7 +55,7 @@ class PathTest {
         Path path = Path.success(File.builder().build());
         assertThat(path).hasToString("Path{item='null null:null --------- null'}");
         path = Path.error(Error.error("error"));
-        assertThat(path).hasToString("Path{error=Error{message='error'}}");
+        assertThat(path).hasToString("Path{error=Error{message='error', reasons=[]}}");
     }
 
     @Test

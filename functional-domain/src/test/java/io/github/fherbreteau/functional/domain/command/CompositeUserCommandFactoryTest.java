@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,8 @@ class CompositeUserCommandFactoryTest {
     @Mock
     private UserChecker userChecker;
     @Mock
+    private PasswordProtector passwordProtector;
+    @Mock
     private UserRepository userRepository;
     @Mock
     private GroupRepository groupRepository;
@@ -44,9 +47,10 @@ class CompositeUserCommandFactoryTest {
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").build(), CheckUserAddCommand.class),
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUserAddCommand.class),
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckUserAddCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckUserAddCommand.class),
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withPassword("password").build(), CheckUserAddCommand.class),
                 // USERMOD Command
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroupName("group").build(), CheckUserModifyCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckUserModifyCommand.class),
                 Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckUserModifyCommand.class),
                 Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUserModifyCommand.class),
                 Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withNewName("user2").build(), CheckUserModifyCommand.class),
@@ -94,7 +98,7 @@ class CompositeUserCommandFactoryTest {
                 new UserDeleteCommandFactory(),
                 new UserModifyCommandFactory()
         );
-        factory = new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, factories);
+        factory = new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, passwordProtector, factories);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")

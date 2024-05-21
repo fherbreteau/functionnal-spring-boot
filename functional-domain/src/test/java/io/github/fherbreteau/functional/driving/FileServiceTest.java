@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -68,7 +69,8 @@ class FileServiceTest {
         // THEN
         assertThat(path).isNotNull()
                 .satisfies(p -> assertThat(p.isError()).isTrue())
-                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' null:null ------rwx null' for actor"));
+                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' null:null ------rwx null' for actor"))
+                .satisfies(p -> assertThat(p.getError().getReasons()).isEmpty());
     }
 
     @Test
@@ -120,5 +122,9 @@ class FileServiceTest {
                 .isNotNull()
                 .extracting(Error::getMessage)
                 .isNotNull();
+        assertThat(result)
+                .extracting(Output::getError)
+                .extracting(Error::getReasons, list(String.class))
+                .isEmpty();
     }
 }

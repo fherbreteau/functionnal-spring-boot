@@ -32,16 +32,6 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public boolean exists(UUID groupId, String name) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-    }
-
-    @Override
-    public Group findByNameAndId(String groupName, UUID groupId) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-    }
-
-    @Override
     public Group save(Group group) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }

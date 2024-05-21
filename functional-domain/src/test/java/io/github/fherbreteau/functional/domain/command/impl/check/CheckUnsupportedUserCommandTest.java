@@ -19,7 +19,7 @@ class CheckUnsupportedUserCommandTest {
     @BeforeEach
     public void setup() {
         actor = User.builder("actor").build();
-        command = new CheckUnsupportedUserCommand(null, null, null, null, null);
+        command = new CheckUnsupportedUserCommand(null, null, null, null, null, null);
     }
 
     @Test

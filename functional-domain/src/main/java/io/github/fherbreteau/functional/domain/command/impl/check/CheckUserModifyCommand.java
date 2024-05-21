@@ -6,9 +6,12 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.nonNull;
@@ -16,61 +19,58 @@ import static java.util.Objects.nonNull;
 public class CheckUserModifyCommand extends AbstractCheckUserCommand<UserModifyCommand> {
     private final String name;
     private final UUID userId;
+    private final UUID groupId;
+    private final List<String> groups;
     private final String newName;
     private final String password;
-    private final UUID groupId;
-    private final String groupName;
     private final UserInput input;
 
     public CheckUserModifyCommand(UserRepository userRepository, GroupRepository groupRepository,
-                                  UserChecker userChecker, UserInput input) {
-        super(userRepository, groupRepository, userChecker);
+                                  UserChecker userChecker, PasswordProtector passwordProtector, UserInput input) {
+        super(userRepository, groupRepository, userChecker, passwordProtector);
         this.name = input.getName();
         this.userId = input.getUserId();
+        this.groupId = input.getGroupId();
+        this.groups = input.getGroups();
         this.newName = input.getNewName();
         this.password = input.getPassword();
-        this.groupId = input.getGroupId();
-        this.groupName = input.getGroupName();
         this.input = input;
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
         if (!userChecker.canUpdateUser(name, actor)) {
-            return false;
+            reasons.add(String.format("%s can't update user %s", actor, name));
         }
         if (!userRepository.exists(name)) {
-            return false;
+            reasons.add(String.format("user %s is missing", name));
         }
         if (nonNull(userId) && userRepository.exists(userId)) {
-            return false;
+            reasons.add(String.format("user with %s already exists", userId));
         }
         if (nonNull(newName) && userRepository.exists(newName)) {
-            return false;
-        }
-        if (nonNull(groupId) && nonNull(groupName)) {
-            return groupRepository.exists(groupId, groupName);
+            reasons.add(String.format("user %s already exists", newName));
         }
         if (nonNull(groupId) && !groupRepository.exists(groupId)) {
-            return false;
+            reasons.add(String.format("group with id %s is missing", groupId));
         }
-        return !nonNull(groupName) || groupRepository.exists(groupName);
+        if (!groups.isEmpty() && groups.stream().anyMatch(g -> !groupRepository.exists(g))) {
+            reasons.add(String.format("one of %s is missing", String.join(", ", groups)));
+        }
+        if (nonNull(password)) {
+            reasons.addAll(passwordProtector.validate(password));
+        }
+        return reasons;
     }
 
     @Override
     protected UserModifyCommand createSuccess() {
-        return new UserModifyCommand(userRepository, groupRepository, input);
+        return new UserModifyCommand(userRepository, groupRepository, passwordProtector, input);
     }
 
     @Override
-    protected UserErrorCommand createError() {
-        UserInput userInput = UserInput.builder(name)
-                .withUserId(userId)
-                .withNewName(newName)
-                .withPassword(password)
-                .withGroupId(groupId)
-                .withGroupName(groupName)
-                .build();
-        return new UserErrorCommand(UserCommandType.USERMOD, userInput);
+    protected UserErrorCommand createError(List<String> reasons) {
+        return new UserErrorCommand(UserCommandType.USERMOD, input, reasons);
     }
 }

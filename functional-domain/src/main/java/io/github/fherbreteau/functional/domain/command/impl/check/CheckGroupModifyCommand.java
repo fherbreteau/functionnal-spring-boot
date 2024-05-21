@@ -6,12 +6,14 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class CheckGroupModifyCommand extends AbstractCheckUserCommand<GroupModifyCommand> {
@@ -20,35 +22,40 @@ public class CheckGroupModifyCommand extends AbstractCheckUserCommand<GroupModif
     private final String newName;
 
     public CheckGroupModifyCommand(UserRepository userRepository, GroupRepository groupRepository,
-                                   UserChecker userChecker, String name, UUID groupId, String newName) {
-        super(userRepository, groupRepository, userChecker);
+                                   UserChecker userChecker, PasswordProtector passwordProtector, String name,
+                                   UUID groupId, String newName) {
+        super(userRepository, groupRepository, userChecker, passwordProtector);
         this.name = name;
         this.groupId = groupId;
         this.newName = newName;
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
         if (!userChecker.canUpdateGroup(name, actor)) {
-            return false;
+            reasons.add(String.format("%s can't update group %s", actor, name));
         }
         if (!groupRepository.exists(name)) {
-            return false;
+            reasons.add(String.format("group %s is missing", name));
         }
         if (nonNull(groupId) && groupRepository.exists(groupId)) {
-            return false;
+            reasons.add(String.format("group with id %s already exists", groupId));
         }
-        return isNull(newName) || !groupRepository.exists(newName);
+        if (nonNull(newName) && groupRepository.exists(newName)) {
+            reasons.add(String.format("group %s already exists", groupId));
+        }
+        return reasons;
     }
 
     @Override
     protected GroupModifyCommand createSuccess() {
-        return new GroupModifyCommand(userRepository, groupRepository, name, groupId, newName);
+        return new GroupModifyCommand(userRepository, groupRepository, passwordProtector, name, groupId, newName);
     }
 
     @Override
-    protected UserErrorCommand createError() {
+    protected UserErrorCommand createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).withGroupId(groupId).withNewName(newName).build();
-        return new UserErrorCommand(UserCommandType.GROUPMOD, userInput);
+        return new UserErrorCommand(UserCommandType.GROUPMOD, userInput, reasons);
     }
 }

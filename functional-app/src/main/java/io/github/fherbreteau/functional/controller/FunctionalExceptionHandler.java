@@ -14,33 +14,39 @@ public class FunctionalExceptionHandler {
 
     @ExceptionHandler(CommandException.class)
     public ResponseEntity<ErrorDTO> handleCommandException(CommandException e) {
-        ErrorDTO error = new ErrorDTO();
-        error.setType(e.getClass().getSimpleName());
-        error.setMessage(e.getMessage());
+        ErrorDTO error = ErrorDTO.builder()
+                .withType(e.getClass().getSimpleName())
+                .withMessage(e.getMessage())
+                .withReasons(e.getReasons())
+                .build();
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(PathException.class)
     public ResponseEntity<ErrorDTO> handlePathException(PathException e) {
-        ErrorDTO error = new ErrorDTO();
-        error.setType(e.getClass().getSimpleName());
-        error.setMessage(e.getMessage());
+        ErrorDTO error = ErrorDTO.builder()
+                .withType(e.getClass().getSimpleName())
+                .withMessage(e.getMessage())
+                .withReasons(e.getReasons())
+                .build();
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorDTO> handleUserException(UserException e) {
-        ErrorDTO error = new ErrorDTO();
-        error.setType(e.getClass().getSimpleName());
-        error.setMessage(e.getMessage());
+        ErrorDTO error = ErrorDTO.builder()
+                .withType(e.getClass().getSimpleName())
+                .withMessage(e.getMessage())
+                .build();
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(GroupException.class)
     public ResponseEntity<ErrorDTO> handlePathException(GroupException e) {
-        ErrorDTO error = new ErrorDTO();
-        error.setType(e.getClass().getSimpleName());
-        error.setMessage(e.getMessage());
+        ErrorDTO error = ErrorDTO.builder()
+                .withType(e.getClass().getSimpleName())
+                .withMessage(e.getMessage())
+                .build();
         return ResponseEntity.badRequest().body(error);
     }
 }

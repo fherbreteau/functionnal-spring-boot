@@ -4,6 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,8 @@ class GroupModifyCommandTest {
     @Mock
     private GroupRepository groupRepository;
     @Mock
+    private PasswordProtector passwordProtector;
+    @Mock
     private User actor;
 
     @Captor
@@ -39,7 +42,7 @@ class GroupModifyCommandTest {
     @BeforeEach
     public void setup() {
         groupId = UUID.randomUUID();
-        command = new GroupModifyCommand(userRepository, groupRepository, "group", null, null);
+        command = new GroupModifyCommand(userRepository, groupRepository, passwordProtector, "group", null, null);
     }
 
     @Test

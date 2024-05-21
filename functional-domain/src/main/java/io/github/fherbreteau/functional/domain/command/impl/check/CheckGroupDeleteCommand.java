@@ -6,41 +6,48 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.UserChecker;
 import io.github.fherbreteau.functional.driven.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckGroupDeleteCommand extends AbstractCheckUserCommand<GroupDeleteCommand> {
     private final String name;
     private final boolean force;
 
-    public CheckGroupDeleteCommand(UserRepository userRepository, GroupRepository groupRepository, UserChecker userChecker, String name, boolean force) {
-        super(userRepository, groupRepository, userChecker);
+    public CheckGroupDeleteCommand(UserRepository userRepository, GroupRepository groupRepository,
+                                   UserChecker userChecker, PasswordProtector passwordProtector,
+                                   String name, boolean force) {
+        super(userRepository, groupRepository, userChecker, passwordProtector);
         this.name = name;
         this.force = force;
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
         if (!userChecker.canDeleteGroup(name, actor)) {
-            return false;
+            reasons.add(String.format("%s can't delete group %s", actor, name));
         }
         if (!groupRepository.exists(name)) {
-            return false;
+            reasons.add(String.format("%s is missing", name));
         }
-        if (userRepository.hasUserWithGroup(name)) {
-            return force;
+        if (!force && userRepository.hasUserWithGroup(name)) {
+            reasons.add(String.format("%s still contain users", name));
         }
-        return true;
+        return reasons;
     }
 
     @Override
     protected GroupDeleteCommand createSuccess() {
-        return new GroupDeleteCommand(userRepository, groupRepository, name, force);
+        return new GroupDeleteCommand(userRepository, groupRepository, passwordProtector, name, force);
     }
 
     @Override
-    protected UserErrorCommand createError() {
+    protected UserErrorCommand createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).withForce(force).build();
-        return new UserErrorCommand(UserCommandType.GROUPDEL, userInput);
+        return new UserErrorCommand(UserCommandType.GROUPDEL, userInput, reasons);
     }
 }

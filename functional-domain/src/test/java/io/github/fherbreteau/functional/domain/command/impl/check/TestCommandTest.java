@@ -5,6 +5,10 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TestCommandTest {
@@ -14,8 +18,12 @@ class TestCommandTest {
         // GIVEN
         AbstractCheckItemCommand<Command<Output>> command = new AbstractCheckItemCommand<>(null, null) {
             @Override
-            protected boolean checkAccess(User actor) {
-                return actor != null;
+            protected List<String> checkAccess(User actor) {
+                List<String> reasons = new ArrayList<>();
+                if (isNull(actor)) {
+                    reasons.add("Error");
+                }
+                return reasons;
             }
 
             @Override
@@ -36,10 +44,14 @@ class TestCommandTest {
     @Test
     void shouldThrowAnExceptionWhenUserCheckFailed() {
         // GIVEN
-        AbstractCheckUserCommand<Command<Output>> command = new AbstractCheckUserCommand<>(null, null, null) {
+        AbstractCheckUserCommand<Command<Output>> command = new AbstractCheckUserCommand<>(null, null, null, null) {
             @Override
-            protected boolean checkAccess(User actor) {
-                return actor != null;
+            protected List<String> checkAccess(User actor) {
+                List<String> reasons = new ArrayList<>();
+                if (isNull(actor)) {
+                    reasons.add("Error");
+                }
+                return reasons;
             }
 
             @Override

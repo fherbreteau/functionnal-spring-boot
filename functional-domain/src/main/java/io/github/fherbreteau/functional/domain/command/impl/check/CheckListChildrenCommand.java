@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.command.impl.success.ListChildrenCommand;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChildrenCommand> {
 
@@ -19,8 +19,12 @@ public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChild
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canRead(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canRead(item, actor)) {
+            reasons.add(String.format("%s can't read %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -29,8 +33,8 @@ public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChild
     }
 
     @Override
-    protected ItemErrorCommand createError() {
+    protected ItemErrorCommand createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.LIST, itemInput);
+        return new ItemErrorCommand(ItemCommandType.LIST, itemInput, reasons);
     }
 }
