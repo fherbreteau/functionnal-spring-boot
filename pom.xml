@@ -167,34 +167,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>${pitest.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>${pitest-junit5.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>pit-report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>mutationCoverage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mutationThreshold>80</mutationThreshold>
-                    <failWhenNoMutations>${pitest.fail-when-no-mutations}</failWhenNoMutations>
-                    <excludedClasses>
-                        <class>io.github.fherbreteau.functional.config.*</class>
-                    </excludedClasses>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -257,4 +229,42 @@
             <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
+
+    <profiles>
+        <profile>
+            <id>mutationTesting</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>${pitest.version}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>${pitest-junit5.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>pit-report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <mutationThreshold>80</mutationThreshold>
+                            <failWhenNoMutations>${pitest.fail-when-no-mutations}</failWhenNoMutations>
+                            <excludedClasses>
+                                <class>io.github.fherbreteau.functional.config.*</class>
+                            </excludedClasses>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

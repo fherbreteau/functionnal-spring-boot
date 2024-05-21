@@ -2,4 +2,3 @@ spring.main.banner-mode: "off"
 
 logging.level:
   root: off
-  org.springframework.web: trace
