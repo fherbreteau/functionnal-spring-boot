@@ -5,7 +5,8 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.exception.NotFoundException;
+
+import static java.lang.String.format;
 
 public class UserManager {
 
@@ -18,26 +19,26 @@ public class UserManager {
     }
 
     public Output findUserByName(String name) {
-        try {
+        if (userRepository.exists(name)) {
             return new Output(userRepository.findByName(name));
-        } catch (NotFoundException e) {
-            return new Output(Error.error(e.getMessage()));
+        } else {
+            return new Output(Error.error(format("%s not found", name)));
         }
     }
 
     public Output findGroupByName(String name) {
-        try {
+        if (groupRepository.exists(name)) {
             return new Output(groupRepository.findByName(name));
-        } catch (NotFoundException e) {
-            return new Output(Error.error(e.getMessage()));
+        } else {
+            return new Output(Error.error(format("%s not found", name)));
         }
     }
 
     public boolean checkPassword(String name, String passwordHash) {
-        try {
+        if (userRepository.exists(name)) {
             User user = userRepository.findByName(name);
             return userRepository.checkPassword(user, passwordHash);
-        } catch (NotFoundException e) {
+        } else {
             return false;
         }
     }

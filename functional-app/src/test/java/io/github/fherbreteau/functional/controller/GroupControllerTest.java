@@ -2,17 +2,15 @@ package io.github.fherbreteau.functional.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
+import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.exception.NotFoundException;
+import io.github.fherbreteau.functional.domain.entities.UserCommandType;
+import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.model.GroupDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,10 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Objects;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -45,18 +43,11 @@ class GroupControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @MockBean
-    private UserChecker userChecker;
-    @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private GroupRepository groupRepository;
+    private UserService userService;
 
     private MockMvc mvc;
 
     private User actor;
-
-    @Captor
-    private ArgumentCaptor<String> passwordCaptor;
 
     @BeforeEach
     public void setup() {
@@ -65,17 +56,17 @@ class GroupControllerTest {
                 .apply(springSecurity())
                 .build();
         actor = User.builder("user").build();
-        given(userRepository.findByName("user")).willReturn(actor);
+        given(userService.findUserByName("user")).willReturn(new Output(actor));
     }
 
     @WithMockUser
     @Test
     void shouldCreateGroupWithGivenParameters() throws Exception {
-        given(userChecker.canCreateGroup("group", actor)).willReturn(true);
-        given(groupRepository.exists("group")).willReturn(false);
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
-
         UUID groupId = UUID.randomUUID();
+        given(userService.processCommand(eq(UserCommandType.GROUPADD), eq(actor), argThat(argument ->
+                Objects.equals(argument.getGroupId(), groupId) && Objects.equals(argument.getName(), "group"))))
+                .willReturn(new Output(Group.builder("group").withGroupId(groupId).build()));
+
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
                 .withGid(groupId)
@@ -94,11 +85,9 @@ class GroupControllerTest {
     void shouldModifyGroupWithGivenParameters() throws Exception {
         UUID groupId = UUID.randomUUID();
         Group group = Group.builder("group").withGroupId(groupId).build();
-        given(userChecker.canUpdateGroup("group", actor)).willReturn(true);
-        given(groupRepository.exists("group")).willReturn(true);
-        given(groupRepository.findByName("group")).willReturn(group);
-        given(groupRepository.exists(groupId)).willReturn(false);
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userService.processCommand(eq(UserCommandType.GROUPMOD), eq(actor), argThat(argument ->
+                Objects.equals(argument.getGroupId(), groupId) && Objects.equals(argument.getName(), "group"))))
+                .willReturn(new Output(group));
 
         GroupDTO dto = GroupDTO.builder()
                 .withGid(groupId)
@@ -117,10 +106,9 @@ class GroupControllerTest {
     void shouldDeleteGroup() throws Exception {
         UUID groupId = UUID.randomUUID();
         Group group = Group.builder("group").withGroupId(groupId).build();
-        given(userChecker.canDeleteGroup("group", actor)).willReturn(true);
-        given(groupRepository.exists("group")).willReturn(true);
-        given(groupRepository.findByName("group")).willReturn(group);
-        given(groupRepository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userService.processCommand(eq(UserCommandType.GROUPDEL), eq(actor), argThat(argument ->
+                Objects.equals(argument.getName(), "group"))))
+                .willReturn(new Output(group));
 
         mvc.perform(delete("/groups/group").with(csrf()))
                 .andExpect(status().isOk())
@@ -132,7 +120,7 @@ class GroupControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
@@ -163,7 +151,8 @@ class GroupControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
-        given(userRepository.exists("user1")).willReturn(true, false);
+        given(userService.processCommand(any(), eq(actor), any()))
+                .willReturn(new Output(Error.error("Command Failed")));
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
                 .build();
@@ -173,7 +162,7 @@ class GroupControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("GROUPADD with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(patch("/groups/group").with(csrf())
                         .content(mapper.writeValueAsBytes(dto))
@@ -181,12 +170,12 @@ class GroupControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("GROUPMOD with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='group', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(delete("/groups/group").with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("GROUPDEL with arguments UserInput{userId=null, name='group', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
     }
 }

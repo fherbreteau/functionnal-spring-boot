@@ -2,17 +2,12 @@ package io.github.fherbreteau.functional.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.exception.NotFoundException;
+import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.model.InputUserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,23 +19,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.UUID;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = FunctionalApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = FunctionalApplication.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class UserControllerTest {
 
@@ -49,18 +39,11 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @MockBean
-    private UserChecker userChecker;
-    @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private GroupRepository groupRepository;
+    private UserService userService;
 
     private MockMvc mvc;
 
     private User actor;
-
-    @Captor
-    private ArgumentCaptor<String> passwordCaptor;
 
     @BeforeEach
     public void setup() {
@@ -69,29 +52,40 @@ class UserControllerTest {
                 .apply(springSecurity())
                 .build();
         actor = User.builder("user").build();
-        given(userRepository.findByName("user")).willReturn(actor);
+        given(userService.findUserByName("user")).willReturn(new Output(actor));
     }
 
     @WithMockUser
     @Test
     void shouldCreateUserWithGivenParameters() throws Exception {
-        given(userChecker.canCreateUser("user1", actor)).willReturn(true);
-        given(userRepository.exists("user1")).willReturn(false);
-        given(groupRepository.exists("user1")).willReturn(false);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        UUID groupId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        given(userService.processCommand(eq(UserCommandType.USERADD), eq(actor),
+                argThat(argument -> Objects.equals(argument.getName(), "user1")
+                && Objects.equals(argument.getUserId(), userId)
+                && Objects.equals(argument.getGroupId(), groupId)
+                && Objects.equals(argument.getPassword(), "Password")
+                && isEqualCollection(argument.getGroups(), List.of("group1", "group2")))))
+                .willReturn(new Output(User.builder("user1").withUserId(userId).build()));
 
         InputUserDTO dto = InputUserDTO.builder()
                 .withName("user1")
+                .withUid(userId)
+                .withGid(groupId)
+                .withPassword("Password")
+                .withGroups(List.of("group1", "group2"))
                 .build();
         mvc.perform(post("/users").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.uid").value(userId.toString()))
                 .andExpect(jsonPath("$.name").value("user1"))
                 .andExpect(jsonPath("$.groups").isArray())
                 .andExpect(jsonPath("$.groups", hasSize(1)))
+                .andExpect(jsonPath("$.groups[0].gid").value(userId.toString()))
                 .andExpect(jsonPath("$.groups[0].name").value("user1"));
     }
 
@@ -100,20 +94,17 @@ class UserControllerTest {
     void shouldModifyUserWithGivenParameters() throws Exception {
         UUID groupId = UUID.randomUUID();
         Group group = Group.builder("group").withGroupId(groupId).build();
-        User user = User.builder("user1").withGroup(Group.builder("user1").build()).build();
-        given(userChecker.canUpdateUser("user1", actor)).willReturn(true);
-        given(userRepository.exists("user1")).willReturn(true);
-        given(userRepository.findByName("user1")).willReturn(user);
-        given(groupRepository.exists(groupId)).willReturn(true);
-        given(groupRepository.findById(groupId)).willReturn(group);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userService.processCommand(eq(UserCommandType.USERMOD), eq(actor),
+                argThat(argument -> Objects.equals(argument.getName(), "user1") &&
+                        Objects.equals(argument.getGroupId(), groupId))))
+                .willReturn(new Output(User.builder("user1").withGroup(group).build()));
 
         InputUserDTO dto = InputUserDTO.builder()
                 .withGid(groupId)
                 .build();
         mvc.perform(patch("/users/user1").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("user1"))
@@ -125,36 +116,28 @@ class UserControllerTest {
     @WithMockUser
     @Test
     void shouldModifyUserPassword() throws Exception {
-        User user = User.builder("user1").withGroup(Group.builder("user1").build()).build();
-        given(userChecker.canUpdateUser("user1", actor)).willReturn(true);
-        given(userRepository.exists("user1")).willReturn(true);
-        given(userRepository.findByName("user1")).willReturn(user);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(userRepository.updatePassword(eq(user), any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userService.processCommand(eq(UserCommandType.PASSWD), eq(actor),
+                argThat(argument -> Objects.equals(argument.getName(), "user1") &&
+                        Objects.equals(argument.getPassword(), "Pa$sw0rd"))))
+                .willReturn(new Output(User.builder("user1").build()));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                        .content("Pa$sw0rd")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content("Pa$sw0rd")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("user1"))
                 .andExpect(jsonPath("$.groups").isArray())
                 .andExpect(jsonPath("$.groups", hasSize(1)))
                 .andExpect(jsonPath("$.groups[0].name").value("user1"));
-
-        then(userRepository).should().updatePassword(eq(user), passwordCaptor.capture());
-        assertThat(passwordCaptor.getValue())
-                .isNotEqualTo("Pa$sw0rd");
     }
 
     @WithMockUser
     @Test
     void shouldDeleteUser() throws Exception {
-        User user = User.builder("user1").withGroup(Group.builder("user1").build()).build();
-        given(userChecker.canDeleteUser("user1", actor)).willReturn(true);
-        given(userRepository.exists("user1")).willReturn(true);
-        given(userRepository.findByName("user1")).willReturn(user);
-        given(userRepository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userService.processCommand(eq(UserCommandType.USERDEL), eq(actor),
+                argThat(argument -> Objects.equals(argument.getName(), "user1"))))
+                .willReturn(new Output(User.builder("user1").build()));
 
         mvc.perform(delete("/users/user1").with(csrf()))
                 .andExpect(status().isOk())
@@ -168,30 +151,28 @@ class UserControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
-        InputUserDTO dto = InputUserDTO.builder()
-                .withName("user1")
-                .build();
+        InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
                 .andExpect(jsonPath("$.message").value("user not found"));
 
         mvc.perform(patch("/users/user1").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
                 .andExpect(jsonPath("$.message").value("user not found"));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                        .content("Pa$sw0rd")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content("Pa$sw0rd")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
@@ -207,38 +188,37 @@ class UserControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
-        given(userRepository.exists("user1")).willReturn(true, false);
-        InputUserDTO dto = InputUserDTO.builder()
-                .withName("user1")
-                .build();
+        given(userService.processCommand(any(), eq(actor), any()))
+                .willReturn(new Output(Error.error("Command Failed")));
+        InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("USERADD with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(patch("/users/user1").with(csrf())
-                        .content(mapper.writeValueAsBytes(dto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsBytes(dto))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("USERMOD with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='user1', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                        .content("Pa$sw0rd")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .content("Pa$sw0rd")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("PASSWD with arguments UserInput{userId=null, name='user1', password='Pa$sw0rd', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(delete("/users/user1").with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("USERDEL with arguments UserInput{userId=null, name='user1', password='null', groupId=null, groups='[]', newName='null', force=false, append=false} failed for ")));
+                .andExpect(jsonPath("$.message").value("Command Failed"));
     }
 }

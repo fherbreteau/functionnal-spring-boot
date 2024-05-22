@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.driving.impl.AccessParserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -111,7 +112,7 @@ public class AccessParserServiceTest {
         );
         CompositeAccessParserFactory accessRightParserFactory = new CompositeAccessParserFactory(accessRightParserFactories);
         accessRightParserFactory.configureRecursive();
-        accessParserService = new AccessParserService(accessRightParserFactory);
+        accessParserService = new AccessParserServiceImpl(accessRightParserFactory);
     }
 
     @ParameterizedTest(name = "{0} should be parsed to {2}{3}{4}")

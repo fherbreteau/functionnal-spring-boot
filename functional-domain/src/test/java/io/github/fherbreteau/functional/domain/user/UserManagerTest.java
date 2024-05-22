@@ -6,7 +6,6 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.exception.NotFoundException;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +34,7 @@ class UserManagerTest {
     @Test
     void shouldLookupUserByName() {
         // GIVEN
+        given(userRepository.exists("user")).willReturn(true);
         User user = User.builder("user").build();
         given(userRepository.findByName("user")).willReturn(user);
         // WHEN
@@ -51,7 +51,7 @@ class UserManagerTest {
     @Test
     void shouldReturnUnErrorWhenUserLookupFails() {
         // GIVEN
-        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+        given(userRepository.exists("user")).willReturn(false);
         // WHEN
         Output result = userManager.findUserByName("user");
         // THEN
@@ -71,6 +71,7 @@ class UserManagerTest {
     @Test
     void shouldLookupGroupByName() {
         // GIVEN
+        given(groupRepository.exists("group")).willReturn(true);
         Group group = Group.builder("group").build();
         given(groupRepository.findByName("group")).willReturn(group);
         // WHEN
@@ -87,7 +88,7 @@ class UserManagerTest {
     @Test
     void shouldReturnUnErrorWhenGroupLookupFails() {
         // GIVEN
-        given(groupRepository.findByName("group")).willThrow(new NotFoundException("group", new Exception()));
+        given(groupRepository.exists("group")).willReturn(false);
         // WHEN
         Output result = userManager.findGroupByName("group");
         // THEN
@@ -105,8 +106,9 @@ class UserManagerTest {
     }
 
     @Test
-    void shouldCheckUserPassword() {
+    void shouldSuccessWhenUserExistsAndCheckSucceed() {
         // GIVEN
+        given(userRepository.exists("user")).willReturn(true);
         User user = User.builder("user").build();
         given(userRepository.findByName("user")).willReturn(user);
         given(userRepository.checkPassword(user, "password")).willReturn(true);
@@ -117,8 +119,9 @@ class UserManagerTest {
     }
 
     @Test
-    void shouldCheckUserPassword1() {
+    void shouldFailWhenUserExistsAndCheckFails() {
         // GIVEN
+        given(userRepository.exists("user")).willReturn(true);
         User user = User.builder("user").build();
         given(userRepository.findByName("user")).willReturn(user);
         given(userRepository.checkPassword(user, "password")).willReturn(false);
@@ -129,9 +132,9 @@ class UserManagerTest {
     }
 
     @Test
-    void shouldReturnFalseWhenUserNotFound() {
+    void shouldFailWhenUserNotFound() {
         // GIVEN
-        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+        given(userRepository.exists("user")).willReturn(false);
         // WHEN
         boolean result = userManager.checkPassword("user", "password");
         // THEN

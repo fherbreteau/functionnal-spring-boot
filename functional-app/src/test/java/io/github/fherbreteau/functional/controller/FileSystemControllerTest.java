@@ -2,8 +2,10 @@ package io.github.fherbreteau.functional.controller;
 
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.*;
-import io.github.fherbreteau.functional.exception.NotFoundException;
+import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.driving.AccessParserService;
+import io.github.fherbreteau.functional.driving.FileService;
+import io.github.fherbreteau.functional.driving.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,10 @@ import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -40,15 +43,11 @@ class FileSystemControllerTest {
     private WebApplicationContext context;
 
     @MockBean
-    private FileRepository fileRepository;
+    private FileService fileService;
     @MockBean
-    private AccessChecker accessChecker;
+    private AccessParserService accessParserService;
     @MockBean
-    private ContentRepository contentRepository;
-    @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private GroupRepository groupRepository;
+    private UserService userService;
 
     private MockMvc mvc;
 
@@ -88,24 +87,15 @@ class FileSystemControllerTest {
                 .withOtherAccess(AccessRight.none())
                 .build();
         actor = User.builder("user").build();
-        given(userRepository.findByName("user")).willReturn(actor);
+        given(userService.findUserByName("user")).willReturn(new Output(actor));
     }
 
     @WithMockUser
     @Test
     void shouldReturnAListOfItemWhenFileServiceCanListElement() throws Exception {
-        given(accessChecker.canRead(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByParentAndUser(Folder.getRoot(), actor))
-                .willReturn(List.of(file, folder));
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor))
-                .willReturn(folder);
-        given(accessChecker.canRead(folder, actor))
-                .willReturn(true);
-        given(fileRepository.findByParentAndUser(folder, actor))
-                .willReturn(List.of());
+        given(fileService.getPath("/", actor)).willReturn(Path.ROOT);
+        given(fileService.processCommand(eq(ItemCommandType.LIST), eq(actor), argThat(argument -> Objects.equals(argument.getItem(), Folder.getRoot()))))
+                .willReturn(new Output(List.of(file, folder)));
 
         mvc.perform(get("/files")
                         .param("path", "/"))
@@ -117,10 +107,15 @@ class FileSystemControllerTest {
                 .andExpect(jsonPath("$[0].created").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$[0].modified").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$[0].accessed").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+                .andExpect(jsonPath("$[0].content-type").value(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .andExpect(jsonPath("$[1].name").value("folder"))
                 .andExpect(jsonPath("$[1].created").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$[1].modified").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
                 .andExpect(jsonPath("$[1].accessed").value(now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+
+        given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
+        given(fileService.processCommand(eq(ItemCommandType.LIST), eq(actor), argThat(argument -> Objects.equals(argument.getItem(), folder))))
+                .willReturn(new Output(List.of()));
 
         mvc.perform(get("/files")
                         .param("path", "/folder"))
@@ -133,10 +128,11 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldCreateFileWhenFileServiceCanCreateFile() throws Exception {
-        given(accessChecker.canWrite(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.save(any()))
-                .willReturn(file);
+        given(fileService.getPath("/", actor)).willReturn(Path.ROOT);
+        given(fileService.processCommand(eq(ItemCommandType.TOUCH), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), Folder.getRoot())
+                        && Objects.equals(argument.getName(), "file"))))
+                .willReturn(new Output(file));
 
         mvc.perform(post("/files/file").with(csrf())
                         .param("path", "/")
@@ -150,10 +146,11 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldCreateFolderWhenFileServiceCanCreateFolder() throws Exception {
-        given(accessChecker.canWrite(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.save(any()))
-                .willReturn(folder);
+        given(fileService.getPath("/", actor)).willReturn(Path.ROOT);
+        given(fileService.processCommand(eq(ItemCommandType.MKDIR), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), Folder.getRoot())
+                        && Objects.equals(argument.getName(), "folder"))))
+                .willReturn(new Output(folder));
 
         mvc.perform(post("/files/folder").with(csrf())
                         .param("path", "/")
@@ -167,15 +164,13 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldChangeOwnerWhenFileServiceCanChangeOwner() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor))
-                .willReturn(folder);
-        given(accessChecker.canChangeOwner(folder, actor))
-                .willReturn(true);
-        given(fileRepository.save(any()))
-                .willAnswer(invocation -> invocation.getArgument(0));
-        given(userRepository.findByName("user2")).willReturn(User.builder("user2").build());
+        User user2 = User.builder("user2").build();
+        given(userService.findUserByName("user2")).willReturn(new Output(user2));
+        given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
+        Folder updated = folder.copyBuilder().withOwner(user2).build();
+        given(fileService.processCommand(eq(ItemCommandType.CHOWN), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), folder) && Objects.equals(argument.getUser(), user2))))
+                .willReturn(new Output(updated));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/folder")
@@ -188,15 +183,13 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldChangeGroupWhenFileServiceCanChangeGroup() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor))
-                .willReturn(folder);
-        given(accessChecker.canChangeGroup(folder, actor))
-                .willReturn(true);
-        given(fileRepository.save(any()))
-                .willAnswer(invocation -> invocation.getArgument(0));
-        given(groupRepository.findByName("group2")).willReturn(Group.builder("group2").build());
+        Group group2 = Group.builder("group2").build();
+        given(userService.findGroupByName("group2")).willReturn(new Output(group2));
+        given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
+        Folder updated = folder.copyBuilder().withGroup(group2).build();
+        given(fileService.processCommand(eq(ItemCommandType.CHGRP), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), folder) && Objects.equals(argument.getGroup(), group2))))
+                .willReturn(new Output(updated));
 
         mvc.perform(patch("/files/group").with(csrf())
                         .param("path", "/folder")
@@ -209,14 +202,12 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldChangeRightWhenFileServiceCanChangeMode() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor))
-                .willReturn(folder);
-        given(accessChecker.canChangeMode(folder, actor))
-                .willReturn(true);
-        given(fileRepository.save(any()))
-                .willAnswer(invocation -> invocation.getArgument(0));
+        given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
+        ItemInput input = ItemInput.builder(folder).withOwnerAccess(AccessRight.writeOnly().addExecute()).build();
+        given(accessParserService.parseAccessRights("-wx", folder)).willReturn(input);
+        Folder updated = folder.copyBuilder().withOwnerAccess(AccessRight.readOnly()).build();
+        given(fileService.processCommand(ItemCommandType.CHMOD, actor, input))
+                .willReturn(new Output(updated));
 
         mvc.perform(patch("/files/mode").with(csrf())
                         .param("path", "/folder")
@@ -229,14 +220,10 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldDownloadContentWhenFileServiceCanReadFile() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("file", Folder.getRoot(), actor))
-                .willReturn(file);
-        given(accessChecker.canRead(file, actor))
-                .willReturn(true);
-        given(contentRepository.readContent(file))
-                .willReturn(new ByteArrayInputStream("content".getBytes()));
+        given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
+        given(fileService.processCommand(eq(ItemCommandType.DOWNLOAD), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), file) && Objects.equals(argument.getContentType(), file.getContentType()))))
+                .willReturn(new Output(new ByteArrayInputStream("content".getBytes())));
 
         mvc.perform(get("/files/download").with(csrf())
                         .param("path", "/file"))
@@ -248,16 +235,10 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldUploadContentWhenFileServiceCanWriteFile() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("file", Folder.getRoot(), actor))
-                .willReturn(file);
-        given(accessChecker.canWrite(file, actor))
-                .willReturn(true);
-        given(contentRepository.readContent(file))
-                .willReturn(new ByteArrayInputStream("content".getBytes()));
-        given(fileRepository.save(any()))
-                .willAnswer(invocation -> invocation.getArgument(0));
+        given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
+        given(fileService.processCommand(eq(ItemCommandType.UPLOAD), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), file))))
+                .willReturn(new Output(file));
 
         mvc.perform(multipart("/files/upload")
                         .file("file", "content".getBytes())
@@ -271,7 +252,7 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenUserDoesNotExists() throws Exception {
-        given(userRepository.findByName("user")).willThrow(new NotFoundException("user"));
+        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
@@ -340,17 +321,14 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenPathDoesNotExists() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
-        given(fileRepository.findByNameAndParentAndUser("path", Folder.getRoot(), actor))
-                .willReturn(null);
+        given(fileService.getPath("/path", actor)).willReturn(Path.error(Error.error("path not found")));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(post("/files/folder").with(csrf())
                         .param("path", "/path")
@@ -358,7 +336,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(post("/files/file").with(csrf())
                         .param("path", "/path")
@@ -366,7 +344,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/owner").with(csrf())
                 .param("path", "/path")
@@ -374,7 +352,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/group").with(csrf())
                 .param("path", "/path")
@@ -382,7 +360,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/mode").with(csrf())
                 .param("path", "/path")
@@ -390,14 +368,14 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(get("/files/download").with(csrf())
                 .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(multipart("/files/upload")
                 .file("file", "content".getBytes())
@@ -406,19 +384,16 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
-                .andExpect(jsonPath("$.message").value(startsWith("path not found in ' null:null ------rwx null' for user")));
+                .andExpect(jsonPath("$.message").value("path not found"));
     }
 
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenParamDoesNotExists() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
         Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
-        given(fileRepository.findByNameAndParentAndUser("path", Folder.getRoot(), actor))
-                .willReturn(path);
-        given(userRepository.findByName("user2")).willThrow(new NotFoundException("user2"));
-        given(groupRepository.findByName("group2")).willThrow(new NotFoundException("group2"));
+        given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
+        given(userService.findUserByName("user2")).willReturn(new Output(Error.error("user2 not found")));
+        given(userService.findGroupByName("group2")).willReturn(new Output(Error.error("group2 not found")));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/path")
@@ -445,27 +420,26 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
-        given(accessChecker.canExecute(Folder.getRoot(), actor))
-                .willReturn(true);
         Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
-        given(fileRepository.findByNameAndParentAndUser("path", Folder.getRoot(), actor))
-                .willReturn(path);
-        given(accessChecker.canWrite(folder, actor))
-                .willReturn(false);
-        given(accessChecker.canRead(folder, actor))
-                .willReturn(false);
-        given(userRepository.findByName("user2")).willReturn(User.builder("user2").build());
-        given(groupRepository.findByName("group2")).willReturn(Group.builder("group2").build());
+        given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
+        ItemInput input = ItemInput.builder(path).withOwnerAccess(AccessRight.writeOnly().addExecute()).build();
+        given(accessParserService.parseAccessRights("-wx", path)).willReturn(input);
+        User user2 = User.builder("user2").build();
+        given(userService.findUserByName("user2")).willReturn(new Output(user2));
+        Group group2 = Group.builder("group2").build();
+        given(userService.findGroupByName("group2")).willReturn(new Output(group2));
+        given(fileService.processCommand(any(), eq(actor), any())).willAnswer(invocation ->
+                new Output(Error.error("Command Failed", List.of("Error"))));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("LIST with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't read 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(post("/files/folder").with(csrf())
                         .param("path", "/path")
@@ -473,10 +447,10 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("MKDIR with arguments Input{item='path null:null --------- ', name='folder', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't create folder in 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(post("/files/file").with(csrf())
                         .param("path", "/path")
@@ -484,10 +458,10 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("TOUCH with arguments Input{item='path null:null --------- ', name='file', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't create file in 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/path")
@@ -495,10 +469,10 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("CHOWN with arguments Input{item='path null:null --------- ', name='null', user=user2, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't change owner of 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(patch("/files/group").with(csrf())
                         .param("path", "/path")
@@ -506,10 +480,10 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("CHGRP with arguments Input{item='path null:null --------- ', name='null', user=null, group=group2, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't change group of 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(patch("/files/mode").with(csrf())
                         .param("path", "/path")
@@ -517,19 +491,20 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("CHMOD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=---, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
                 .andExpect(jsonPath("$.reasons", hasSize(1)))
-                .andExpect(jsonPath("$.reasons[0]").value(endsWith(" can't change mode of 'path null:null --------- '")));
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(get("/files/download").with(csrf())
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("DOWNLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
-                .andExpect(jsonPath("$.reasons").isEmpty());
+                .andExpect(jsonPath("$.reasons", hasSize(1)))
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
 
         mvc.perform(multipart("/files/upload")
                         .file("file", "content".getBytes())
@@ -538,8 +513,9 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
-                .andExpect(jsonPath("$.message").value(startsWith("UPLOAD with arguments Input{item='path null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=application/octet-stream} failed for user")))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
                 .andExpect(jsonPath("$.reasons").isArray())
-                .andExpect(jsonPath("$.reasons").isEmpty());
+                .andExpect(jsonPath("$.reasons", hasSize(1)))
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
     }
 }

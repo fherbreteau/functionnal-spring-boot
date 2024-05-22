@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class FileRepositoryImpl implements FileRepository, ContentRepository {
@@ -32,7 +33,7 @@ public class FileRepositoryImpl implements FileRepository, ContentRepository {
     }
 
     @Override
-    public <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor) {
+    public <I extends Item> Optional<I> findByNameAndParentAndUser(String name, Folder folder, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 

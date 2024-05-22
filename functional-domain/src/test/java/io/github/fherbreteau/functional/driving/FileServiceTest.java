@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
+import io.github.fherbreteau.functional.driving.impl.FileServiceImpl;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class FileServiceTest {
 
     @BeforeEach
     public void setup() {
-        fileService = new FileService(commandFactory, pathFactory);
+        fileService = new FileServiceImpl(commandFactory, pathFactory);
     }
 
     @Test

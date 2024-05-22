@@ -58,7 +58,8 @@ public class EntityMapper {
                     .withModified(item.getLastModified())
                     .withAccessed(item.getLastAccessed());
             if (item instanceof File file) {
-                builder.withContentType(file.getContentType());
+                return builder.withContentType(file.getContentType())
+                        .build();
             }
             return builder.build();
         }

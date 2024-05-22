@@ -33,6 +33,7 @@ public class UserManagementService {
         UserInput input = UserInput.builder(userDTO.getName())
                 .withUserId(userDTO.getUid())
                 .withGroupId(userDTO.getGid())
+                .withGroups(userDTO.getGroups())
                 .withPassword(userDTO.getPassword())
                 .build();
         output = userService.processCommand(UserCommandType.USERADD, actor, input);

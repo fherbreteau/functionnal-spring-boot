@@ -13,6 +13,9 @@ import io.github.fherbreteau.functional.driven.*;
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.driving.UserService;
+import io.github.fherbreteau.functional.driving.impl.AccessParserServiceImpl;
+import io.github.fherbreteau.functional.driving.impl.FileServiceImpl;
+import io.github.fherbreteau.functional.driving.impl.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,17 +27,17 @@ public class DomainConfiguration {
     @Bean
     public FileService fileService(CompositeItemCommandFactory compositeItemCommandFactory,
                                    CompositePathFactory compositePathFactory) {
-        return new FileService(compositeItemCommandFactory, compositePathFactory);
+        return new FileServiceImpl(compositeItemCommandFactory, compositePathFactory);
     }
 
     @Bean
     public AccessParserService accessParserService(CompositeAccessParserFactory compositeAccessParserFactory) {
-        return new AccessParserService(compositeAccessParserFactory);
+        return new AccessParserServiceImpl(compositeAccessParserFactory);
     }
 
     @Bean
     public UserService userService(UserManager userManager, CompositeUserCommandFactory compositeUserCommandFactory) {
-        return new UserService(userManager, compositeUserCommandFactory);
+        return new UserServiceImpl(userManager, compositeUserCommandFactory);
     }
 
     @Bean

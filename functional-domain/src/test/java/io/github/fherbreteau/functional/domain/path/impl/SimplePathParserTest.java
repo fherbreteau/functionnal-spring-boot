@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,8 +86,9 @@ class SimplePathParserTest {
         String segment = "file";
         PathParser parser = new SimplePathParser(repository, accessChecker, path, segment);
         given(accessChecker.canExecute(path.getItem(), actor)).willReturn(true);
+        File result = File.builder().withName(segment).withParent(path.getAsFolder()).build();
         given(repository.findByNameAndParentAndUser(segment, path.getAsFolder(), actor))
-                .willReturn(File.builder().withName(segment).withParent(path.getAsFolder()).build());
+                .willReturn(of(result));
         // WHEN
         Path resolved = parser.resolve(actor);
         // THEN

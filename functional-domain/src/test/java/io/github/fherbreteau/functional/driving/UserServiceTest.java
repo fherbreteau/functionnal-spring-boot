@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.user.UserManager;
+import io.github.fherbreteau.functional.driving.impl.UserServiceImpl;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class UserServiceTest {
 
     @BeforeEach
     public void setup() {
-        userService = new UserService(userManager, commandFactory);
+        userService = new UserServiceImpl(userManager, commandFactory);
     }
 
     @Test

@@ -85,6 +85,7 @@ class UserGroupTest {
                 .doesNotHaveSameHashCodeAs(group2);
 
         UUID groupId = UUID.randomUUID();
+        group1 = Group.builder("group1").withGroupId(groupId).build();
         group2 = Group.builder("group2").withGroupId(groupId).build();
         assertThat(group1).isNotEqualTo(group2);
     }
