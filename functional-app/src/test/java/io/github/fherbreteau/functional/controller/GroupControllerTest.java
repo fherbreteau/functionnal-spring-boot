@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Objects;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -57,6 +58,21 @@ class GroupControllerTest {
                 .build();
         actor = User.builder("user").build();
         given(userService.findUserByName("user")).willReturn(new Output(actor));
+    }
+
+    @WithMockUser
+    @Test
+    void shouldReturnCurrentUserWithGivenName() throws Exception {
+        given(userService.processCommand(eq(UserCommandType.GROUPS), eq(actor),
+                argThat(argument -> Objects.isNull(argument.getName()) && Objects.isNull(argument.getUserId()))))
+                .willReturn(new Output(actor.getGroups()));
+        mvc.perform(get("/groups").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].gid").value(actor.getUserId().toString()))
+                .andExpect(jsonPath("$[0].name").value("user"));
     }
 
     @WithMockUser
@@ -122,6 +138,12 @@ class GroupControllerTest {
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
         given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
+        mvc.perform(get("/groups").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
                 .build();
@@ -153,6 +175,13 @@ class GroupControllerTest {
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
                 .willReturn(new Output(Error.error("Command Failed")));
+
+        mvc.perform(get("/groups").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value("Command Failed"));
+
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
                 .build();

@@ -28,6 +28,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User findById(UUID userId) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
     public User save(User user) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }

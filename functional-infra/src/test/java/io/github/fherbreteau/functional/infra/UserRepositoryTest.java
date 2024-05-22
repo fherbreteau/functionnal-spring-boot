@@ -25,6 +25,8 @@ class UserRepositoryTest {
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.exists(UUID.randomUUID()))
                 .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> repository.findById(null))
+                .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.save(null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.delete(null))

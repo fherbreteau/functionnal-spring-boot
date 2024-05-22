@@ -13,6 +13,9 @@ import io.github.fherbreteau.functional.model.GroupDTO;
 import io.github.fherbreteau.functional.model.UserDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class UserManagementService {
 
@@ -22,6 +25,22 @@ public class UserManagementService {
     public UserManagementService(UserService userService, EntityMapper entityMapper) {
         this.userService = userService;
         this.entityMapper = entityMapper;
+    }
+
+    public UserDTO getUser(String name, UUID userId, String username) {
+        Output output = userService.findUserByName(username);
+        if (output.isError()) {
+            throw new UserException(output.getError());
+        }
+        User actor = (User) output.getValue();
+        UserInput input = UserInput.builder(name)
+                .withUserId(userId)
+                .build();
+        output = userService.processCommand(UserCommandType.ID, actor, input);
+        if (output.isError()) {
+            throw new CommandException(output.getError());
+        }
+        return entityMapper.mapToUser(output.getValue());
     }
 
     public UserDTO createUser(InputUserDTO userDTO, String username) {
@@ -93,6 +112,22 @@ public class UserManagementService {
             throw new CommandException(output.getError());
         }
         return entityMapper.mapToUser(output.getValue());
+    }
+
+    public List<GroupDTO> getGroups(String name, UUID userId, String username) {
+        Output output = userService.findUserByName(username);
+        if (output.isError()) {
+            throw new UserException(output.getError());
+        }
+        User actor = (User) output.getValue();
+        UserInput input = UserInput.builder(name)
+                .withUserId(userId)
+                .build();
+        output = userService.processCommand(UserCommandType.GROUPS, actor, input);
+        if (output.isError()) {
+            throw new CommandException(output.getError());
+        }
+        return entityMapper.mapToGroupList(output.getValue());
     }
 
     public GroupDTO createGroup(GroupDTO groupDTO, String username) {

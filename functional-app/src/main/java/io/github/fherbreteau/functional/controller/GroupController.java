@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/groups")
@@ -15,6 +17,14 @@ public class GroupController {
 
     public GroupController(UserManagementService userManagementService) {
         this.userManagementService = userManagementService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(value = "name", required = false) String name,
+                                                    @RequestParam(value = "uid", required = false) UUID userId,
+                                                    Principal user) {
+        List<GroupDTO> response = userManagementService.getGroups(name, userId, user.getName());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

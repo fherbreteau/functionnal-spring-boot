@@ -13,6 +13,8 @@ public interface UserRepository {
 
     boolean exists(UUID userId);
 
+    User findById(UUID userId);
+
     User save(User user);
 
     User delete(User user);

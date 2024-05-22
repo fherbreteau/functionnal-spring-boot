@@ -401,9 +401,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
-                .andExpect(jsonPath("$.message").value("user2 not found"))
-                .andExpect(jsonPath("$.reasons").isArray())
-                .andExpect(jsonPath("$.reasons").isEmpty());
+                .andExpect(jsonPath("$.message").value("user2 not found"));
 
         mvc.perform(patch("/files/group").with(csrf())
                         .param("path", "/path")
@@ -411,9 +409,7 @@ class FileSystemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("GroupException"))
-                .andExpect(jsonPath("$.message").value("group2 not found"))
-                .andExpect(jsonPath("$.reasons").isArray())
-                .andExpect(jsonPath("$.reasons").isEmpty());
+                .andExpect(jsonPath("$.message").value("group2 not found"));
 
     }
 

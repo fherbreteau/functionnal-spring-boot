@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -16,6 +17,14 @@ public class UserController {
 
     public UserController(UserManagementService userManagementService) {
         this.userManagementService = userManagementService;
+    }
+
+    @GetMapping
+    public ResponseEntity<UserDTO> getUser(@RequestParam(value = "name", required = false) String name,
+                                           @RequestParam(value = "uid", required = false) UUID userId,
+                                           Principal user) {
+        UserDTO response = userManagementService.getUser(name, userId, user.getName());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

@@ -57,6 +57,23 @@ class UserControllerTest {
 
     @WithMockUser
     @Test
+    void shouldReturnCurrentUserWithGivenName() throws Exception {
+        given(userService.processCommand(eq(UserCommandType.ID), eq(actor),
+                argThat(argument -> Objects.isNull(argument.getName()) && Objects.isNull(argument.getUserId()))))
+                .willReturn(new Output(actor));
+        mvc.perform(get("/users").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.uid").value(actor.getUserId().toString()))
+                .andExpect(jsonPath("$.name").value("user"))
+                .andExpect(jsonPath("$.groups").isArray())
+                .andExpect(jsonPath("$.groups", hasSize(1)))
+                .andExpect(jsonPath("$.groups[0].gid").value(actor.getUserId().toString()))
+                .andExpect(jsonPath("$.groups[0].name").value("user"));
+    }
+
+    @WithMockUser
+    @Test
     void shouldCreateUserWithGivenParameters() throws Exception {
         UUID groupId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
@@ -153,6 +170,12 @@ class UserControllerTest {
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
         given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
+        mvc.perform(get("/users").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+
         InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
                 .content(mapper.writeValueAsBytes(dto))
@@ -190,6 +213,13 @@ class UserControllerTest {
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
                 .willReturn(new Output(Error.error("Command Failed")));
+
+        mvc.perform(get("/users").with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value("Command Failed"));
+
         InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
                 .content(mapper.writeValueAsBytes(dto))

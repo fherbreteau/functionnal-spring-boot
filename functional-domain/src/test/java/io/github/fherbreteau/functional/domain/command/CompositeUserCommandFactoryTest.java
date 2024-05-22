@@ -43,6 +43,10 @@ class CompositeUserCommandFactoryTest {
 
     public static Stream<Arguments> validCommandArguments() {
         return Stream.of(
+                // ID Command
+                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckUserGetCommand.class),
+                Arguments.of(UserCommandType.ID, UserInput.builder("user").build(), CheckUserGetCommand.class),
+                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckUserGetCommand.class),
                 // USERADD Command
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").build(), CheckUserAddCommand.class),
                 Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUserAddCommand.class),
@@ -60,6 +64,10 @@ class CompositeUserCommandFactoryTest {
                 Arguments.of(UserCommandType.USERDEL, UserInput.builder("user").withForce(true).build(), CheckUserDeleteCommand.class),
                 // PASSWD Command
                 Arguments.of(UserCommandType.PASSWD, UserInput.builder("user").withPassword("password").build(), CheckUserModifyCommand.class),
+                // GROUPS Command
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).build(), CheckGroupGetCommand.class),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder("user").build(), CheckGroupGetCommand.class),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).withGroupId(UUID.randomUUID()).build(), CheckGroupGetCommand.class),
                 // GROUPADD Command
                 Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").build(), CheckGroupAddCommand.class),
                 Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").withGroupId(UUID.randomUUID()).build(), CheckGroupAddCommand.class),
@@ -74,12 +82,14 @@ class CompositeUserCommandFactoryTest {
 
     public static Stream<Arguments> invalidCommandArguments() {
         return Stream.of(
+                Arguments.of(UserCommandType.ID, UserInput.builder("user").withUserId(UUID.randomUUID()).build()),
                 Arguments.of(UserCommandType.USERADD, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.USERMOD, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.USERMOD, UserInput.builder("name").build()),
                 Arguments.of(UserCommandType.USERDEL, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.PASSWD, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.PASSWD, UserInput.builder("user").build()),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder("user").withUserId(UUID.randomUUID()).build()),
                 Arguments.of(UserCommandType.GROUPADD, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.GROUPMOD, UserInput.builder(null).build()),
                 Arguments.of(UserCommandType.GROUPMOD, UserInput.builder("name").build()),
@@ -92,10 +102,12 @@ class CompositeUserCommandFactoryTest {
         List<UserCommandFactory> factories = List.of(
                 new GroupAddCommandFactory(),
                 new GroupDeleteCommandFactory(),
+                new GroupGetCommandFactory(),
                 new GroupModifyCommandFactory(),
                 new UnsupportedUserCommandFactory(),
                 new UserAddCommandFactory(),
                 new UserDeleteCommandFactory(),
+                new UserGetCommandFactory(),
                 new UserModifyCommandFactory()
         );
         factory = new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, passwordProtector, factories);

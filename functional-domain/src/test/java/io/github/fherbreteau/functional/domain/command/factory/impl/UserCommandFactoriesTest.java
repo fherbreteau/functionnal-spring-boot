@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -185,6 +186,25 @@ class UserCommandFactoriesTest {
     }
 
     @Test
+    void shouldGetAUserByName() {
+        UserCommandFactory factory = new UserGetCommandFactory();
+        UserInput input = UserInput.builder("user").build();
+        User user = User.builder("user").build();
+        given(userRepository.exists("user")).willReturn(true);
+        given(userRepository.findByName("user")).willReturn(user);
+
+        CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
+                passwordProtector, UserCommandType.ID, input);
+        Command<Output> executeCommand = checkCommand.execute(actor);
+        Output output = executeCommand.execute(actor);
+
+        assertThat(output).extracting(Output::getValue, type(User.class))
+                .isNotNull()
+                .extracting(User::getName)
+                .isEqualTo("user");
+    }
+
+    @Test
     void shouldCreateAGroupWithGivenInformation() {
         UserCommandFactory factory = new GroupAddCommandFactory();
         UUID groupId = UUID.randomUUID();
@@ -259,6 +279,27 @@ class UserCommandFactoriesTest {
 
         assertThat(output).extracting(Output::getValue, type(Group.class))
                 .isNotNull()
+                .extracting(Group::getName)
+                .isEqualTo("group");
+    }
+
+    @Test
+    void shouldGetGroupsOfAUserByName() {
+        UserCommandFactory factory = new GroupGetCommandFactory();
+        UserInput input = UserInput.builder("user").build();
+        User user = User.builder("user").withGroup(Group.builder("group").build()).build();
+        given(userRepository.exists("user")).willReturn(true);
+        given(userRepository.findByName("user")).willReturn(user);
+
+        CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
+                passwordProtector, UserCommandType.GROUPS, input);
+        Command<Output> executeCommand = checkCommand.execute(actor);
+        Output output = executeCommand.execute(actor);
+
+        assertThat(output).extracting(Output::getValue, list(Group.class))
+                .isNotNull()
+                .hasSize(1)
+                .first()
                 .extracting(Group::getName)
                 .isEqualTo("group");
     }
