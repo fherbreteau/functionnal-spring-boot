@@ -20,6 +20,7 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+    private UserService userService;
     @Mock
     private UserManager userManager;
     @Mock
@@ -30,8 +31,6 @@ class UserServiceTest {
     private Command<Output> executeCommand;
     @Mock
     private User actor;
-
-    private UserService userService;
 
     @BeforeEach
     public void setup() {

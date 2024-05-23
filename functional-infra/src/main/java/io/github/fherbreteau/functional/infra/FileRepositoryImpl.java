@@ -28,6 +28,11 @@ public class FileRepositoryImpl implements FileRepository, ContentRepository {
     }
 
     @Override
+    public <I extends Item> I delete(I item) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
     public List<Item> findByParentAndUser(Folder folder, User actor) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
@@ -44,6 +49,11 @@ public class FileRepositoryImpl implements FileRepository, ContentRepository {
 
     @Override
     public void writeContent(File item, InputStream content) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public void deleteContent(File item) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }

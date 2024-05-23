@@ -4,10 +4,7 @@ import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,13 +30,15 @@ class UserCommandFactoriesTest {
     @Mock
     private UserChecker userChecker;
     @Mock
+    private UserUpdater userUpdater;
+    @Mock
     private PasswordProtector passwordProtector;
     @Mock
     private User actor;
 
     @Test
     void shouldCreateAUserWithGivenInformation() {
-        UserCommandFactory factory = new UserAddCommandFactory();
+        UserCommandFactory factory = new CreateUserCommandFactory();
         UUID userId = UUID.randomUUID();
         UUID groupId = UUID.randomUUID();
         UserInput input = UserInput.builder("user")
@@ -61,9 +60,10 @@ class UserCommandFactoriesTest {
                 .willAnswer(invocation -> invocation.getArgument(0));
         given(passwordProtector.validate("password")).willReturn(List.of());
         given(passwordProtector.protect("password")).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.createUser(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.USERADD, input);
+                userUpdater, passwordProtector, UserCommandType.USERADD, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -84,7 +84,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldModifyAUserWithGivenInformation() {
-        UserCommandFactory factory = new UserModifyCommandFactory();
+        UserCommandFactory factory = new UpdateUserCommandFactory();
         UUID userId = UUID.randomUUID();
         UUID groupId = UUID.randomUUID();
         UserInput input = UserInput.builder("user")
@@ -109,9 +109,10 @@ class UserCommandFactoriesTest {
         given(groupRepository.findById(groupId)).willReturn(group);
         given(passwordProtector.validate("password")).willReturn(List.of());
         given(passwordProtector.protect("password")).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.USERMOD, input);
+                userUpdater, passwordProtector, UserCommandType.USERMOD, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -132,7 +133,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldModifyAUserWithGivenGroupName() {
-        UserCommandFactory factory = new UserModifyCommandFactory();
+        UserCommandFactory factory = new UpdateUserCommandFactory();
         UUID groupId = UUID.randomUUID();
         UserInput input = UserInput.builder("user")
                 .withGroups(List.of("group1"))
@@ -147,9 +148,10 @@ class UserCommandFactoriesTest {
         given(groupRepository.exists("group1")).willReturn(true);
         given(groupRepository.findByName("group1")).willReturn(group);
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.USERMOD, input);
+                userUpdater, passwordProtector, UserCommandType.USERMOD, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -165,7 +167,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldDeleteAnUser() {
-        UserCommandFactory factory = new UserDeleteCommandFactory();
+        UserCommandFactory factory = new DeleteUserCommandFactory();
         UserInput input = UserInput.builder("user").build();
         User user = User.builder("user").build();
 
@@ -173,9 +175,10 @@ class UserCommandFactoriesTest {
         given(userRepository.exists("user")).willReturn(true);
         given(userRepository.findByName("user")).willReturn(user);
         given(userRepository.delete(user)).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.deleteUser(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.USERDEL, input);
+                userUpdater, passwordProtector, UserCommandType.USERDEL, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -187,14 +190,14 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldGetAUserByName() {
-        UserCommandFactory factory = new UserGetCommandFactory();
+        UserCommandFactory factory = new GetUserCommandFactory();
         UserInput input = UserInput.builder("user").build();
         User user = User.builder("user").build();
         given(userRepository.exists("user")).willReturn(true);
         given(userRepository.findByName("user")).willReturn(user);
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.ID, input);
+                userUpdater, passwordProtector, UserCommandType.ID, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -206,7 +209,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldCreateAGroupWithGivenInformation() {
-        UserCommandFactory factory = new GroupAddCommandFactory();
+        UserCommandFactory factory = new CreateGroupCommandFactory();
         UUID groupId = UUID.randomUUID();
         UserInput input = UserInput.builder("group").withGroupId(groupId).build();
 
@@ -214,9 +217,10 @@ class UserCommandFactoriesTest {
         given(groupRepository.exists("group")).willReturn(false);
         given(groupRepository.exists(groupId)).willReturn(false);
         given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.createGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.GROUPADD, input);
+                userUpdater, passwordProtector, UserCommandType.GROUPADD, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -232,7 +236,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldModifyAGroupWithGivenInformation() {
-        UserCommandFactory factory = new GroupModifyCommandFactory();
+        UserCommandFactory factory = new UpdateGroupCommandFactory();
         UUID groupId = UUID.randomUUID();
         UserInput input = UserInput.builder("group").withGroupId(groupId).withNewName("group1").build();
 
@@ -244,9 +248,10 @@ class UserCommandFactoriesTest {
         given(groupRepository.exists(groupId)).willReturn(false);
         given(groupRepository.findByName("group")).willReturn(group);
         given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.GROUPMOD, input);
+                userUpdater, passwordProtector, UserCommandType.GROUPMOD, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -262,7 +267,7 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldDeleteAGroup() {
-        UserCommandFactory factory = new GroupDeleteCommandFactory();
+        UserCommandFactory factory = new DeleteGroupCommandFactory();
         UserInput input = UserInput.builder("group").withForce(true).build();
         Group group = Group.builder("group").build();
 
@@ -271,9 +276,10 @@ class UserCommandFactoriesTest {
         given(groupRepository.findByName("group")).willReturn(group);
         given(userRepository.removeGroupFromUser(group)).willAnswer(invocation -> invocation.getArgument(0));
         given(groupRepository.delete(group)).willAnswer(invocation -> invocation.getArgument(0));
+        given(userUpdater.deleteGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.GROUPDEL, input);
+                userUpdater, passwordProtector, UserCommandType.GROUPDEL, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 
@@ -285,14 +291,14 @@ class UserCommandFactoriesTest {
 
     @Test
     void shouldGetGroupsOfAUserByName() {
-        UserCommandFactory factory = new GroupGetCommandFactory();
+        UserCommandFactory factory = new GetGroupCommandFactory();
         UserInput input = UserInput.builder("user").build();
         User user = User.builder("user").withGroup(Group.builder("group").build()).build();
         given(userRepository.exists("user")).willReturn(true);
         given(userRepository.findByName("user")).willReturn(user);
 
         CheckCommand<Output> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
-                passwordProtector, UserCommandType.GROUPS, input);
+                userUpdater, passwordProtector, UserCommandType.GROUPS, input);
         Command<Output> executeCommand = checkCommand.execute(actor);
         Output output = executeCommand.execute(actor);
 

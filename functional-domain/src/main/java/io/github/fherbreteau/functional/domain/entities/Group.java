@@ -16,10 +16,6 @@ public final class Group {
         name = builder.name;
     }
 
-    public static Group root() {
-        return builder("root").withGroupId(ROOT).build();
-    }
-
     public UUID getGroupId() {
         return groupId;
     }
@@ -32,12 +28,8 @@ public final class Group {
         return Objects.equals(ROOT, groupId);
     }
 
-    public Group withGroupId(UUID groupId) {
-        return Group.builder(name).withGroupId(groupId).build();
-    }
-
-    public Group withName(String name) {
-        return Group.builder(name).withGroupId(groupId).build();
+    public Builder copy() {
+        return new Builder(this);
     }
 
     @Override
@@ -62,16 +54,29 @@ public final class Group {
         return Objects.hash(groupId, name);
     }
 
+    public static Group root() {
+        return builder("root").withGroupId(ROOT).build();
+    }
+
     public static Builder builder(String name) {
-        return new Builder(name);
+        return new Builder().withName(name);
     }
 
     public static final class Builder {
-        private final String name;
+        private String name;
         private UUID groupId;
 
-        private Builder(String name) {
+        private Builder() {
+        }
+
+        private Builder(Group group) {
+            name = group.name;
+            groupId = group.groupId;
+        }
+
+        public Builder withName(String name) {
             this.name = name;
+            return this;
         }
 
         public Builder withGroupId(UUID groupId) {

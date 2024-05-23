@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.util.ArrayList;
@@ -15,17 +16,16 @@ import java.util.List;
 
 public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeCommand> {
 
+    private final AccessUpdater accessUpdater;
     private final Item item;
-
     private final AccessRight ownerAccess;
-
     private final AccessRight groupAccess;
-
     private final AccessRight otherAccess;
 
-    public CheckChangeModeCommand(FileRepository repository, AccessChecker accessChecker, Item item,
-                                     AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
+    public CheckChangeModeCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+                                  Item item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessChecker);
+        this.accessUpdater = accessUpdater;
         this.item = item;
         this.ownerAccess = ownerAccess;
         this.groupAccess = groupAccess;
@@ -43,7 +43,7 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeC
 
     @Override
     protected ChangeModeCommand createSuccess() {
-        return new ChangeModeCommand(repository, item, ownerAccess, groupAccess, otherAccess);
+        return new ChangeModeCommand(repository, accessUpdater, item, ownerAccess, groupAccess, otherAccess);
     }
 
     @Override

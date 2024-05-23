@@ -43,24 +43,8 @@ public final class User {
         return ROOT.equals(userId);
     }
 
-    public User withUserId(UUID userId) {
-        return User.builder(name).withUserId(userId).withGroups(groups).build();
-    }
-
-    public User withName(String name) {
-        return User.builder(name).withUserId(userId).withGroups(groups).build();
-    }
-
-    public User withGroup(Group group) {
-        return User.builder(name).withUserId(userId).withGroups(groups).withGroup(group).build();
-    }
-
-    public User withGroups(List<Group> groups) {
-        return User.builder(name).withUserId(userId).withGroups(groups).build();
-    }
-
-    public User addGroups(List<Group> groups) {
-        return User.builder(name).withUserId(userId).withGroups(this.groups).addGroups(groups).build();
+    public Builder copy() {
+        return new Builder(this);
     }
 
     @Override
@@ -85,7 +69,7 @@ public final class User {
     }
 
     public static Builder builder(String name) {
-        return new Builder(name);
+        return new Builder().withName(name);
     }
 
     public static User root() {
@@ -96,12 +80,22 @@ public final class User {
     }
 
     public static final class Builder {
-        private final String name;
+        private String name;
         private UUID userId;
         private List<Group> groups;
 
-        private Builder(String name) {
+        private Builder() {
+        }
+
+        private Builder(User user) {
+            name = user.name;
+            userId = user.userId;
+            groups = List.copyOf(user.groups);
+        }
+
+        public Builder withName(String name) {
             this.name = name;
+            return this;
         }
 
         public Builder withUserId(UUID userId) {

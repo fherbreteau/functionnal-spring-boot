@@ -202,4 +202,22 @@ public class FileSystemService {
         }
         return entityMapper.mapStream(output.getValue(), itemInput.getContentType());
     }
+
+    public ItemDTO delete(String path, String username) {
+        Output output = userService.findUserByName(username);
+        if (output.isError()) {
+            throw new UserException(output.getError());
+        }
+        User actor = (User) output.getValue();
+        Path itemPath = fileService.getPath(path, actor);
+        if (itemPath.isError()) {
+            throw new PathException(itemPath.getError());
+        }
+        ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
+        output = fileService.processCommand(ItemCommandType.DELETE, actor, itemInput);
+        if (output.isError()) {
+            throw new CommandException(output.getError());
+        }
+        return entityMapper.mapToItem(output.getValue());
+    }
 }

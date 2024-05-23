@@ -4,6 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,9 @@ class CreateFolderCommandTest {
     private CreateFolderCommand command;
     @Mock
     private FileRepository repository;
+    @Mock
+    private AccessUpdater accessUpdater;
+
     private Folder parent;
     private User actor;
 
@@ -36,13 +40,14 @@ class CreateFolderCommandTest {
                 .withName("parent")
                 .build();
         actor = User.builder("actor").build();
-        command = new CreateFolderCommand(repository, "folder", parent);
+        command = new CreateFolderCommand(repository, accessUpdater, "folder", parent);
     }
 
     @Test
     void shouldCreateFolderWhenExecutingCommand() {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.createItem(any(Folder.class))).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
         Output result = command.execute(actor);
         //THEN

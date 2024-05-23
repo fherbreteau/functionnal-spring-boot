@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
-
     private FileService fileService;
     @Mock
     private CompositeItemCommandFactory commandFactory;

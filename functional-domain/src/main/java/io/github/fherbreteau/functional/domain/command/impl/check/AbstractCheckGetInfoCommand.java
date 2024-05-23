@@ -6,10 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +20,9 @@ public abstract class AbstractCheckGetInfoCommand<C extends Command<Output>> ext
     private final UserCommandType type;
 
     protected AbstractCheckGetInfoCommand(UserRepository userRepository, GroupRepository groupRepository,
-                                          UserChecker userChecker, PasswordProtector passwordProtector, String name,
-                                          UUID userId, UserCommandType type) {
-        super(userRepository, groupRepository, userChecker, passwordProtector);
+                                          UserChecker userChecker, UserUpdater userUpdater, String name, UUID userId,
+                                          UserCommandType type) {
+        super(userRepository, groupRepository, userChecker, userUpdater);
         this.name = name;
         this.userId = userId;
         this.type = type;

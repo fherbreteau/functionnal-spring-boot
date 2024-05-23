@@ -5,22 +5,23 @@ import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CreateFileCommand extends AbstractSuccessItemCommand {
+public class CreateFileCommand extends AbstractModifyItemCommand {
 
     private final String name;
     private final Folder parent;
 
-    public CreateFileCommand(FileRepository repository, String name, Folder parent) {
-        super(repository);
+    public CreateFileCommand(FileRepository repository, AccessUpdater accessUpdater, String name, Folder parent) {
+        super(repository, accessUpdater);
         this.name = name;
         this.parent = parent;
     }
 
     @Override
     public Output execute(User actor) {
-        File newFolder = File.builder()
+        File newFile = File.builder()
                 .withName(name)
                 .withParent(parent)
                 .withOwner(actor)
@@ -28,6 +29,6 @@ public class CreateFileCommand extends AbstractSuccessItemCommand {
                 .withGroupAccess(AccessRight.readOnly())
                 .withOtherAccess(AccessRight.none())
                 .build();
-        return new Output(repository.save(newFolder));
+        return new Output(repository.save(accessUpdater.createItem(newFile)));
     }
 }

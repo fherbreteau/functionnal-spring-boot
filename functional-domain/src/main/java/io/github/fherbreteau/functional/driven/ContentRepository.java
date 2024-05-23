@@ -9,4 +9,6 @@ public interface ContentRepository {
     InputStream readContent(File item);
 
     void writeContent(File item, InputStream content);
+
+    void deleteContent(File item);
 }

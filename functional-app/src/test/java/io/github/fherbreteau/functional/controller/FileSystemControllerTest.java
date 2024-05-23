@@ -251,6 +251,21 @@ class FileSystemControllerTest {
 
     @WithMockUser
     @Test
+    void shouldDeleteItemWhenFileServiceCanDeleteFile() throws Exception {
+        given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
+        given(fileService.processCommand(eq(ItemCommandType.DELETE), eq(actor), argThat(argument ->
+                Objects.equals(argument.getItem(), file))))
+                .willReturn(new Output(file));
+        mvc.perform(delete("/files")
+                        .with(csrf())
+                        .param("path", "/file"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value("file"));
+    }
+
+    @WithMockUser
+    @Test
     void shouldReturnAnErrorWhenUserDoesNotExists() throws Exception {
         given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
 
@@ -312,6 +327,13 @@ class FileSystemControllerTest {
                         .file("file", "content".getBytes())
                         .with(csrf())
                         .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("UserException"))
+                .andExpect(jsonPath("$.message").value("user not found"));
+        mvc.perform(delete("/files")
+                .with(csrf())
+                .param("path", "/file"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
@@ -381,6 +403,13 @@ class FileSystemControllerTest {
                 .file("file", "content".getBytes())
                 .with(csrf())
                 .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("PathException"))
+                .andExpect(jsonPath("$.message").value("path not found"));
+        mvc.perform(delete("/files")
+                        .with(csrf())
+                        .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
@@ -504,6 +533,16 @@ class FileSystemControllerTest {
 
         mvc.perform(multipart("/files/upload")
                         .file("file", "content".getBytes())
+                        .with(csrf())
+                        .param("path", "/path"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.type").value("CommandException"))
+                .andExpect(jsonPath("$.message").value("Command Failed"))
+                .andExpect(jsonPath("$.reasons").isArray())
+                .andExpect(jsonPath("$.reasons", hasSize(1)))
+                .andExpect(jsonPath("$.reasons[0]").value("Error"));
+        mvc.perform(delete("/files")
                         .with(csrf())
                         .param("path", "/path"))
                 .andExpect(status().isBadRequest())

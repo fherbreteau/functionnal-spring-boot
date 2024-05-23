@@ -2,6 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.verify;
 class ChangeModeCommandTest {
     @Mock
     private FileRepository repository;
+    @Mock
+    private AccessUpdater accessUpdater;
     @Mock
     private User actor;
 
@@ -50,7 +53,8 @@ class ChangeModeCommandTest {
                 .withGroupAccess(null)
                 .withOtherAccess(null)
                 .build();
-        ChangeModeCommand command = new ChangeModeCommand(repository, item, ownerAccess, groupAccess, otherAccess);
+        ChangeModeCommand command = new ChangeModeCommand(repository, accessUpdater, item, ownerAccess, groupAccess,
+                otherAccess);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
         Output result = command.execute(actor);

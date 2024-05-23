@@ -125,7 +125,7 @@ class UserGroupTest {
         Group group3 = Group.builder("group3").withGroupId(groupId3).build();
 
         User user = User.builder("user").withGroups(List.of(group1, group2)).build();
-        user = user.addGroups(List.of(group2, group3));
+        user = user.copy().addGroups(List.of(group2, group3)).build();
 
         assertThat(user).extracting(User::getGroups, list(Group.class))
                 .containsExactly(group1, group2, group3);

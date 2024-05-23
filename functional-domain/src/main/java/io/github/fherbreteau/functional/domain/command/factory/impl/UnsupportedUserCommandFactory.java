@@ -14,9 +14,10 @@ public class UnsupportedUserCommandFactory implements UserCommandFactory {
 
     @Override
     public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                              UserChecker userChecker, PasswordProtector passwordProtector,
-                                              UserCommandType type, UserInput userInput) {
-        return new CheckUnsupportedUserCommand(repository, groupRepository, userChecker, passwordProtector, type,
+                                              UserChecker userChecker, UserUpdater userUpdater,
+                                              PasswordProtector passwordProtector, UserCommandType type,
+                                              UserInput userInput) {
+        return new CheckUnsupportedUserCommand(repository, groupRepository, userChecker, userUpdater, type,
                 userInput);
     }
 

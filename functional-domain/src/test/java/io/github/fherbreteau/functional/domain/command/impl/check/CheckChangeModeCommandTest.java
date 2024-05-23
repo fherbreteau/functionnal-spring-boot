@@ -9,6 +9,7 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,12 @@ class CheckChangeModeCommandTest {
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
-    private File item;
+    @Mock
+    private AccessUpdater accessUpdater;
     @Mock
     private User actor;
+
+    private File item;
 
     @BeforeEach
     public void setup() {
@@ -40,7 +44,8 @@ class CheckChangeModeCommandTest {
         AccessRight ownerAccess = AccessRight.full();
         AccessRight groupAccess = AccessRight.full();
         AccessRight otherAccess = AccessRight.full();
-        command = new CheckChangeModeCommand(repository, accessChecker, item, ownerAccess, groupAccess, otherAccess);
+        command = new CheckChangeModeCommand(repository, accessChecker, accessUpdater, item, ownerAccess, groupAccess,
+                otherAccess);
     }
 
     @Test

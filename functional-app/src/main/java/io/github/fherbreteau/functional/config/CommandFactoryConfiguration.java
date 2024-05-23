@@ -28,6 +28,11 @@ public class CommandFactoryConfiguration {
     }
 
     @Bean
+    public DeleteItemCommandFactory deleteItemCommandFactory() {
+        return new DeleteItemCommandFactory();
+    }
+
+    @Bean
     public DownloadCommandFactory downloadCommandFactory() {
         return new DownloadCommandFactory();
     }
@@ -48,18 +53,18 @@ public class CommandFactoryConfiguration {
     }
 
     @Bean
-    public GroupAddCommandFactory groupAddCommandFactory() {
-        return new GroupAddCommandFactory();
+    public CreateGroupCommandFactory groupAddCommandFactory() {
+        return new CreateGroupCommandFactory();
     }
 
     @Bean
-    public GroupDeleteCommandFactory groupDeleteCommandFactory() {
-        return new GroupDeleteCommandFactory();
+    public DeleteGroupCommandFactory groupDeleteCommandFactory() {
+        return new DeleteGroupCommandFactory();
     }
 
     @Bean
-    public GroupModifyCommandFactory groupModifyCommandFactory() {
-        return new GroupModifyCommandFactory();
+    public UpdateGroupCommandFactory groupModifyCommandFactory() {
+        return new UpdateGroupCommandFactory();
     }
 
     @Bean
@@ -68,17 +73,17 @@ public class CommandFactoryConfiguration {
     }
 
     @Bean
-    public UserAddCommandFactory userAddCommandFactory() {
-        return new UserAddCommandFactory();
+    public CreateUserCommandFactory userAddCommandFactory() {
+        return new CreateUserCommandFactory();
     }
 
     @Bean
-    public UserDeleteCommandFactory userDeleteCommandFactory() {
-        return new UserDeleteCommandFactory();
+    public DeleteUserCommandFactory userDeleteCommandFactory() {
+        return new DeleteUserCommandFactory();
     }
 
     @Bean
-    public UserModifyCommandFactory userModifyCommandFactory() {
-        return new UserModifyCommandFactory();
+    public UpdateUserCommandFactory userModifyCommandFactory() {
+        return new UpdateUserCommandFactory();
     }
 }
