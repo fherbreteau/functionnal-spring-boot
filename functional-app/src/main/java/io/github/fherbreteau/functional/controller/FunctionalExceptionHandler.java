@@ -48,4 +48,13 @@ public class FunctionalExceptionHandler {
                 .build();
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ErrorDTO> handleUnsupportedOperationException(UnsupportedOperationException e) {
+        ErrorDTO error = ErrorDTO.builder()
+                .withType(e.getClass().getSimpleName())
+                .withMessage(e.getMessage())
+                .build();
+        return ResponseEntity.internalServerError().body(error);
+    }
 }

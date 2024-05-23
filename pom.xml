@@ -167,6 +167,11 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Application.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
             <plugin>
