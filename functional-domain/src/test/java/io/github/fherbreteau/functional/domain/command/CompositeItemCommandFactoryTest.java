@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.command.factory.impl.*;
 import io.github.fherbreteau.functional.domain.command.impl.check.*;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,10 +28,11 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class CompositeItemCommandFactoryTest {
-
     private CompositeItemCommandFactory factory;
     @Mock
     private AccessChecker accessChecker;
+    @Mock
+    private AccessUpdater accessUpdater;
     @Mock
     private FileRepository repository;
     @Mock
@@ -50,7 +52,9 @@ class CompositeItemCommandFactoryTest {
                 Arguments.of(ItemCommandType.CHGRP, ItemInput.builder(file).withGroup(group).build(), CheckChangeGroupCommand.class),
                 Arguments.of(ItemCommandType.CHMOD, ItemInput.builder(file).withOwnerAccess(AccessRight.full()).build(), CheckChangeModeCommand.class),
                 Arguments.of(ItemCommandType.DOWNLOAD, ItemInput.builder(file).build(), CheckDownloadCommand.class),
-                Arguments.of(ItemCommandType.UPLOAD, ItemInput.builder(file).withContent(stream).withContentType("content").build(), CheckUploadCommand.class)
+                Arguments.of(ItemCommandType.UPLOAD, ItemInput.builder(file).withContent(stream).withContentType("content").build(), CheckUploadCommand.class),
+                Arguments.of(ItemCommandType.DELETE, ItemInput.builder(folder).build(), CheckDeleteItemCommand.class),
+                Arguments.of(ItemCommandType.DELETE, ItemInput.builder(file).build(), CheckDeleteItemCommand.class)
         );
     }
 
@@ -77,7 +81,8 @@ class CompositeItemCommandFactoryTest {
                 Arguments.of(ItemCommandType.CHGRP, ItemInput.builder(null).build()),
                 Arguments.of(ItemCommandType.CHMOD, ItemInput.builder(null).build()),
                 Arguments.of(ItemCommandType.DOWNLOAD, ItemInput.builder(null).build()),
-                Arguments.of(ItemCommandType.UPLOAD, ItemInput.builder(null).withContent(stream).withContentType("content").build())
+                Arguments.of(ItemCommandType.UPLOAD, ItemInput.builder(null).withContent(stream).withContentType("content").build()),
+                Arguments.of(ItemCommandType.DELETE, ItemInput.builder(null).build())
         );
     }
 
@@ -88,16 +93,18 @@ class CompositeItemCommandFactoryTest {
                 new ChangeGroupCommandFactory(),
                 new ChangeModeCommandFactory(),
                 new CreateItemCommandFactory(),
+                new DeleteItemCommandFactory(),
                 new DownloadCommandFactory(),
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory(),
                 new UnsupportedItemCommandFactory());
-        factory = new CompositeItemCommandFactory(repository, accessChecker, contentRepository, factories);
+        factory = new CompositeItemCommandFactory(repository, contentRepository, accessChecker, accessUpdater, factories);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
     @MethodSource("validCommandArguments")
-    void testCommandCreatedForSpecificTypeAndValidInput(ItemCommandType type, ItemInput itemInput, Class<? extends Command<Command<Output>>> expected) {
+    void testCommandCreatedForSpecificTypeAndValidInput(ItemCommandType type, ItemInput itemInput,
+                                                        Class<? extends Command<Command<Output>>> expected) {
         Command<?> command = factory.createCommand(type, itemInput);
 
         assertThat(command).isNotNull().isInstanceOf(expected);
@@ -118,7 +125,9 @@ class CompositeItemCommandFactoryTest {
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory()
         );
-        List<ItemCommandFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(ItemCommandFactory::order)).toList();
+        List<ItemCommandFactory> sortedFactories = factories.stream()
+                .sorted(Comparator.comparing(ItemCommandFactory::order))
+                .toList();
         assertThat(sortedFactories).last(type(ItemCommandFactory.class))
                 .isInstanceOf(UnsupportedItemCommandFactory.class);
 

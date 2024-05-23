@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +26,18 @@ class CheckChangeGroupCommandTest {
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
-    private File item;
+    @Mock
+    private AccessUpdater accessUpdater;
     @Mock
     private User actor;
+
+    private File item;
 
     @BeforeEach
     public void setup() {
         item = File.builder().withName("name").withOwner(User.builder("user").build()).build();
         Group group = Group.builder("group").build();
-        command = new CheckChangeGroupCommand(repository, accessChecker, item, group);
+        command = new CheckChangeGroupCommand(repository, accessChecker, accessUpdater, item, group);
     }
 
     @Test

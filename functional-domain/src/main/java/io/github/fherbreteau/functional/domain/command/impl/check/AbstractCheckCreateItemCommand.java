@@ -4,6 +4,7 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.util.ArrayList;
@@ -12,9 +13,12 @@ import java.util.List;
 public abstract class AbstractCheckCreateItemCommand<C extends Command<Output>> extends AbstractCheckItemCommand<C> {
     protected final String name;
     protected final Folder parent;
+    protected final AccessUpdater accessUpdater;
 
-    protected AbstractCheckCreateItemCommand(FileRepository repository, AccessChecker accessChecker, String name, Folder parent) {
+    protected AbstractCheckCreateItemCommand(FileRepository repository, AccessChecker accessChecker,
+                                             AccessUpdater accessUpdater, String name, Folder parent) {
         super(repository, accessChecker);
+        this.accessUpdater = accessUpdater;
         this.name = name;
         this.parent = parent;
     }

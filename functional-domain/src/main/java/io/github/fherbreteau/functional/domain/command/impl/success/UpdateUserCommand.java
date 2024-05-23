@@ -1,0 +1,68 @@
+package io.github.fherbreteau.functional.domain.command.impl.success;
+
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
+import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.UserUpdater;
+
+import java.util.List;
+import java.util.UUID;
+
+import static java.util.Objects.nonNull;
+
+public class UpdateUserCommand extends AbstractModifyUserCommand {
+    private final PasswordProtector passwordProtector;
+    private final String name;
+    private final UUID userId;
+    private final String newName;
+    private final String password;
+    private final UUID groupId;
+    private final List<String> groups;
+    private final boolean append;
+
+    public UpdateUserCommand(UserRepository userRepository, GroupRepository groupRepository,
+                             UserUpdater userUpdater, PasswordProtector passwordProtector, UserInput input) {
+        super(userRepository, groupRepository, userUpdater);
+        this.passwordProtector = passwordProtector;
+        this.name = input.getName();
+        this.userId = input.getUserId();
+        this.newName = input.getNewName();
+        this.password = input.getPassword();
+        this.groupId = input.getGroupId();
+        this.groups = input.getGroups();
+        this.append = input.isAppend();
+    }
+
+    @Override
+    public Output execute(User actor) {
+        User user = userRepository.findByName(name);
+        User.Builder builder = user.copy();
+        if (nonNull(userId)) {
+            builder.withUserId(userId);
+        }
+        if (nonNull(newName)) {
+            builder.withName(newName);
+        }
+        if (nonNull(groupId)) {
+            Group group = groupRepository.findById(groupId);
+            builder.withGroup(group);
+        }
+        if (!groups.isEmpty()) {
+            List<Group> newGroups = groups.stream().map(groupRepository::findByName).toList();
+            if (append) {
+                builder.addGroups(newGroups);
+            } else {
+                builder.withGroups(newGroups);
+            }
+        }
+        User newUser = userRepository.save(userUpdater.updateUser(user, builder.build()));
+        if (nonNull(password)) {
+            newUser = userRepository.updatePassword(newUser, passwordProtector.protect(password));
+        }
+        return new Output(newUser);
+    }
+}

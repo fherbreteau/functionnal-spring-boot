@@ -30,7 +30,6 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class CompositePathFactoryTest {
-
     private CompositePathFactory compositePathFactory;
     @Mock
     private FileRepository repository;

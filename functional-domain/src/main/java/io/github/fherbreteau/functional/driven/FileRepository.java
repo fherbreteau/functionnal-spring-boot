@@ -15,4 +15,6 @@ public interface FileRepository {
     List<Item> findByParentAndUser(Folder folder, User actor);
 
     <I extends Item> Optional<I> findByNameAndParentAndUser(String name, Folder folder, User actor);
+
+    <I extends Item> I delete(I item);
 }

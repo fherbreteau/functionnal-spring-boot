@@ -4,12 +4,14 @@ import io.github.fherbreteau.functional.domain.command.impl.success.CreateFileCo
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 public class CheckCreateFileCommand extends AbstractCheckCreateItemCommand<CreateFileCommand> {
 
-    public CheckCreateFileCommand(FileRepository repository, AccessChecker accessChecker, String name, Folder parent) {
-        super(repository, accessChecker, name, parent);
+    public CheckCreateFileCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+                                  String name, Folder parent) {
+        super(repository, accessChecker, accessUpdater, name, parent);
     }
 
     @Override
@@ -19,7 +21,7 @@ public class CheckCreateFileCommand extends AbstractCheckCreateItemCommand<Creat
 
     @Override
     protected CreateFileCommand createSuccess() {
-        return new CreateFileCommand(repository, name, parent);
+        return new CreateFileCommand(repository, accessUpdater, name, parent);
     }
 
     @Override

@@ -9,7 +9,8 @@ public interface UserCommandFactory {
     boolean supports(UserCommandType type, UserInput userInput);
 
     CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                       UserChecker userChecker, PasswordProtector passwordProtector, UserCommandType type, UserInput userInput);
+                                       UserChecker userChecker, UserUpdater userUpdater,
+                                       PasswordProtector passwordProtector, UserCommandType type, UserInput userInput);
 
     default int order() {
         return 0;

@@ -22,5 +22,7 @@ class ContentRepositoryTest {
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.writeContent(null, nullInputStream()))
                 .isInstanceOf(UnsupportedOperationException.class);
+        assertThatThrownBy(() -> repository.deleteContent(null))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 }

@@ -7,6 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeModeCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
@@ -22,10 +23,10 @@ public class ChangeModeCommandFactory implements ItemCommandFactory {
     }
 
     @Override
-    public CheckCommand<Output> createCommand(FileRepository repository, AccessChecker accessChecker,
-                                              ContentRepository contentRepository, ItemCommandType type,
-                                              ItemInput itemInput) {
-        return new CheckChangeModeCommand(repository, accessChecker, itemInput.getItem(), itemInput.getOwnerAccess(),
-                itemInput.getGroupAccess(), itemInput.getOtherAccess());
+    public CheckCommand<Output> createCommand(FileRepository repository, ContentRepository contentRepository,
+                                              AccessChecker accessChecker, AccessUpdater accessUpdater,
+                                              ItemCommandType type, ItemInput itemInput) {
+        return new CheckChangeModeCommand(repository, accessChecker, accessUpdater, itemInput.getItem(),
+                itemInput.getOwnerAccess(), itemInput.getGroupAccess(), itemInput.getOtherAccess());
     }
 }

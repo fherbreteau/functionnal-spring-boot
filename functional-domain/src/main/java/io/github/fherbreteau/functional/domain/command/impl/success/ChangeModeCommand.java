@@ -5,9 +5,10 @@ import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBui
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeModeCommand extends AbstractSuccessItemCommand {
+public class ChangeModeCommand extends AbstractModifyItemCommand {
 
     private final Item item;
 
@@ -17,9 +18,9 @@ public class ChangeModeCommand extends AbstractSuccessItemCommand {
 
     private final AccessRight otherAccess;
 
-    public ChangeModeCommand(FileRepository repository, Item item, AccessRight ownerAccess,
+    public ChangeModeCommand(FileRepository repository, AccessUpdater accessUpdater, Item item, AccessRight ownerAccess,
                              AccessRight groupAccess, AccessRight otherAccess) {
-        super(repository);
+        super(repository, accessUpdater);
         this.item = item;
         this.ownerAccess = ownerAccess;
         this.groupAccess = groupAccess;
@@ -31,12 +32,15 @@ public class ChangeModeCommand extends AbstractSuccessItemCommand {
         AbstractBuilder<?, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);
+            accessUpdater.updateOwnerAccess(builder.build(), item.getOwnerAccess());
         }
         if (groupAccess != null) {
             builder.withGroupAccess(groupAccess);
+            accessUpdater.updateGroupAccess(builder.build(), item.getGroupAccess());
         }
         if (otherAccess != null) {
             builder.withOtherAccess(otherAccess);
+            accessUpdater.updateOtherAccess(builder.build(), item.getOtherAccess());
         }
         return new Output(repository.save(builder.build()));
     }

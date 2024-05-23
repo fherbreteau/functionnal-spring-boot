@@ -7,10 +7,7 @@ import io.github.fherbreteau.functional.domain.command.impl.check.*;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,10 +27,11 @@ import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 @ExtendWith(MockitoExtension.class)
 class CompositeUserCommandFactoryTest {
-
     private CompositeUserCommandFactory factory;
     @Mock
     private UserChecker userChecker;
+    @Mock
+    private UserUpdater userUpdater;
     @Mock
     private PasswordProtector passwordProtector;
     @Mock
@@ -44,39 +42,39 @@ class CompositeUserCommandFactoryTest {
     public static Stream<Arguments> validCommandArguments() {
         return Stream.of(
                 // ID Command
-                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckUserGetCommand.class),
-                Arguments.of(UserCommandType.ID, UserInput.builder("user").build(), CheckUserGetCommand.class),
-                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckUserGetCommand.class),
+                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckGetUserCommand.class),
+                Arguments.of(UserCommandType.ID, UserInput.builder("user").build(), CheckGetUserCommand.class),
+                Arguments.of(UserCommandType.ID, UserInput.builder(null).build(), CheckGetUserCommand.class),
                 // USERADD Command
-                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").build(), CheckUserAddCommand.class),
-                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUserAddCommand.class),
-                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckUserAddCommand.class),
-                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckUserAddCommand.class),
-                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withPassword("password").build(), CheckUserAddCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").build(), CheckCreateUserCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckCreateUserCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckCreateUserCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckCreateUserCommand.class),
+                Arguments.of(UserCommandType.USERADD, UserInput.builder("user").withPassword("password").build(), CheckCreateUserCommand.class),
                 // USERMOD Command
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckUserModifyCommand.class),
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckUserModifyCommand.class),
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUserModifyCommand.class),
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withNewName("user2").build(), CheckUserModifyCommand.class),
-                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withPassword("password").build(), CheckUserModifyCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroups(List.of("group")).build(), CheckUpdateUserCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withGroupId(UUID.randomUUID()).build(), CheckUpdateUserCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withUserId(UUID.randomUUID()).build(), CheckUpdateUserCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withNewName("user2").build(), CheckUpdateUserCommand.class),
+                Arguments.of(UserCommandType.USERMOD, UserInput.builder("user").withPassword("password").build(), CheckUpdateUserCommand.class),
                 // USERDEL Command
-                Arguments.of(UserCommandType.USERDEL, UserInput.builder("user").build(), CheckUserDeleteCommand.class),
-                Arguments.of(UserCommandType.USERDEL, UserInput.builder("user").withForce(true).build(), CheckUserDeleteCommand.class),
+                Arguments.of(UserCommandType.USERDEL, UserInput.builder("user").build(), CheckDeleteUserCommand.class),
+                Arguments.of(UserCommandType.USERDEL, UserInput.builder("user").withForce(true).build(), CheckDeleteUserCommand.class),
                 // PASSWD Command
-                Arguments.of(UserCommandType.PASSWD, UserInput.builder("user").withPassword("password").build(), CheckUserModifyCommand.class),
+                Arguments.of(UserCommandType.PASSWD, UserInput.builder("user").withPassword("password").build(), CheckUpdateUserCommand.class),
                 // GROUPS Command
-                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).build(), CheckGroupGetCommand.class),
-                Arguments.of(UserCommandType.GROUPS, UserInput.builder("user").build(), CheckGroupGetCommand.class),
-                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).withGroupId(UUID.randomUUID()).build(), CheckGroupGetCommand.class),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).build(), CheckGetGroupCommand.class),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder("user").build(), CheckGetGroupCommand.class),
+                Arguments.of(UserCommandType.GROUPS, UserInput.builder(null).withGroupId(UUID.randomUUID()).build(), CheckGetGroupCommand.class),
                 // GROUPADD Command
-                Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").build(), CheckGroupAddCommand.class),
-                Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").withGroupId(UUID.randomUUID()).build(), CheckGroupAddCommand.class),
+                Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").build(), CheckCreateGroupCommand.class),
+                Arguments.of(UserCommandType.GROUPADD, UserInput.builder("group").withGroupId(UUID.randomUUID()).build(), CheckCreateGroupCommand.class),
                 // GROUPMOD Command
-                Arguments.of(UserCommandType.GROUPMOD, UserInput.builder("group").withNewName("group").build(), CheckGroupModifyCommand.class),
-                Arguments.of(UserCommandType.GROUPMOD, UserInput.builder("group").withGroupId(UUID.randomUUID()).build(), CheckGroupModifyCommand.class),
+                Arguments.of(UserCommandType.GROUPMOD, UserInput.builder("group").withNewName("group").build(), CheckUpdateGroupCommand.class),
+                Arguments.of(UserCommandType.GROUPMOD, UserInput.builder("group").withGroupId(UUID.randomUUID()).build(), CheckUpdateGroupCommand.class),
                 // GROUPDEL Command
-                Arguments.of(UserCommandType.GROUPDEL, UserInput.builder("group").build(), CheckGroupDeleteCommand.class),
-                Arguments.of(UserCommandType.GROUPDEL, UserInput.builder("group").withForce(true).build(), CheckGroupDeleteCommand.class)
+                Arguments.of(UserCommandType.GROUPDEL, UserInput.builder("group").build(), CheckDeleteGroupCommand.class),
+                Arguments.of(UserCommandType.GROUPDEL, UserInput.builder("group").withForce(true).build(), CheckDeleteGroupCommand.class)
         );
     }
 
@@ -100,17 +98,18 @@ class CompositeUserCommandFactoryTest {
     @BeforeEach
     public void setup() {
         List<UserCommandFactory> factories = List.of(
-                new GroupAddCommandFactory(),
-                new GroupDeleteCommandFactory(),
-                new GroupGetCommandFactory(),
-                new GroupModifyCommandFactory(),
+                new CreateGroupCommandFactory(),
+                new DeleteGroupCommandFactory(),
+                new GetGroupCommandFactory(),
+                new UpdateGroupCommandFactory(),
                 new UnsupportedUserCommandFactory(),
-                new UserAddCommandFactory(),
-                new UserDeleteCommandFactory(),
-                new UserGetCommandFactory(),
-                new UserModifyCommandFactory()
+                new CreateUserCommandFactory(),
+                new DeleteUserCommandFactory(),
+                new GetUserCommandFactory(),
+                new UpdateUserCommandFactory()
         );
-        factory = new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, passwordProtector, factories);
+        factory = new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, userUpdater,
+                passwordProtector, factories);
     }
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")

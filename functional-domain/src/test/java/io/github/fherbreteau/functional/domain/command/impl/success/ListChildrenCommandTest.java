@@ -21,6 +21,7 @@ class ListChildrenCommandTest {
     private ListChildrenCommand command;
     @Mock
     private FileRepository repository;
+
     private Folder parent;
     private User actor;
 

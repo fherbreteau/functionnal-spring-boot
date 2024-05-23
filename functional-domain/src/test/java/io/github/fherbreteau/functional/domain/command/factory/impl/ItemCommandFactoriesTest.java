@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactor
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,11 @@ class ItemCommandFactoriesTest {
     @Mock
     private FileRepository repository;
     @Mock
+    private ContentRepository contentRepository;
+    @Mock
     private AccessChecker accessChecker;
     @Mock
-    private ContentRepository contentRepository;
+    private AccessUpdater accessUpdater;
     @Mock
     private User actor;
 
@@ -38,9 +41,10 @@ class ItemCommandFactoriesTest {
         given(accessChecker.canWrite(folder, actor)).willReturn(true);
         given(repository.exists(folder, "file")).willReturn(false);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.createItem(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                ItemCommandType.TOUCH, itemInput);
+        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+                accessUpdater, ItemCommandType.TOUCH, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -63,8 +67,8 @@ class ItemCommandFactoriesTest {
         given(accessChecker.canChangeMode(file, actor)).willReturn(true);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                ItemCommandType.CHMOD, itemInput);
+        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+                accessUpdater, ItemCommandType.CHMOD, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -88,8 +92,8 @@ class ItemCommandFactoriesTest {
         given(accessChecker.canWrite(file, actor)).willReturn(true);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, accessChecker, contentRepository,
-                ItemCommandType.CHMOD, itemInput);
+        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+                accessUpdater, ItemCommandType.CHMOD, itemInput);
         Command<Output> executor = checker.execute(actor);
         Output output = executor.execute(actor);
 
@@ -97,6 +101,25 @@ class ItemCommandFactoriesTest {
                 .isNotNull()
                 .extracting(File::getContentType)
                 .isEqualTo("newValue");
+    }
+
+    @Test
+    void shouldDeleteTheGivenItem() {
+        ItemCommandFactory factory = new DeleteItemCommandFactory();
+        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
+        ItemInput itemInput = ItemInput.builder(folder).build();
+
+        given(accessChecker.canWrite(Folder.getRoot(), actor)).willReturn(true);
+        given(repository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.deleteItem(any())).willAnswer(invocation -> invocation.getArgument(0));
+
+        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+                accessUpdater, ItemCommandType.DELETE, itemInput);
+        Command<Output> executor = checker.execute(actor);
+        Output output = executor.execute(actor);
+
+        assertThat(output).extracting(Output::getValue, type(Folder.class))
+                .isEqualTo(folder);
     }
 
     @Test

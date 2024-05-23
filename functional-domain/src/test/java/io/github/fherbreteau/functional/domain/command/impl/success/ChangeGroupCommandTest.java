@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,24 +26,33 @@ class ChangeGroupCommandTest {
     private ChangeGroupCommand command;
     @Mock
     private FileRepository repository;
-    private Group group;
+    @Mock
+    private AccessUpdater accessUpdater;
     @Mock
     private User actor;
 
+    private Group oldGroup;
+    private Group newGroup;
+
     @Captor
     private ArgumentCaptor<Item> itemCaptor;
+    @Captor
+    private ArgumentCaptor<Group> groupCaptor;
 
     @BeforeEach
     public void setup() {
-        Item item = File.builder().withName("name").withOwner(User.builder("user").build()).build();
-        group = Group.builder("group").build();
-        command = new ChangeGroupCommand(repository, item, group);
+        User user = User.builder("user").build();
+        oldGroup = user.getGroup();
+        Item item = File.builder().withName("name").withOwner(user).build();
+        newGroup = Group.builder("group").build();
+        command = new ChangeGroupCommand(repository, accessUpdater, item, newGroup);
     }
 
     @Test
     void shouldEditGroupWhenExecutingCommand() {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
         Output result = command.execute(actor);
         //THEN
@@ -52,6 +62,9 @@ class ChangeGroupCommandTest {
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getGroup)
-                .isEqualTo(group);
+                .isEqualTo(newGroup);
+        verify(accessUpdater).updateGroup(any(), groupCaptor.capture());
+        assertThat(groupCaptor.getValue())
+                .isEqualTo(oldGroup);
     }
 }

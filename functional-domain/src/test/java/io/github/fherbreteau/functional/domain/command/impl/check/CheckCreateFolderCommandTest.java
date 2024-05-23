@@ -8,6 +8,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.CreateFolder
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ class CheckCreateFolderCommandTest {
     private FileRepository repository;
     @Mock
     private AccessChecker accessChecker;
+    @Mock
+    private AccessUpdater accessUpdater;
+
     private Folder parent;
     private User actor;
 
@@ -35,7 +39,7 @@ class CheckCreateFolderCommandTest {
                 .withName("parent")
                 .build();
         actor = User.builder("actor").build();
-        command = new CheckCreateFolderCommand(repository, accessChecker, "folder", parent);
+        command = new CheckCreateFolderCommand(repository, accessChecker, accessUpdater, "folder", parent);
     }
 
     @Test

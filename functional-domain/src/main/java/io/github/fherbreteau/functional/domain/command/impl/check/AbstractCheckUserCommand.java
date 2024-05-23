@@ -5,10 +5,7 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserChecker;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.*;
 
 import java.util.List;
 
@@ -17,14 +14,14 @@ public abstract class AbstractCheckUserCommand<C extends Command<Output>> implem
     protected final UserRepository userRepository;
     protected final GroupRepository groupRepository;
     protected final UserChecker userChecker;
-    protected final PasswordProtector passwordProtector;
+    protected final UserUpdater userUpdater;
 
     protected AbstractCheckUserCommand(UserRepository userRepository, GroupRepository groupRepository,
-                                       UserChecker userChecker, PasswordProtector passwordProtector) {
+                                       UserChecker userChecker, UserUpdater userUpdater) {
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.userChecker = userChecker;
-        this.passwordProtector = passwordProtector;
+        this.userUpdater = userUpdater;
     }
 
     @Override

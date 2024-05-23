@@ -15,7 +15,8 @@ public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<ItemEr
 
     private final ItemInput itemInput;
 
-    public CheckUnsupportedItemCommand(FileRepository repository, AccessChecker accessChecker, ItemCommandType itemCommandType, ItemInput itemInput) {
+    public CheckUnsupportedItemCommand(FileRepository repository, AccessChecker accessChecker,
+                                       ItemCommandType itemCommandType, ItemInput itemInput) {
         super(repository, accessChecker);
         this.itemCommandType = itemCommandType;
         this.itemInput = itemInput;

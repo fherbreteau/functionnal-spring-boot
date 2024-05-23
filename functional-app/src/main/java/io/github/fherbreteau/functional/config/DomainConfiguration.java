@@ -47,10 +47,12 @@ public class DomainConfiguration {
 
     @Bean
     public CompositeItemCommandFactory compositeCommandFactory(FileRepository fileRepository,
-                                                               AccessChecker accessChecker,
                                                                ContentRepository contentRepository,
+                                                               AccessChecker accessChecker,
+                                                               AccessUpdater accessUpdater,
                                                                List<ItemCommandFactory> commandFactories) {
-        return new CompositeItemCommandFactory(fileRepository, accessChecker, contentRepository, commandFactories);
+        return new CompositeItemCommandFactory(fileRepository, contentRepository, accessChecker, accessUpdater,
+                commandFactories);
     }
 
     @Bean
@@ -72,9 +74,10 @@ public class DomainConfiguration {
     public CompositeUserCommandFactory compositeUserCommandFactory(UserRepository userRepository,
                                                                    GroupRepository groupRepository,
                                                                    UserChecker userChecker,
+                                                                   UserUpdater userUpdater,
                                                                    PasswordProtector passwordProtector,
                                                                    List<UserCommandFactory> userFactories) {
-        return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, passwordProtector,
-                userFactories);
+        return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, userUpdater,
+                passwordProtector, userFactories);
     }
 }

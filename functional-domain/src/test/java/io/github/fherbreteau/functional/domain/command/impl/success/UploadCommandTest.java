@@ -30,6 +30,7 @@ class UploadCommandTest {
     private ContentRepository contentRepository;
     @Mock
     private InputStream inputStream;
+
     private File file;
     private User actor;
 

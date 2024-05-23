@@ -72,4 +72,10 @@ public class FileSystemController {
                                                         Principal user) {
         return fileSystemService.download(path, user.getName());
     }
+
+    @DeleteMapping
+    public ResponseEntity<ItemDTO> delete(@RequestParam("path") String path,
+                                          Principal user) {
+        return ResponseEntity.ok(fileSystemService.delete(path, user.getName()));
+    }
 }
