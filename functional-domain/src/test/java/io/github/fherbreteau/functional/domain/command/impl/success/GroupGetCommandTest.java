@@ -18,7 +18,7 @@ import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class GroupGetCommandTest {
+class GroupGetCommandTest {
     @Mock
     private UserRepository userRepository;
     @Mock
