@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FileRepository {
     boolean exists(Folder parent, String name);
@@ -13,7 +14,5 @@ public interface FileRepository {
 
     List<Item> findByParentAndUser(Folder folder, User actor);
 
-    <I extends Item> I findByNameAndParentAndUser(String name, Folder folder, User actor);
-
-    Item getItem(String path);
+    <I extends Item> Optional<I> findByNameAndParentAndUser(String name, Folder folder, User actor);
 }

@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.access;
 
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 public interface AccessRightParser {
 
@@ -9,5 +9,5 @@ public interface AccessRightParser {
     String STEP_ACTION = "action";
     String STEP_RIGHT = "right";
 
-    AccessRight resolve(Input.Builder builder, AccessRight accessRight);
+    AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight);
 }

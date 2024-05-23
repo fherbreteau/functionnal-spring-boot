@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeModeCommand;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -10,7 +10,10 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CheckChangeModeCommand extends AbstractCheckCommand<ChangeModeCommand> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeCommand> {
 
     private final Item item;
 
@@ -30,8 +33,12 @@ public class CheckChangeModeCommand extends AbstractCheckCommand<ChangeModeComma
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canChangeMode(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canChangeMode(item, actor)) {
+            reasons.add(String.format("%s can't change mode of %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -40,12 +47,12 @@ public class CheckChangeModeCommand extends AbstractCheckCommand<ChangeModeComma
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item)
+    protected ItemErrorCommand createError(List<String> reasons) {
+        ItemInput itemInput = ItemInput.builder(item)
                 .withOwnerAccess(ownerAccess)
                 .withGroupAccess(groupAccess)
                 .withOtherAccess(otherAccess)
                 .build();
-        return new ErrorCommand(CommandType.CHMOD, input);
+        return new ItemErrorCommand(ItemCommandType.CHMOD, itemInput, reasons);
     }
 }

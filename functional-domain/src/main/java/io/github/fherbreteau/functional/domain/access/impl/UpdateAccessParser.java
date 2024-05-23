@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.access.impl;
 import io.github.fherbreteau.functional.domain.access.AccessRightContext;
 import io.github.fherbreteau.functional.domain.access.AccessRightParser;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 import java.util.function.BinaryOperator;
 
@@ -19,7 +19,7 @@ public class UpdateAccessParser  implements AccessRightParser {
     }
 
     @Override
-    public AccessRight resolve(Input.Builder builder, AccessRight accessRight) {
+    public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
         this.context.setAccessRightMergeFunction(accessRightMergeFunction);
         return accessRight;
     }

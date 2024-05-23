@@ -34,8 +34,10 @@ public class SimplePathParser implements PathParser {
                 .map(Path::getAsFolder)
                 .filter(i -> accessChecker.canExecute(i, actor))
                 .map(i -> repository.findByNameAndParentAndUser(segment, i, actor))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(Item.class::cast)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(new Error(current.getItem(), segment, actor)));
+                .orElseGet(() -> Path.error(Error.error(String.format("%s not found in %s for %s", segment, current.getItem(), actor))));
     }
 }

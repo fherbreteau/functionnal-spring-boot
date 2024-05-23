@@ -35,7 +35,7 @@ class CreateFolderCommandTest {
         parent = Folder.builder()
                 .withName("parent")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new CreateFolderCommand(repository, "folder", parent);
     }
 

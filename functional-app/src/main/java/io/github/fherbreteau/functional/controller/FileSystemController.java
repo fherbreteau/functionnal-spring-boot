@@ -10,7 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.List;
 
-@RestController()
+@RestController
+@RequestMapping("/files")
 public class FileSystemController {
 
     private final FileSystemService fileSystemService;
@@ -19,7 +20,7 @@ public class FileSystemController {
         this.fileSystemService = fileSystemService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ItemDTO>> listItems(@RequestParam("path") String path, Principal user) {
         return ResponseEntity.ok(fileSystemService.listItems(path, user.getName()));
     }

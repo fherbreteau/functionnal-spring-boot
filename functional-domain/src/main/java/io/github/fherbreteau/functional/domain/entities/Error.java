@@ -1,30 +1,40 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.List;
 import java.util.Objects;
 
-public class Error {
+public final class Error {
 
     private final String message;
+    private final List<String> reasons;
 
-    public Error(CommandType type, Input input, User actor) {
-        this(String.format("%s with arguments %s failed for %s", type, input, actor));
+    public static Error error(String message) {
+        return error(message, List.of());
     }
 
-    public Error(Item item, String segment, User actor) {
-        this(String.format("%s not found in %s for %s", segment, item, actor));
+    public static Error error(String message, List<String> reasons) {
+        return new Error(message, reasons);
     }
 
-    public Error(String message) {
+    private Error(String message, List<String> reasons) {
         this.message = message;
+        this.reasons = reasons;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public List<String> getReasons() {
+        return reasons;
+    }
+
     @Override
     public String toString() {
-        return "Error{message='" + message + "'}";
+        return "Error{" +
+                "message='" + message + '\'' +
+                ", reasons=" + reasons +
+                '}';
     }
 
     @Override

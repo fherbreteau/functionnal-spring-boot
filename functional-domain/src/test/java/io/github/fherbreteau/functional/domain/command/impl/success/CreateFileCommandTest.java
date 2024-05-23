@@ -36,7 +36,7 @@ class CreateFileCommandTest {
         parent = Folder.builder()
                 .withName("parent")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new CreateFileCommand(repository, "file", parent);
     }
 

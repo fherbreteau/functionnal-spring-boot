@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.access.AccessRightContext;
 import io.github.fherbreteau.functional.domain.access.AccessRightParser;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.impl.GenericAttributionAccessParser;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
 
 import java.util.Objects;
@@ -20,6 +20,6 @@ public class GroupAccessParserFactory implements AccessParserFactory {
 
     @Override
     public AccessRightParser createAccessRightParser(AccessRightContext context, String rights, Item item) {
-        return new GenericAttributionAccessParser(context, item, Input.Builder::withGroupAccess, Item::getGroupAccess);
+        return new GenericAttributionAccessParser(context, item, ItemInput.Builder::withGroupAccess, Item::getGroupAccess);
     }
 }

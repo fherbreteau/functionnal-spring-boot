@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.model.GroupDTO;
 import io.github.fherbreteau.functional.model.ItemDTO;
+import io.github.fherbreteau.functional.model.UserDTO;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,33 +19,70 @@ import static java.util.Optional.ofNullable;
 @Service
 public class EntityMapper {
 
-    public List<ItemDTO> mapToList(Object value) {
+    public List<ItemDTO> mapToItemList(Object value) {
         if (value instanceof Collection<?> coll) {
             return coll.stream()
-                    .map(this::map)
+                    .map(this::mapToItem)
                     .filter(Objects::nonNull)
                     .toList();
         }
         return ofNullable(value)
-                .map(this::map)
+                .map(this::mapToItem)
                 .map(List::of)
                 .orElse(List.of());
     }
 
-    public ItemDTO map(Object value) {
+    public List<GroupDTO> mapToGroupList(Object value) {
+        if (value instanceof Collection<?> coll) {
+            return coll.stream()
+                    .map(this::mapToGroup)
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
+        return ofNullable(value)
+                .map(this::mapToGroup)
+                .map(List::of)
+                .orElse(List.of());
+    }
+
+    public ItemDTO mapToItem(Object value) {
         if (value instanceof Item item) {
-            ItemDTO dto = new ItemDTO();
-            dto.setName(item.getName());
-            dto.setOwner(item.getOwner().getName());
-            dto.setGroup(item.getGroup().getName());
-            dto.setAccess(formatAccess(item.isFolder(), item.getOwnerAccess(), item.getGroupAccess(), item.getOtherAccess()));
-            dto.setCreated(item.getCreated());
-            dto.setModified(item.getLastModified());
-            dto.setAccessed(item.getLastAccessed());
+            String access = formatAccess(item.isFolder(), item.getOwnerAccess(), item.getGroupAccess(),
+                    item.getOtherAccess());
+            ItemDTO.Builder builder = ItemDTO.buidler()
+                    .withName(item.getName())
+                    .withOwner(item.getOwner().getName())
+                    .withGroup(item.getGroup().getName())
+                    .withAccess(access)
+                    .withCreated(item.getCreated())
+                    .withModified(item.getLastModified())
+                    .withAccessed(item.getLastAccessed());
             if (item instanceof File file) {
-                dto.setContentType(file.getContentType());
+                return builder.withContentType(file.getContentType())
+                        .build();
             }
-            return dto;
+            return builder.build();
+        }
+        return null;
+    }
+
+    public UserDTO mapToUser(Object value) {
+        if (value instanceof User user) {
+            return UserDTO.builder()
+                    .withUid(user.getUserId())
+                    .withName(user.getName())
+                    .withGroups(mapToGroupList(user.getGroups()))
+                    .build();
+        }
+        return null;
+    }
+
+    public GroupDTO mapToGroup(Object value) {
+        if (value instanceof Group group) {
+            return GroupDTO.builder()
+                    .withGid(group.getGroupId())
+                    .withName(group.getName())
+                    .build();
         }
         return null;
     }
@@ -62,7 +99,8 @@ public class EntityMapper {
         return ResponseEntity.unprocessableEntity().build();
     }
 
-    private String formatAccess(boolean folder, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
+    private String formatAccess(boolean folder, AccessRight ownerAccess, AccessRight groupAccess,
+                                AccessRight otherAccess) {
         return (folder ? "d" : "-") + ownerAccess + groupAccess + otherAccess;
     }
 }

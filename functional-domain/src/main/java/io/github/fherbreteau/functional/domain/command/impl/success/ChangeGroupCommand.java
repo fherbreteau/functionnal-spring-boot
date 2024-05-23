@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeGroupCommand extends AbstractSuccessCommand {
+public class ChangeGroupCommand extends AbstractSuccessItemCommand {
 
     private final Item item;
 

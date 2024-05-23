@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.access.AccessRightContext;
 import io.github.fherbreteau.functional.domain.access.AccessRightParser;
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
 
 public class RecursiveAccessParser implements AccessRightParser {
@@ -24,7 +24,7 @@ public class RecursiveAccessParser implements AccessRightParser {
     }
 
     @Override
-    public AccessRight resolve(Input.Builder builder, AccessRight accessRight) {
+    public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
         AccessRightParser elementParser = compositeAccessParserFactory.createParser(context, element, item);
         AccessRightParser restParser = compositeAccessParserFactory.createParser(context, rest, item);
         return restParser.resolve(builder, elementParser.resolve(builder, accessRight));

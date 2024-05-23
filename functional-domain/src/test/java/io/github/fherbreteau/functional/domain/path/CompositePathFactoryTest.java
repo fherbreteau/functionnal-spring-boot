@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
@@ -60,7 +61,7 @@ class CompositePathFactoryTest {
     public static Stream<Arguments> invalidPathArguments() {
         Path folder = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
         Path file = Path.success(File.builder().withName("file").withParent(folder.getAsFolder()).build());
-        Path error = Path.error(new Error("error"));
+        Path error = Path.error(Error.error("error"));
         return Stream.of(
                 // Go up
                 Arguments.of(Path.ROOT, ".."),
@@ -108,11 +109,11 @@ class CompositePathFactoryTest {
         // GIVEN
         given(accessChecker.canExecute(any(), eq(actor))).willReturn(true);
         File file1 = File.builder().withName("file").withParent(Folder.getRoot()).build();
-        given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(file1);
+        given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(of(file1));
         Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(folder);
+        given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(of(folder));
         File file2 = File.builder().withName("file").withParent(folder).build();
-        given(repository.findByNameAndParentAndUser("file", folder, actor)).willReturn(file2);
+        given(repository.findByNameAndParentAndUser("file", folder, actor)).willReturn(of(file2));
         // WHEN
         PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./file");
         // THEN
@@ -131,11 +132,11 @@ class CompositePathFactoryTest {
         // GIVEN
         given(accessChecker.canExecute(any(), eq(actor))).willReturn(true);
         File file1 = File.builder().withName("file").withParent(Folder.getRoot()).build();
-        given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(file1);
+        given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(of(file1));
         Folder folder1 = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(folder1);
+        given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(of(folder1));
         Folder folder2 = Folder.builder().withName("folder").withParent(folder1).build();
-        given(repository.findByNameAndParentAndUser("folder", folder1, actor)).willReturn(folder2);
+        given(repository.findByNameAndParentAndUser("folder", folder1, actor)).willReturn(of(folder2));
         // WHEN
         PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./folder/");
         // THEN

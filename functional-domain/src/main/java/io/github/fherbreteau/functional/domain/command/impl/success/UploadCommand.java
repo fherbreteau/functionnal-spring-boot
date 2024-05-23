@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.io.InputStream;
 
-public class UploadCommand extends AbstractSuccessCommand {
+public class UploadCommand extends AbstractSuccessItemCommand {
     private final ContentRepository contentRepository;
     private final File item;
     private final InputStream content;

@@ -7,7 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeModeCommand extends AbstractSuccessCommand {
+public class ChangeModeCommand extends AbstractSuccessItemCommand {
 
     private final Item item;
 

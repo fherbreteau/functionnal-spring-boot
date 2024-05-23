@@ -17,14 +17,25 @@
     </properties>
 
     <dependencies>
+        <!-- Project dependencies-->
         <dependency>
             <groupId>io.github.fherbreteau</groupId>
             <artifactId>functional-domain</artifactId>
         </dependency>
+
+        <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- Database dependencies-->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <!-- Test dependencies-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

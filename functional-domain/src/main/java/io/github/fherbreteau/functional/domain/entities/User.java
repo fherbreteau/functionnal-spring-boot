@@ -1,7 +1,11 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 public final class User {
 
@@ -11,32 +15,12 @@ public final class User {
 
     private final String name;
 
-    private final Group group;
+    private final List<Group> groups;
 
-    private User(UUID userId, String name, Group group) {
-        this.userId = userId;
-        this.name = name;
-        this.group = group;
-    }
-
-    public static User root() {
-        return user(ROOT, "root", Group.root());
-    }
-
-    public static User user(String name) {
-        return user(UUID.randomUUID(), name);
-    }
-
-    public static User user(UUID userId, String name) {
-        return user(userId, name, Group.group(userId, name));
-    }
-
-    public static User user(String name, Group group) {
-        return user(UUID.randomUUID(), name, group);
-    }
-
-    public static User user(UUID userId, String name, Group group) {
-        return new User(userId, name, group);
+    private User(Builder builder) {
+        this.userId = builder.userId;
+        this.name = builder.name;
+        this.groups = builder.groups;
     }
 
     public UUID getUserId() {
@@ -48,11 +32,35 @@ public final class User {
     }
 
     public Group getGroup() {
-        return group;
+        return groups.get(0);
+    }
+
+    public List<Group> getGroups() {
+        return groups;
     }
 
     public boolean isSuperUser() {
         return ROOT.equals(userId);
+    }
+
+    public User withUserId(UUID userId) {
+        return User.builder(name).withUserId(userId).withGroups(groups).build();
+    }
+
+    public User withName(String name) {
+        return User.builder(name).withUserId(userId).withGroups(groups).build();
+    }
+
+    public User withGroup(Group group) {
+        return User.builder(name).withUserId(userId).withGroups(groups).withGroup(group).build();
+    }
+
+    public User withGroups(List<Group> groups) {
+        return User.builder(name).withUserId(userId).withGroups(groups).build();
+    }
+
+    public User addGroups(List<Group> groups) {
+        return User.builder(name).withUserId(userId).withGroups(this.groups).addGroups(groups).build();
     }
 
     @Override
@@ -68,11 +76,83 @@ public final class User {
         if (!(o instanceof User user)) {
             return false;
         }
-        return Objects.equals(userId, user.userId) && Objects.equals(name, user.name) && Objects.equals(group, user.group);
+        return Objects.equals(userId, user.userId) && Objects.equals(name, user.name) && Objects.equals(groups, user.groups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, group);
+        return Objects.hash(userId, name, groups);
+    }
+
+    public static Builder builder(String name) {
+        return new Builder(name);
+    }
+
+    public static User root() {
+        return User.builder("root")
+                .withUserId(ROOT)
+                .withGroup(Group.root())
+                .build();
+    }
+
+    public static final class Builder {
+        private final String name;
+        private UUID userId;
+        private List<Group> groups;
+
+        private Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder withUserId(UUID userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder withGroup(Group group) {
+            List<Group> newGroups = copyGroups();
+            newGroups.remove(group);
+            if (newGroups.isEmpty()) {
+                newGroups.add(group);
+            } else {
+                newGroups.set(0, group);
+            }
+            return withGroups(List.copyOf(newGroups));
+        }
+
+        public Builder withGroups(List<Group> groups) {
+            this.groups = groups;
+            return this;
+        }
+
+        public Builder addGroups(List<Group> groups) {
+            List<Group> newGroups = copyGroups();
+            newGroups.addAll(groups.stream().filter(g -> !newGroups.contains(g)).toList());
+            this.groups = List.copyOf(newGroups);
+            return this;
+        }
+
+        private List<Group> copyGroups() {
+            return this.groups != null ? new ArrayList<>(groups) : new ArrayList<>();
+        }
+
+        public User build() {
+            if (isNull(userId)) {
+                userId = UUID.randomUUID();
+            }
+            if (isNull(name)) {
+                throw new NullPointerException("name is required");
+            }
+            if (name.isEmpty()) {
+                throw new IllegalStateException("name must not be empty");
+            }
+            if (isNull(groups)) {
+                groups = List.of(Group.builder(name).withGroupId(userId).build());
+            }
+            if (groups.isEmpty()) {
+                throw new IllegalStateException("groups must contain at least one group");
+            }
+            return new User(this);
+        }
     }
 }

@@ -1,15 +1,18 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeOwnerCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CheckChangeOwnerCommand extends AbstractCheckCommand<ChangeOwnerCommand> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<ChangeOwnerCommand> {
 
     private final Item item;
 
@@ -22,8 +25,12 @@ public class CheckChangeOwnerCommand extends AbstractCheckCommand<ChangeOwnerCom
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canChangeOwner(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canChangeOwner(item, actor)) {
+            reasons.add(String.format("%s can't change owner of %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -32,10 +39,10 @@ public class CheckChangeOwnerCommand extends AbstractCheckCommand<ChangeOwnerCom
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item)
+    protected ItemErrorCommand createError(List<String> reasons) {
+        ItemInput itemInput = ItemInput.builder(item)
                 .withUser(newOwner)
                 .build();
-        return new ErrorCommand(CommandType.CHOWN, input);
+        return new ItemErrorCommand(ItemCommandType.CHOWN, itemInput, reasons);
     }
 }

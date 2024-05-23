@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ListChildrenCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -32,7 +32,7 @@ class CheckListChildrenCommandTest {
         parent = Folder.builder()
                 .withName("parent")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new CheckListChildrenCommand(repository, accessChecker, parent);
     }
 
@@ -53,6 +53,6 @@ class CheckListChildrenCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

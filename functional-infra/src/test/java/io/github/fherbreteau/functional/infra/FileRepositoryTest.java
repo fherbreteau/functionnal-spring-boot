@@ -25,7 +25,5 @@ class FileRepositoryTest {
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.findByNameAndParentAndUser(null, null, null))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> repository.getItem(null))
-                .isInstanceOf(UnsupportedOperationException.class);
     }
 }

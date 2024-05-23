@@ -1,8 +1,11 @@
 package io.github.fherbreteau.functional.mapper;
 
 import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.model.GroupDTO;
 import io.github.fherbreteau.functional.model.ItemDTO;
+import io.github.fherbreteau.functional.model.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.InputStreamResource;
@@ -24,19 +27,39 @@ class EntityMapperTest {
 
     @Test
     void shouldReturnNullWhenValueIsNotAnItem() {
-        ItemDTO dto = mapper.map(new Object());
+        ItemDTO dto = mapper.mapToItem(new Object());
         assertThat(dto).isNull();
     }
 
     @Test
     void shouldReturnAnEmptyListWhenValueIsNotAnItemNorACollection() {
-        List<ItemDTO> dtos = mapper.mapToList(new Object());
+        List<ItemDTO> dtos = mapper.mapToItemList(new Object());
         assertThat(dtos).isEmpty();
     }
 
     @Test
     void shouldReturnASingleElementListWhenValueIsAnItem() {
-        List<ItemDTO> dtos = mapper.mapToList(File.builder().withName("name").withOwner(User.user("user")).build());
+        List<ItemDTO> dtos = mapper.mapToItemList(File.builder()
+                .withName("name")
+                .withOwner(User.builder("user").build()).build());
+        assertThat(dtos).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnNullWhenValueIsNotAnUser() {
+        UserDTO dto = mapper.mapToUser(new Object());
+        assertThat(dto).isNull();
+    }
+
+    @Test
+    void shouldReturnAnEmptyListWhenValueIsNotAGroupNorACollection() {
+        List<GroupDTO> dtos = mapper.mapToGroupList(new Object());
+        assertThat(dtos).isEmpty();
+    }
+
+    @Test
+    void shouldReturnASingleElementListWhenValueIsAGroup() {
+        List<GroupDTO> dtos = mapper.mapToGroupList(Group.builder("name").build());
         assertThat(dtos).hasSize(1);
     }
 

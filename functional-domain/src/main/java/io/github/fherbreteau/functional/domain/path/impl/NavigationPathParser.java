@@ -29,6 +29,6 @@ public class NavigationPathParser implements PathParser {
                 .map(Path::getItem)
                 .map(itemFunction)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(new Error(parentPath.getItem(), path, actor)));
+                .orElseGet(() -> Path.error(Error.error(String.format("%s not found in %s for %s", path, parentPath.getItem(), actor))));
     }
 }

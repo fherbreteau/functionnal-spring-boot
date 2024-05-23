@@ -44,8 +44,8 @@ class ChangeModeCommandTest {
         // GIVEN
         File item = File.builder()
                 .withName("name")
-                .withOwner(User.user("user"))
-                .withGroup(Group.group("group"))
+                .withOwner(User.builder("user").build())
+                .withGroup(Group.builder("group").build())
                 .withOwnerAccess(null)
                 .withGroupAccess(null)
                 .withOtherAccess(null)

@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeModeCommand;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
@@ -34,8 +34,8 @@ class CheckChangeModeCommandTest {
     public void setup() {
         item = File.builder()
                 .withName("name")
-                .withOwner(User.user("user"))
-                .withGroup(Group.group("group"))
+                .withOwner(User.builder("user").build())
+                .withGroup(Group.builder("group").build())
                 .build();
         AccessRight ownerAccess = AccessRight.full();
         AccessRight groupAccess = AccessRight.full();
@@ -60,6 +60,6 @@ class CheckChangeModeCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

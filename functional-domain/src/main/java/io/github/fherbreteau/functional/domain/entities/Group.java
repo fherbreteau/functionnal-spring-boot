@@ -11,28 +11,13 @@ public final class Group {
 
     private final String name;
 
-    private final Group parent;
-
-    private Group(UUID groupId, String name, Group parent) {
-        this.groupId = groupId;
-        this.name = name;
-        this.parent = parent;
+    private Group(Builder builder) {
+        groupId = builder.groupId;
+        name = builder.name;
     }
 
     public static Group root() {
-        return group(ROOT, "root", null);
-    }
-
-    public static Group group(String name) {
-        return group(UUID.randomUUID(), name);
-    }
-
-    public static Group group(UUID groupId, String name) {
-        return group(groupId, name, root());
-    }
-
-    public static Group group(UUID groupId, String name, Group parent) {
-        return new Group(groupId, name, parent);
+        return builder("root").withGroupId(ROOT).build();
     }
 
     public UUID getGroupId() {
@@ -43,12 +28,16 @@ public final class Group {
         return name;
     }
 
-    public Group getParent() {
-        return parent;
+    public boolean isRoot() {
+        return Objects.equals(ROOT, groupId);
     }
 
-    public boolean isRoot() {
-        return parent == null;
+    public Group withGroupId(UUID groupId) {
+        return Group.builder(name).withGroupId(groupId).build();
+    }
+
+    public Group withName(String name) {
+        return Group.builder(name).withGroupId(groupId).build();
     }
 
     @Override
@@ -65,12 +54,42 @@ public final class Group {
             return false;
         }
         return Objects.equals(groupId, group.groupId)
-                && Objects.equals(name, group.name)
-                && Objects.equals(parent, group.parent);
+                && Objects.equals(name, group.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, name, parent);
+        return Objects.hash(groupId, name);
+    }
+
+    public static Builder builder(String name) {
+        return new Builder(name);
+    }
+
+    public static final class Builder {
+        private final String name;
+        private UUID groupId;
+
+        private Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder withGroupId(UUID groupId) {
+            this.groupId = groupId;
+            return this;
+        }
+
+        public Group build() {
+            if (Objects.isNull(groupId)) {
+                groupId = UUID.randomUUID();
+            }
+            if (Objects.isNull(name)) {
+                throw new NullPointerException("name is required");
+            }
+            if (name.isEmpty()) {
+                throw new IllegalStateException("name must not be empty");
+            }
+            return new Group(this);
+        }
     }
 }

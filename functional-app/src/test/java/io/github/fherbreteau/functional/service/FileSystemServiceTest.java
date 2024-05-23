@@ -2,6 +2,7 @@ package io.github.fherbreteau.functional.service;
 
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
+import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.exception.CommandException;
 import io.github.fherbreteau.functional.mapper.EntityMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,10 +28,12 @@ class FileSystemServiceTest {
     private EntityMapper entityMapper;
     @Mock
     private AccessParserService accessParserService;
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
-        service = new FileSystemService(fileService, entityMapper, accessParserService);
+        service = new FileSystemService(fileService, entityMapper, accessParserService, userService);
     }
 
     @Test

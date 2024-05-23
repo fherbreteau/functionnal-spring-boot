@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -39,7 +39,7 @@ class CheckUploadCommandTest {
         file = File.builder()
                 .withName("file")
                 .build();
-        actor = User.user("actor");
+        actor = User.builder("actor").build();
         command = new CheckUploadCommand(repository, accessChecker, contentRepository, file, inputStream, "contentType");
     }
 
@@ -60,6 +60,6 @@ class CheckUploadCommandTest {
         // WHEN
         Command<Output> result = command.execute(actor);
         //THEN
-        assertThat(result).isInstanceOf(ErrorCommand.class);
+        assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }
 }

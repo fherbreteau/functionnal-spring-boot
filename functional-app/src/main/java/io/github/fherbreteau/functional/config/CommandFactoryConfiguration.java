@@ -38,12 +38,47 @@ public class CommandFactoryConfiguration {
     }
 
     @Bean
-    public UnsupportedCommandFactory unsupportedCommandFactory() {
-        return new UnsupportedCommandFactory();
+    public UnsupportedItemCommandFactory unsupportedCommandFactory() {
+        return new UnsupportedItemCommandFactory();
     }
 
     @Bean
     public UploadCommandFactory uploadCommandFactory() {
         return new UploadCommandFactory();
+    }
+
+    @Bean
+    public GroupAddCommandFactory groupAddCommandFactory() {
+        return new GroupAddCommandFactory();
+    }
+
+    @Bean
+    public GroupDeleteCommandFactory groupDeleteCommandFactory() {
+        return new GroupDeleteCommandFactory();
+    }
+
+    @Bean
+    public GroupModifyCommandFactory groupModifyCommandFactory() {
+        return new GroupModifyCommandFactory();
+    }
+
+    @Bean
+    public UnsupportedUserCommandFactory unsupportedUserCommandFactory() {
+        return new UnsupportedUserCommandFactory();
+    }
+
+    @Bean
+    public UserAddCommandFactory userAddCommandFactory() {
+        return new UserAddCommandFactory();
+    }
+
+    @Bean
+    public UserDeleteCommandFactory userDeleteCommandFactory() {
+        return new UserDeleteCommandFactory();
+    }
+
+    @Bean
+    public UserModifyCommandFactory userModifyCommandFactory() {
+        return new UserModifyCommandFactory();
     }
 }

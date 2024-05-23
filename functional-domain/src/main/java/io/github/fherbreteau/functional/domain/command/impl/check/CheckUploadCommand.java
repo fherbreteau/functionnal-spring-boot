@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.CommandType;
-import io.github.fherbreteau.functional.domain.entities.Input;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
@@ -11,8 +11,10 @@ import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
+public class CheckUploadCommand extends AbstractCheckItemCommand<UploadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
     private final InputStream content;
@@ -28,8 +30,12 @@ public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
     }
 
     @Override
-    protected boolean checkAccess(User actor) {
-        return accessChecker.canWrite(item, actor);
+    protected List<String> checkAccess(User actor) {
+        List<String> reasons = new ArrayList<>();
+        if (!accessChecker.canWrite(item, actor)) {
+            reasons.add(String.format("%s can't write %s", actor, item));
+        }
+        return reasons;
     }
 
     @Override
@@ -38,8 +44,8 @@ public class CheckUploadCommand extends AbstractCheckCommand<UploadCommand> {
     }
 
     @Override
-    protected ErrorCommand createError() {
-        Input input = Input.builder(item).withContent(content).build();
-        return new ErrorCommand(CommandType.UPLOAD, input);
+    protected ItemErrorCommand createError(List<String> reasons) {
+        ItemInput itemInput = ItemInput.builder(item).withContent(content).build();
+        return new ItemErrorCommand(ItemCommandType.UPLOAD, itemInput, reasons);
     }
 }

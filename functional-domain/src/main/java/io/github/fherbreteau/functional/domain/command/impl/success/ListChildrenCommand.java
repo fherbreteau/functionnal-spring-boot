@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ListChildrenCommand extends AbstractSuccessCommand {
+public class ListChildrenCommand extends AbstractSuccessItemCommand {
 
     private final Folder folder;
 
