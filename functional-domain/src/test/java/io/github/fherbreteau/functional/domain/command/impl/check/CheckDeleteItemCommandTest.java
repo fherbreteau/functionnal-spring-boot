@@ -51,7 +51,7 @@ class CheckDeleteItemCommandTest {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DeleteItemCommand.class);
     }
@@ -61,7 +61,7 @@ class CheckDeleteItemCommandTest {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))

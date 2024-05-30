@@ -26,7 +26,7 @@ class CheckUnsupportedUserCommandTest {
     void shouldGenerateErrorCommandWhenCheckingSucceed() {
         // GIVEN
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

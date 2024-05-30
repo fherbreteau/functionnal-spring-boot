@@ -16,5 +16,5 @@ public interface GroupRepository {
 
     Group save(Group group);
 
-    Group delete(Group group);
+    void delete(Group group);
 }

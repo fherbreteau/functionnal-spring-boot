@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.driven.*;
 
 import java.util.List;
 
-public class CheckUnsupportedUserCommand extends AbstractCheckUserCommand<UserErrorCommand> {
+public class CheckUnsupportedUserCommand extends AbstractCheckUserCommand<Void, UserErrorCommand<Void>> {
 
     private final UserCommandType userCommandType;
 
@@ -26,7 +26,7 @@ public class CheckUnsupportedUserCommand extends AbstractCheckUserCommand<UserEr
     }
 
     @Override
-    protected UserErrorCommand createSuccess() {
-        return new UserErrorCommand(userCommandType, userInput);
+    protected UserErrorCommand<Void> createSuccess() {
+        return new UserErrorCommand<>(userCommandType, userInput);
     }
 }

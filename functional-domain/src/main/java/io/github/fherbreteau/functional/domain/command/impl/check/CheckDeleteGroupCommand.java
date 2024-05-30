@@ -10,7 +10,7 @@ import io.github.fherbreteau.functional.driven.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<DeleteGroupCommand> {
+public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<Void, DeleteGroupCommand> {
     private final String name;
     private final boolean force;
 
@@ -43,8 +43,8 @@ public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<DeleteGrou
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
+    protected UserErrorCommand<Void> createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).withForce(force).build();
-        return new UserErrorCommand(UserCommandType.GROUPDEL, userInput, reasons);
+        return new UserErrorCommand<>(UserCommandType.GROUPDEL, userInput, reasons);
     }
 }

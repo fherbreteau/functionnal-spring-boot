@@ -88,7 +88,7 @@ class CompositeItemCommandFactoryTest {
 
     @BeforeEach
     public void setup() {
-        List<ItemCommandFactory> factories = List.of(
+        List<ItemCommandFactory<?>> factories = List.of(
                 new ChangeOwnerCommandFactory(),
                 new ChangeGroupCommandFactory(),
                 new ChangeModeCommandFactory(),
@@ -104,7 +104,7 @@ class CompositeItemCommandFactoryTest {
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
     @MethodSource("validCommandArguments")
     void testCommandCreatedForSpecificTypeAndValidInput(ItemCommandType type, ItemInput itemInput,
-                                                        Class<? extends Command<Command<Output>>> expected) {
+                                                        Class<? extends CheckCommand<?>> expected) {
         Command<?> command = factory.createCommand(type, itemInput);
 
         assertThat(command).isNotNull().isInstanceOf(expected);
@@ -120,12 +120,12 @@ class CompositeItemCommandFactoryTest {
 
     @Test
     void testOrderOfCommandFactoriesIsRespected() {
-        List<ItemCommandFactory> factories = List.of(
+        List<ItemCommandFactory<?>> factories = List.of(
                 new UnsupportedItemCommandFactory(),
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory()
         );
-        List<ItemCommandFactory> sortedFactories = factories.stream()
+        List<ItemCommandFactory<?>> sortedFactories = factories.stream()
                 .sorted(Comparator.comparing(ItemCommandFactory::order))
                 .toList();
         assertThat(sortedFactories).last(type(ItemCommandFactory.class))

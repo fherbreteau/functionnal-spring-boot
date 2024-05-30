@@ -31,8 +31,8 @@ class GetGroupCommandTest {
         User user = User.builder("user").withUserId(userId).withGroup(Group.builder("group").build()).build();
         given(userRepository.findById(userId)).willReturn(user);
 
-        Command<Output> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, userId);
-        Output output = executeCommand.execute(actor);
+        Command<Output<List<Group>>> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, userId);
+        Output<List<Group>> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, list(Group.class))
                 .isNotNull()
@@ -46,8 +46,8 @@ class GetGroupCommandTest {
     void shouldGetGroupsOfActor() {
         given(actor.getGroups()).willReturn(List.of(Group.builder("group").build()));
 
-        Command<Output> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, null);
-        Output output = executeCommand.execute(actor);
+        Command<Output<List<Group>>> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, null);
+        Output<List<Group>> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, list(Group.class))
                 .isNotNull()

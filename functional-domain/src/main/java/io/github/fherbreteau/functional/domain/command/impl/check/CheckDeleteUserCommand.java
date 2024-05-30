@@ -10,7 +10,7 @@ import io.github.fherbreteau.functional.driven.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteUserCommand extends AbstractCheckUserCommand<DeleteUserCommand> {
+public class CheckDeleteUserCommand extends AbstractCheckUserCommand<Void, DeleteUserCommand> {
     private final String name;
 
     public CheckDeleteUserCommand(UserRepository userRepository, GroupRepository groupRepository,
@@ -37,8 +37,8 @@ public class CheckDeleteUserCommand extends AbstractCheckUserCommand<DeleteUserC
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
+    protected UserErrorCommand<Void> createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).build();
-        return new UserErrorCommand(UserCommandType.USERDEL, userInput, reasons);
+        return new UserErrorCommand<>(UserCommandType.USERDEL, userInput, reasons);
     }
 }

@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 
 import io.github.fherbreteau.functional.driven.*;
 
-public abstract class AbstractModifyItemCommand extends AbstractSuccessItemCommand {
+public abstract class AbstractModifyItemCommand<T> extends AbstractSuccessItemCommand<T> {
 
     protected final AccessUpdater accessUpdater;
 

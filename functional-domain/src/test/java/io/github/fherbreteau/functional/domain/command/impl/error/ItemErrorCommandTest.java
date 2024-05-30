@@ -39,9 +39,9 @@ class ItemErrorCommandTest {
         // GIVEN
         Item item = File.builder().build();
         List<String> reasons = List.of("error1", "error2");
-        ItemErrorCommand command = new ItemErrorCommand(itemCommandType, ItemInput.builder(item).build(), reasons);
+        ItemErrorCommand<Void> command = new ItemErrorCommand<>(itemCommandType, ItemInput.builder(item).build(), reasons);
         // WHEN
-        Output result = command.execute(actor);
+        Output<Void> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)

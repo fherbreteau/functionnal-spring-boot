@@ -14,9 +14,9 @@ public interface AccessUpdater {
 
     <I extends Item> I updateOwnerAccess(I item, AccessRight oldOwner);
 
-    <I extends Item> I updateGroupAccess(I item, AccessRight oldOwner);
+    <I extends Item> I updateGroupAccess(I item, AccessRight oldGroup);
 
-    <I extends Item> I updateOtherAccess(I item, AccessRight oldOwner);
+    <I extends Item> I updateOtherAccess(I item, AccessRight oldOther);
 
-    <I extends Item> I deleteItem(I item);
+    <I extends Item> void deleteItem(I item);
 }

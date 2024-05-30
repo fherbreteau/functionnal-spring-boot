@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.InputStream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -44,7 +46,7 @@ class CheckDownloadCommandTest {
         // GIVEN
         given(accessChecker.canRead(file, actor)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<InputStream>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DownloadCommand.class);
     }
@@ -54,7 +56,7 @@ class CheckDownloadCommandTest {
         // GIVEN
         given(accessChecker.canRead(file, actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<InputStream>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }

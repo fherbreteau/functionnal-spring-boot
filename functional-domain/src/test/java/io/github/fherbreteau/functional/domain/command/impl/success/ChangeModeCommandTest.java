@@ -16,8 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -56,8 +57,17 @@ class ChangeModeCommandTest {
         ChangeModeCommand command = new ChangeModeCommand(repository, accessUpdater, item, ownerAccess, groupAccess,
                 otherAccess);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        if (nonNull(ownerAccess)) {
+            given(accessUpdater.updateOwnerAccess(any(), isNull())).willAnswer(invocation -> invocation.getArgument(0));
+        }
+        if (nonNull(groupAccess)) {
+            given(accessUpdater.updateGroupAccess(any(), isNull())).willAnswer(invocation -> invocation.getArgument(0));
+        }
+        if (nonNull(otherAccess)) {
+            given(accessUpdater.updateOtherAccess(any(), isNull())).willAnswer(invocation -> invocation.getArgument(0));
+        }
         // WHEN
-        Output result = command.execute(actor);
+        Output<Item> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

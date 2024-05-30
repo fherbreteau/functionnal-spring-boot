@@ -50,7 +50,7 @@ class CheckUpdateUserCommandTest {
         given(userRepository.exists("user")).willReturn(true);
         given(userRepository.exists("user1")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UpdateUserCommand.class);
     }
@@ -67,7 +67,7 @@ class CheckUpdateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).withGroupId(groupId).build();
         command = new CheckUpdateUserCommand(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, type, input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UpdateUserCommand.class);
     }
@@ -77,7 +77,7 @@ class CheckUpdateUserCommandTest {
         // GIVEN
         given(userChecker.canUpdateUser("user", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class)
                 .extracting("type")
@@ -90,7 +90,7 @@ class CheckUpdateUserCommandTest {
         given(userChecker.canUpdateUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -102,7 +102,7 @@ class CheckUpdateUserCommandTest {
         given(userRepository.exists("user")).willReturn(true);
         given(userRepository.exists("user1")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -118,7 +118,7 @@ class CheckUpdateUserCommandTest {
         UserInput input = UserInput.builder("user").withUserId(userId).build();
         command = new CheckUpdateUserCommand(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, type, input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -135,7 +135,7 @@ class CheckUpdateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).withGroupId(groupId).build();
         command = new CheckUpdateUserCommand(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, type, input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -151,7 +151,7 @@ class CheckUpdateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroupId(groupId).build();
         command = new CheckUpdateUserCommand(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, type, input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -166,7 +166,7 @@ class CheckUpdateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
         command = new CheckUpdateUserCommand(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, type, input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

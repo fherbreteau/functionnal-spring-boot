@@ -9,11 +9,11 @@ public interface UserUpdater {
 
     User updateUser(User oldUser, User newUser);
 
-    User deleteUser(User user);
+    void deleteUser(User user);
 
     Group createGroup(Group group);
 
     Group updateGroup(Group oldGroup, Group newGroup);
 
-    Group deleteGroup(Group group);
+    void deleteGroup(Group group);
 }

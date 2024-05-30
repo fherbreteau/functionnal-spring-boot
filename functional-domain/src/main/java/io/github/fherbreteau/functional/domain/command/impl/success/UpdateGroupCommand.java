@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public class UpdateGroupCommand extends AbstractModifyUserCommand {
+public class UpdateGroupCommand extends AbstractModifyUserCommand<Group> {
     private final String name;
     private final UUID groupId;
     private final String newName;
@@ -25,7 +25,7 @@ public class UpdateGroupCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Group> execute(User actor) {
         Group group = groupRepository.findByName(name);
         Group.Builder builder = group.copy();
         if (nonNull(groupId)) {
@@ -35,6 +35,6 @@ public class UpdateGroupCommand extends AbstractModifyUserCommand {
             builder.withName(newName);
         }
         Group newGroup = groupRepository.save(userUpdater.updateGroup(group, builder.build()));
-        return new Output(newGroup);
+        return Output.success(newGroup);
     }
 }

@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.driving.impl;
 
-import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
@@ -23,8 +23,9 @@ public class FileServiceImpl implements FileService {
         return parser.resolve(currentUser);
     }
 
-    public Output processCommand(ItemCommandType type, User currentUser, ItemInput itemInput) {
-        Command<Command<Output>> command = commandFactory.createCommand(type, itemInput);
+    @SuppressWarnings("unchecked")
+    public <T> Output<T> processCommand(ItemCommandType type, User currentUser, ItemInput itemInput) {
+        CheckCommand<T> command = commandFactory.createCommand(type, itemInput);
         return command.execute(currentUser).execute(currentUser);
     }
 }

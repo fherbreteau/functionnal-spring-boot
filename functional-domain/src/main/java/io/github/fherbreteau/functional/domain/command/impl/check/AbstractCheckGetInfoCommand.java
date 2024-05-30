@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public abstract class AbstractCheckGetInfoCommand<C extends Command<Output>> extends AbstractCheckUserCommand<C>  {
+public abstract class AbstractCheckGetInfoCommand<T, C extends Command<Output<T>>> extends AbstractCheckUserCommand<T, C>  {
     protected final String name;
     protected final UUID userId;
     private final UserCommandType type;
@@ -41,8 +41,8 @@ public abstract class AbstractCheckGetInfoCommand<C extends Command<Output>> ext
     }
 
     @Override
-    protected final UserErrorCommand createError(List<String> reasons) {
+    protected final UserErrorCommand<T> createError(List<String> reasons) {
         UserInput input = UserInput.builder(name).withUserId(userId).build();
-        return new UserErrorCommand(type, input, reasons);
+        return new UserErrorCommand<>(type, input, reasons);
     }
 }

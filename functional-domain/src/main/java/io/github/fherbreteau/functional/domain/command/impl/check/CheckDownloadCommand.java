@@ -9,10 +9,11 @@ import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadCommand> {
+public class CheckDownloadCommand extends AbstractCheckItemCommand<InputStream, DownloadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
 
@@ -38,8 +39,8 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadComma
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<InputStream> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.DOWNLOAD, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.DOWNLOAD, itemInput, reasons);
     }
 }

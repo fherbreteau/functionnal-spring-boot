@@ -14,7 +14,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteItemCommand extends AbstractCheckItemCommand<DeleteItemCommand> {
+public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, DeleteItemCommand> {
     private final ContentRepository contentRepository;
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -42,8 +42,8 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<DeleteItemC
     }
 
     @Override
-    protected final ItemErrorCommand createError(List<String> reasons) {
+    protected final ItemErrorCommand<Void> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.DELETE, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.DELETE, itemInput, reasons);
     }
 }

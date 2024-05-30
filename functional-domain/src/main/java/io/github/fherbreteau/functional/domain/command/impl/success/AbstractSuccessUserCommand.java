@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
 
-public abstract class AbstractSuccessUserCommand implements Command<Output> {
+public abstract class AbstractSuccessUserCommand<T> implements Command<Output<T>> {
 
     protected final UserRepository userRepository;
     protected final GroupRepository groupRepository;

@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChildrenCommand> {
+public class CheckListChildrenCommand extends AbstractCheckItemCommand<List<Item>, ListChildrenCommand> {
 
     private final Folder item;
 
@@ -33,8 +33,8 @@ public class CheckListChildrenCommand extends AbstractCheckItemCommand<ListChild
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<List<Item>> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.LIST, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.LIST, itemInput, reasons);
     }
 }

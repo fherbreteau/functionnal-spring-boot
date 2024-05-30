@@ -10,7 +10,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractCheckCreateItemCommand<C extends Command<Output>> extends AbstractCheckItemCommand<C> {
+public abstract class AbstractCheckCreateItemCommand<T, C extends Command<Output<T>>> extends AbstractCheckItemCommand<T, C> {
     protected final String name;
     protected final Folder parent;
     protected final AccessUpdater accessUpdater;
@@ -38,11 +38,11 @@ public abstract class AbstractCheckCreateItemCommand<C extends Command<Output>> 
     protected abstract String getCantWriteFormat();
 
     @Override
-    protected final ItemErrorCommand createError(List<String> reasons) {
+    protected final ItemErrorCommand<T> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(parent)
                 .withName(name)
                 .build();
-        return new ItemErrorCommand(getType(), itemInput, reasons);
+        return new ItemErrorCommand<>(getType(), itemInput, reasons);
     }
 
     protected abstract ItemCommandType getType();

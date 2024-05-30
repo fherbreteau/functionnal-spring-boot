@@ -14,7 +14,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CheckCreateUserCommand extends AbstractCheckUserCommand<CreateUserCommand> {
+public class CheckCreateUserCommand extends AbstractCheckUserCommand<User, CreateUserCommand> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -68,7 +68,7 @@ public class CheckCreateUserCommand extends AbstractCheckUserCommand<CreateUserC
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
-        return new UserErrorCommand(UserCommandType.USERADD, input, reasons);
+    protected UserErrorCommand<User> createError(List<String> reasons) {
+        return new UserErrorCommand<>(UserCommandType.USERADD, input, reasons);
     }
 }

@@ -3,7 +3,6 @@ package io.github.fherbreteau.functional.domain.command.factory.impl;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
@@ -13,10 +12,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.InputStream;
+
+import static io.github.fherbreteau.functional.domain.entities.Output.success;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 
 @ExtendWith(MockitoExtension.class)
 class ItemCommandFactoriesTest {
@@ -34,7 +38,7 @@ class ItemCommandFactoriesTest {
 
     @Test
     void shouldCreateAFileWithTheGivenName() {
-        ItemCommandFactory factory = new CreateItemCommandFactory();
+        ItemCommandFactory<Item> factory = new CreateItemCommandFactory();
         Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
         ItemInput itemInput = ItemInput.builder(folder).withName("file").build();
 
@@ -42,11 +46,12 @@ class ItemCommandFactoriesTest {
         given(repository.exists(folder, "file")).willReturn(false);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.createItem(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(contentRepository.initContent(any())).willAnswer(invocation -> success(invocation.getArgument(0)));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+        Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
                 accessUpdater, ItemCommandType.TOUCH, itemInput);
-        Command<Output> executor = checker.execute(actor);
-        Output output = executor.execute(actor);
+        Command<Output<Item>> executor = checker.execute(actor);
+        Output<Item> output = executor.execute(actor);
 
         assertThat(output).extracting(Output::getValue, type(File.class))
                 .isNotNull()
@@ -56,7 +61,7 @@ class ItemCommandFactoriesTest {
 
     @Test
     void shouldChangeTheAccessOfTheFileWithTheGivenAccessRight() {
-        ItemCommandFactory factory = new ChangeModeCommandFactory();
+        ItemCommandFactory<Item> factory = new ChangeModeCommandFactory();
         File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
         ItemInput itemInput = ItemInput.builder(file)
                 .withOwnerAccess(AccessRight.full())
@@ -65,12 +70,15 @@ class ItemCommandFactoriesTest {
                 .build();
 
         given(accessChecker.canChangeMode(file, actor)).willReturn(true);
+        given(accessUpdater.updateOwnerAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.updateGroupAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(accessUpdater.updateOtherAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+        Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
                 accessUpdater, ItemCommandType.CHMOD, itemInput);
-        Command<Output> executor = checker.execute(actor);
-        Output output = executor.execute(actor);
+        Command<Output<Item>> executor = checker.execute(actor);
+        Output<Item> output = executor.execute(actor);
 
         assertThat(output).extracting(Output::getValue, type(File.class))
                 .isNotNull()
@@ -83,19 +91,21 @@ class ItemCommandFactoriesTest {
 
     @Test
     void shouldUpdateTheContentTypeOfTheFileWithTheGivenContentType() {
-        ItemCommandFactory factory = new UploadCommandFactory();
+        ItemCommandFactory<Item> factory = new UploadCommandFactory();
         File file = File.builder().withName("file").withParent(Folder.getRoot()).withContentType("oldValue").build();
         ItemInput itemInput = ItemInput.builder(file)
                 .withContentType("newValue")
+                .withContent(InputStream.nullInputStream())
                 .build();
 
         given(accessChecker.canWrite(file, actor)).willReturn(true);
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(contentRepository.writeContent(any(), any())).willAnswer(invocation -> success(invocation.getArgument(0)));
 
-        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
-                accessUpdater, ItemCommandType.CHMOD, itemInput);
-        Command<Output> executor = checker.execute(actor);
-        Output output = executor.execute(actor);
+        Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+                accessUpdater, ItemCommandType.UPLOAD, itemInput);
+        Command<Output<Item>> executor = checker.execute(actor);
+        Output<Item> output = executor.execute(actor);
 
         assertThat(output).extracting(Output::getValue, type(File.class))
                 .isNotNull()
@@ -105,21 +115,21 @@ class ItemCommandFactoriesTest {
 
     @Test
     void shouldDeleteTheGivenItem() {
-        ItemCommandFactory factory = new DeleteItemCommandFactory();
+        ItemCommandFactory<Void> factory = new DeleteItemCommandFactory();
         Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
         ItemInput itemInput = ItemInput.builder(folder).build();
 
         given(accessChecker.canWrite(Folder.getRoot(), actor)).willReturn(true);
-        given(repository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(accessUpdater.deleteItem(any())).willAnswer(invocation -> invocation.getArgument(0));
+        willDoNothing().given(repository).delete(any());
+        willDoNothing().given(accessUpdater).deleteItem(any());
 
-        Command<Command<Output>> checker = factory.createCommand(repository, contentRepository, accessChecker,
+        Command<Command<Output<Void>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
                 accessUpdater, ItemCommandType.DELETE, itemInput);
-        Command<Output> executor = checker.execute(actor);
-        Output output = executor.execute(actor);
+        Command<Output<Void>> executor = checker.execute(actor);
+        Output<Void> output = executor.execute(actor);
 
-        assertThat(output).extracting(Output::getValue, type(Folder.class))
-                .isEqualTo(folder);
+        assertThat(output).extracting(Output::isSuccess, BOOLEAN)
+                .isTrue();
     }
 
     @Test
@@ -131,9 +141,9 @@ class ItemCommandFactoriesTest {
 
     @Test
     void testOutputHasRequiredInfoInToString() {
-        Output output = new Output("success");
+        Output<String> output = success("success");
         assertThat(output).hasToString("Output{value=success}");
-        output = new Output(Error.error("error"));
+        output = Output.error("error");
         assertThat(output).hasToString("Output{error=Error{message='error', reasons=[]}}");
     }
 }

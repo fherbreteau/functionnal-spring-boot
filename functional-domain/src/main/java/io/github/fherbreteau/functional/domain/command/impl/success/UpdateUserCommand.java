@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public class UpdateUserCommand extends AbstractModifyUserCommand {
+public class UpdateUserCommand extends AbstractModifyUserCommand<User> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -38,7 +38,7 @@ public class UpdateUserCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<User> execute(User actor) {
         User user = userRepository.findByName(name);
         User.Builder builder = user.copy();
         if (nonNull(userId)) {
@@ -63,6 +63,6 @@ public class UpdateUserCommand extends AbstractModifyUserCommand {
         if (nonNull(password)) {
             newUser = userRepository.updatePassword(newUser, passwordProtector.protect(password));
         }
-        return new Output(newUser);
+        return Output.success(newUser);
     }
 }

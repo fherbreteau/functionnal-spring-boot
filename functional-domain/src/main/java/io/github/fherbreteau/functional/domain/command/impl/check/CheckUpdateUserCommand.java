@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public class CheckUpdateUserCommand extends AbstractCheckUserCommand<UpdateUserCommand> {
+public class CheckUpdateUserCommand extends AbstractCheckUserCommand<User, UpdateUserCommand> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -72,7 +72,7 @@ public class CheckUpdateUserCommand extends AbstractCheckUserCommand<UpdateUserC
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
-        return new UserErrorCommand(type, input, reasons);
+    protected UserErrorCommand<User> createError(List<String> reasons) {
+        return new UserErrorCommand<>(type, input, reasons);
     }
 }

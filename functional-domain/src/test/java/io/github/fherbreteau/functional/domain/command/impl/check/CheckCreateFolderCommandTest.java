@@ -1,12 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFolderCommand;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
@@ -47,7 +44,7 @@ class CheckCreateFolderCommandTest {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(CreateFolderCommand.class);
     }
@@ -57,7 +54,7 @@ class CheckCreateFolderCommandTest {
         // GIVEN
         given(accessChecker.canWrite(parent, actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
@@ -71,7 +68,7 @@ class CheckCreateFolderCommandTest {
         given(accessChecker.canWrite(parent, actor)).willReturn(true);
         given(repository.exists(parent, "folder")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))

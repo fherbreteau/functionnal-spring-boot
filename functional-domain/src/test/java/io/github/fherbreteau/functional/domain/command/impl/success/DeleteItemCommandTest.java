@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -38,14 +39,14 @@ class DeleteItemCommandTest {
     @Test
     void shouldDeleteTheGivenItem() {
 
-        given(repository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(accessUpdater.deleteItem(any())).willAnswer(invocation -> invocation.getArgument(0));
-        willDoNothing().given(contentRepository).deleteContent(file);
+        willDoNothing().given(repository).delete(any());
+        willDoNothing().given(accessUpdater).deleteItem(any());
+        given(contentRepository.deleteContent(file)).willReturn(Output.success(null));
 
-        Output output = command.execute(actor);
+        Output<Void> output = command.execute(actor);
 
-        assertThat(output).extracting(Output::getValue)
-                .isEqualTo(file);
+        assertThat(output).extracting(Output::isSuccess, BOOLEAN)
+                .isTrue();
     }
 
 }

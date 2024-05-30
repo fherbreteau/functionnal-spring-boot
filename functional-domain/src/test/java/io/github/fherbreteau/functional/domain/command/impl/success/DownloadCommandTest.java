@@ -42,9 +42,9 @@ class DownloadCommandTest {
     @Test
     void shouldReadContentWhenExecutingCommand() {
         // GIVEN
-        given(contentRepository.readContent(file)).willReturn(inputStream);
+        given(contentRepository.readContent(file)).willReturn(Output.success(inputStream));
         // WHEN
-        Output result = command.execute(actor);
+        Output<InputStream> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

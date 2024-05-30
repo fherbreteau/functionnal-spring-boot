@@ -13,7 +13,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<ChangeOwnerCommand> {
+public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<Item, ChangeOwnerCommand> {
 
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -42,10 +42,10 @@ public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<ChangeOwne
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<Item> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item)
                 .withUser(newOwner)
                 .build();
-        return new ItemErrorCommand(ItemCommandType.CHOWN, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.CHOWN, itemInput, reasons);
     }
 }

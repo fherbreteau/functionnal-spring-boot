@@ -6,14 +6,14 @@ import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupport
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.*;
 
-public class UnsupportedUserCommandFactory implements UserCommandFactory {
+public class UnsupportedUserCommandFactory implements UserCommandFactory<Void> {
     @Override
     public boolean supports(UserCommandType type, UserInput userInput) {
         return true;
     }
 
     @Override
-    public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
+    public CheckCommand<Void> createCommand(UserRepository repository, GroupRepository groupRepository,
                                               UserChecker userChecker, UserUpdater userUpdater,
                                               PasswordProtector passwordProtector, UserCommandType type,
                                               UserInput userInput) {

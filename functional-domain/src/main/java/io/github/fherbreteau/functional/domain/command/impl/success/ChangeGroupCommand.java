@@ -7,7 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeGroupCommand extends AbstractModifyItemCommand {
+public class ChangeGroupCommand extends AbstractModifyItemCommand<Item> {
 
     private final Item item;
     private final Group newGroup;
@@ -19,8 +19,8 @@ public class ChangeGroupCommand extends AbstractModifyItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Item> execute(User actor) {
         Item newItem = item.copyBuilder().withGroup(newGroup).build();
-        return new Output(repository.save(accessUpdater.updateGroup(newItem, item.getGroup())));
+        return Output.success(repository.save(accessUpdater.updateGroup(newItem, item.getGroup())));
     }
 }

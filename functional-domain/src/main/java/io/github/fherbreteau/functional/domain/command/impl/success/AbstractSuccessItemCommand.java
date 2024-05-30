@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public abstract class AbstractSuccessItemCommand implements Command<Output> {
+public abstract class AbstractSuccessItemCommand<T> implements Command<Output<T>> {
 
     protected final FileRepository repository;
 

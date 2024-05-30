@@ -6,7 +6,9 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class DownloadCommand extends AbstractSuccessItemCommand {
+import java.io.InputStream;
+
+public class DownloadCommand extends AbstractSuccessItemCommand<InputStream> {
 
     private final ContentRepository contentRepository;
     private final File item;
@@ -18,7 +20,7 @@ public class DownloadCommand extends AbstractSuccessItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
-        return new Output(contentRepository.readContent(item));
+    public Output<InputStream> execute(User actor) {
+        return contentRepository.readContent(item);
     }
 }

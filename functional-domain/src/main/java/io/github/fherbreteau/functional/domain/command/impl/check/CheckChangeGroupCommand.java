@@ -14,7 +14,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGroupCommand> {
+public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, ChangeGroupCommand> {
 
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -43,8 +43,8 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGrou
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<Item> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).withGroup(newGroup).build();
-        return new ItemErrorCommand(ItemCommandType.CHGRP, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.CHGRP, itemInput, reasons);
     }
 }

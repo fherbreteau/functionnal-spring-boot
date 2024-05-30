@@ -14,7 +14,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeCommand> {
+public class CheckChangeModeCommand extends AbstractCheckItemCommand<Item, ChangeModeCommand> {
 
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -47,12 +47,12 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeC
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<Item> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item)
                 .withOwnerAccess(ownerAccess)
                 .withGroupAccess(groupAccess)
                 .withOtherAccess(otherAccess)
                 .build();
-        return new ItemErrorCommand(ItemCommandType.CHMOD, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.CHMOD, itemInput, reasons);
     }
 }

@@ -3,6 +3,7 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.UpdateGroupCommand;
+import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.*;
@@ -44,7 +45,7 @@ class CheckUpdateGroupCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(groupRepository.exists("group1")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UpdateGroupCommand.class);
     }
@@ -59,7 +60,7 @@ class CheckUpdateGroupCommandTest {
         // WHEN
         command = new CheckUpdateGroupCommand(userRepository, groupRepository, userChecker, userUpdater, "group",
                 groupId, null);
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UpdateGroupCommand.class);
     }
@@ -69,7 +70,7 @@ class CheckUpdateGroupCommandTest {
         // GIVEN
         given(userChecker.canUpdateGroup("group", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -80,7 +81,7 @@ class CheckUpdateGroupCommandTest {
         given(userChecker.canUpdateGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -92,7 +93,7 @@ class CheckUpdateGroupCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(groupRepository.exists("group1")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -107,7 +108,7 @@ class CheckUpdateGroupCommandTest {
         // WHEN
         command = new CheckUpdateGroupCommand(userRepository, groupRepository, userChecker, userUpdater, "group",
                 groupId, null);
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

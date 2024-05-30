@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeModeCommand extends AbstractModifyItemCommand {
+public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
 
     private final Item item;
 
@@ -28,20 +28,20 @@ public class ChangeModeCommand extends AbstractModifyItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Item> execute(User actor) {
         AbstractBuilder<?, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);
-            accessUpdater.updateOwnerAccess(builder.build(), item.getOwnerAccess());
+            builder = accessUpdater.updateOwnerAccess(builder.build(), item.getOwnerAccess()).copyBuilder();
         }
         if (groupAccess != null) {
             builder.withGroupAccess(groupAccess);
-            accessUpdater.updateGroupAccess(builder.build(), item.getGroupAccess());
+            builder = accessUpdater.updateGroupAccess(builder.build(), item.getGroupAccess()).copyBuilder();
         }
         if (otherAccess != null) {
             builder.withOtherAccess(otherAccess);
-            accessUpdater.updateOtherAccess(builder.build(), item.getOtherAccess());
+            builder = accessUpdater.updateOtherAccess(builder.build(), item.getOtherAccess()).copyBuilder();
         }
-        return new Output(repository.save(builder.build()));
+        return Output.success(repository.save(builder.build()));
     }
 }

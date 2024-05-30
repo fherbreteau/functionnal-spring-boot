@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -50,13 +52,15 @@ class UploadCommandTest {
     void shouldWriteContentWhenExecutingCommand() {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(contentRepository.writeContent(any(), any()))
+                .willAnswer(invocation -> Output.success(invocation.getArgument(0)));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Item> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(contentRepository).writeContent(file, inputStream);
+        verify(contentRepository).writeContent(any(), eq(inputStream));
         verify(repository).save(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .isInstanceOf(File.class)

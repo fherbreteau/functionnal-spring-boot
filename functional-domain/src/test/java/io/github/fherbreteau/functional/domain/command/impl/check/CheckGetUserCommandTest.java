@@ -42,7 +42,7 @@ class CheckGetUserCommandTest {
         // GIVEN
         given(userRepository.exists(userId)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GetUserCommand.class);
     }
@@ -54,7 +54,7 @@ class CheckGetUserCommandTest {
         // GIVEN
         given(userRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GetUserCommand.class);
     }
@@ -67,7 +67,7 @@ class CheckGetUserCommandTest {
         // GIVEN
         given(userRepository.exists(userId)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -79,7 +79,7 @@ class CheckGetUserCommandTest {
         // GIVEN
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

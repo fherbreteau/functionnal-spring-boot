@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import io.github.fherbreteau.functional.driven.UserUpdater;
 
-public class DeleteUserCommand extends AbstractModifyUserCommand {
+public class DeleteUserCommand extends AbstractModifyUserCommand<Void> {
     private final String name;
 
     public DeleteUserCommand(UserRepository userRepository, GroupRepository groupRepository,
@@ -16,9 +16,10 @@ public class DeleteUserCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Void> execute(User actor) {
         User user = userRepository.findByName(name);
-        user = userRepository.delete(userUpdater.deleteUser(user));
-        return new Output(user);
+        userUpdater.deleteUser(user);
+        userRepository.delete(user);
+        return Output.success(null);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
@@ -48,7 +49,7 @@ class CheckUploadCommandTest {
         // GIVEN
         given(accessChecker.canWrite(file, actor)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(UploadCommand.class);
     }
@@ -58,7 +59,7 @@ class CheckUploadCommandTest {
         // GIVEN
         given(accessChecker.canWrite(file, actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }

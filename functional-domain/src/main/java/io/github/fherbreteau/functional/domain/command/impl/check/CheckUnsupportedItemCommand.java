@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.driven.FileRepository;
 
 import java.util.List;
 
-public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<ItemErrorCommand> {
+public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<Void, ItemErrorCommand<Void>> {
 
     private final ItemCommandType itemCommandType;
 
@@ -28,7 +28,7 @@ public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<ItemEr
     }
 
     @Override
-    protected ItemErrorCommand createSuccess() {
-        return new ItemErrorCommand(itemCommandType, itemInput);
+    protected ItemErrorCommand<Void> createSuccess() {
+        return new ItemErrorCommand<>(itemCommandType, itemInput);
     }
 }

@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.driven.GroupRepository;
 import io.github.fherbreteau.functional.driven.UserRepository;
 import io.github.fherbreteau.functional.driven.UserUpdater;
 
-public abstract class AbstractModifyUserCommand extends AbstractSuccessUserCommand {
+public abstract class AbstractModifyUserCommand<T> extends AbstractSuccessUserCommand<T> {
 
     protected final UserUpdater userUpdater;
 

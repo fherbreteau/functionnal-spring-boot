@@ -42,7 +42,7 @@ class CheckDeleteGroupCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(userRepository.hasUserWithGroup("group")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DeleteGroupCommand.class);
     }
@@ -55,7 +55,7 @@ class CheckDeleteGroupCommandTest {
         // WHEN
         command = new CheckDeleteGroupCommand(userRepository, groupRepository, userChecker, userUpdater,
                 "group", true);
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DeleteGroupCommand.class);
     }
@@ -65,7 +65,7 @@ class CheckDeleteGroupCommandTest {
         // GIVEN
         given(userChecker.canDeleteGroup("group", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -76,7 +76,7 @@ class CheckDeleteGroupCommandTest {
         given(userChecker.canDeleteGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -88,7 +88,7 @@ class CheckDeleteGroupCommandTest {
         given(groupRepository.exists("group")).willReturn(true);
         given(userRepository.hasUserWithGroup("group")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

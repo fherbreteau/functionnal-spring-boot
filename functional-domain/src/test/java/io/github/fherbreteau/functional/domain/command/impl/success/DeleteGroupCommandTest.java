@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -45,10 +44,8 @@ class DeleteGroupCommandTest {
         // GIVEN
         Group group = Group.builder("group").withGroupId(groupId).build();
         given(groupRepository.findByName("group")).willReturn(group);
-        given(groupRepository.delete(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(userUpdater.deleteGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Void> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

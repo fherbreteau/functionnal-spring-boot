@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class DeleteItemCommand extends AbstractSuccessItemCommand {
+public class DeleteItemCommand extends AbstractSuccessItemCommand<Void> {
     private final ContentRepository contentRepository;
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -22,10 +22,12 @@ public class DeleteItemCommand extends AbstractSuccessItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Void> execute(User actor) {
+        repository.delete(item);
+        accessUpdater.deleteItem(item);
         if (item instanceof File file) {
-            contentRepository.deleteContent(file);
+            return contentRepository.deleteContent(file);
         }
-        return new Output(accessUpdater.deleteItem(repository.delete(item)));
+        return Output.success(null);
     }
 }

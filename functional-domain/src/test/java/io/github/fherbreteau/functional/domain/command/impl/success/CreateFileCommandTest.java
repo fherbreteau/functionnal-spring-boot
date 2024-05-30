@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
+import io.github.fherbreteau.functional.driven.ContentRepository;
 import io.github.fherbreteau.functional.driven.FileRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ class CreateFileCommandTest {
     @Mock
     private FileRepository repository;
     @Mock
+    private ContentRepository contentRepository;
+    @Mock
     private AccessUpdater accessUpdater;
 
     private Folder parent;
@@ -41,7 +44,7 @@ class CreateFileCommandTest {
                 .withName("parent")
                 .build();
         actor = User.builder("actor").build();
-        command = new CreateFileCommand(repository, accessUpdater, "file", parent);
+        command = new CreateFileCommand(repository, contentRepository, accessUpdater, "file", parent);
     }
 
     @Test
@@ -49,8 +52,9 @@ class CreateFileCommandTest {
         // GIVEN
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.createItem(any(File.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.success(invocation.getArgument(0)));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Item> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

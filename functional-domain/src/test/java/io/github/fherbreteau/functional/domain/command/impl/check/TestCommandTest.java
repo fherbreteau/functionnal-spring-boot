@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class TestCommandTest {
     @Test
     void shouldThrowAnExceptionWhenItemCheckFailed() {
         // GIVEN
-        AbstractCheckItemCommand<Command<Output>> command = new AbstractCheckItemCommand<>(null, null) {
+        AbstractCheckItemCommand<Item, Command<Output<Item>>> command = new AbstractCheckItemCommand<>(null, null) {
             @Override
             protected List<String> checkAccess(User actor) {
                 List<String> reasons = new ArrayList<>();
@@ -27,7 +28,7 @@ class TestCommandTest {
             }
 
             @Override
-            protected Command<Output> createSuccess() {
+            protected Command<Output<Item>> createSuccess() {
                 throw new UnsupportedOperationException("Should never be called");
             }
         };
@@ -44,7 +45,7 @@ class TestCommandTest {
     @Test
     void shouldThrowAnExceptionWhenUserCheckFailed() {
         // GIVEN
-        AbstractCheckUserCommand<Command<Output>> command = new AbstractCheckUserCommand<>(null, null, null, null) {
+        AbstractCheckUserCommand<User, Command<Output<User>>> command = new AbstractCheckUserCommand<>(null, null, null, null) {
             @Override
             protected List<String> checkAccess(User actor) {
                 List<String> reasons = new ArrayList<>();
@@ -55,7 +56,7 @@ class TestCommandTest {
             }
 
             @Override
-            protected Command<Output> createSuccess() {
+            protected Command<Output<User>> createSuccess() {
                 throw new UnsupportedOperationException("Should never be called");
             }
         };

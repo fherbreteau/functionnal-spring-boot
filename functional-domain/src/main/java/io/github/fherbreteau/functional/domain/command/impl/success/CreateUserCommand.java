@@ -15,7 +15,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CreateUserCommand extends AbstractModifyUserCommand {
+public class CreateUserCommand extends AbstractModifyUserCommand<User> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -57,6 +57,6 @@ public class CreateUserCommand extends AbstractModifyUserCommand {
         if (nonNull(password)) {
             userRepository.updatePassword(user, passwordProtector.protect(password));
         }
-        return new Output(user);
+        return Output.success(user);
     }
 }

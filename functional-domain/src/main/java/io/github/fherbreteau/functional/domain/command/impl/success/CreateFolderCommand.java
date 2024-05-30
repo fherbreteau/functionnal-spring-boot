@@ -1,13 +1,10 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class CreateFolderCommand extends AbstractModifyItemCommand {
+public class CreateFolderCommand extends AbstractModifyItemCommand<Item> {
 
     private final String name;
     private final Folder parent;
@@ -19,7 +16,7 @@ public class CreateFolderCommand extends AbstractModifyItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Item> execute(User actor) {
         Folder newFolder = Folder.builder()
                 .withName(name)
                 .withParent(parent)
@@ -28,6 +25,6 @@ public class CreateFolderCommand extends AbstractModifyItemCommand {
                 .withGroupAccess(AccessRight.readExecute())
                 .withOtherAccess(AccessRight.none())
                 .build();
-        return new Output(repository.save(accessUpdater.createItem(newFolder)));
+        return Output.success(repository.save(accessUpdater.createItem(newFolder)));
     }
 }

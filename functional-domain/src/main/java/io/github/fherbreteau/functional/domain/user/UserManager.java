@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.user;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.GroupRepository;
@@ -18,19 +18,19 @@ public class UserManager {
         this.groupRepository = groupRepository;
     }
 
-    public Output findUserByName(String name) {
+    public Output<User> findUserByName(String name) {
         if (userRepository.exists(name)) {
-            return new Output(userRepository.findByName(name));
+            return Output.success(userRepository.findByName(name));
         } else {
-            return new Output(Error.error(format("%s not found", name)));
+            return Output.error(format("%s not found", name));
         }
     }
 
-    public Output findGroupByName(String name) {
+    public Output<Group> findGroupByName(String name) {
         if (groupRepository.exists(name)) {
-            return new Output(groupRepository.findByName(name));
+            return Output.success(groupRepository.findByName(name));
         } else {
-            return new Output(Error.error(format("%s not found", name)));
+            return Output.error(format("%s not found", name));
         }
     }
 

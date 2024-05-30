@@ -40,7 +40,7 @@ class CheckDeleteUserCommandTest {
         given(userChecker.canDeleteUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DeleteUserCommand.class);
     }
@@ -50,7 +50,7 @@ class CheckDeleteUserCommandTest {
         // GIVEN
         given(userChecker.canDeleteUser("user", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -61,7 +61,7 @@ class CheckDeleteUserCommandTest {
         given(userChecker.canDeleteUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

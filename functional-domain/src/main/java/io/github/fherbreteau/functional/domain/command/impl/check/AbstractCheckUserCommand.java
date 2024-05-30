@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.driven.*;
 
 import java.util.List;
 
-public abstract class AbstractCheckUserCommand<C extends Command<Output>> implements CheckCommand<Output> {
+public abstract class AbstractCheckUserCommand<T, C extends Command<Output<T>>> implements CheckCommand<T> {
 
     protected final UserRepository userRepository;
     protected final GroupRepository groupRepository;
@@ -25,7 +25,7 @@ public abstract class AbstractCheckUserCommand<C extends Command<Output>> implem
     }
 
     @Override
-    public final Command<Output> execute(User actor) {
+    public final Command<Output<T>> execute(User actor) {
         List<String> reasons = checkAccess(actor);
         if (!reasons.isEmpty()) {
             return createError(reasons);
@@ -37,7 +37,7 @@ public abstract class AbstractCheckUserCommand<C extends Command<Output>> implem
 
     protected abstract C createSuccess();
 
-    protected UserErrorCommand createError(List<String> reasons) {
+    protected UserErrorCommand<T> createError(List<String> reasons) {
         throw new UnsupportedOperationException("Unsupported Command always succeed");
     }
 }

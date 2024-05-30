@@ -17,7 +17,7 @@ public interface UserRepository {
 
     User save(User user);
 
-    User delete(User user);
+    void delete(User user);
 
     User updatePassword(User user, String password);
 
@@ -25,5 +25,5 @@ public interface UserRepository {
 
     boolean hasUserWithGroup(String name);
 
-    Group removeGroupFromUser(Group group);
+    void removeGroupFromUser(Group group);
 }

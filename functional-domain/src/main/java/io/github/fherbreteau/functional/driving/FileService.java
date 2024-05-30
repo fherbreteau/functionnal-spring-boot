@@ -6,5 +6,5 @@ public interface FileService {
 
     Path getPath(String path, User currentUser);
 
-    Output processCommand(ItemCommandType type, User currentUser, ItemInput itemInput);
+    <T> Output<T> processCommand(ItemCommandType type, User currentUser, ItemInput itemInput);
 }

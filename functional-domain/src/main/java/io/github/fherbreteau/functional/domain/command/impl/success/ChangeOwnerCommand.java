@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.FileRepository;
 
-public class ChangeOwnerCommand extends AbstractModifyItemCommand {
+public class ChangeOwnerCommand extends AbstractModifyItemCommand<Item> {
 
     private final Item item;
 
@@ -19,8 +19,8 @@ public class ChangeOwnerCommand extends AbstractModifyItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Item> execute(User actor) {
         Item newItem = item.copyBuilder().withOwner(newOwner).build();
-        return new Output(repository.save(accessUpdater.updateOwner(newItem, item.getOwner())));
+        return Output.success(repository.save(accessUpdater.updateOwner(newItem, item.getOwner())));
     }
 }
