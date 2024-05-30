@@ -50,7 +50,7 @@ public class DomainConfiguration {
                                                                ContentRepository contentRepository,
                                                                AccessChecker accessChecker,
                                                                AccessUpdater accessUpdater,
-                                                               List<ItemCommandFactory> commandFactories) {
+                                                               List<ItemCommandFactory<?>> commandFactories) {
         return new CompositeItemCommandFactory(fileRepository, contentRepository, accessChecker, accessUpdater,
                 commandFactories);
     }
@@ -76,7 +76,7 @@ public class DomainConfiguration {
                                                                    UserChecker userChecker,
                                                                    UserUpdater userUpdater,
                                                                    PasswordProtector passwordProtector,
-                                                                   List<UserCommandFactory> userFactories) {
+                                                                   List<UserCommandFactory<?>> userFactories) {
         return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, userFactories);
     }
