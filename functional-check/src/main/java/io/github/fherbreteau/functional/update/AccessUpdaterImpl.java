@@ -33,17 +33,17 @@ public class AccessUpdaterImpl implements AccessUpdater {
     }
 
     @Override
-    public <I extends Item> I updateGroupAccess(I item, AccessRight oldOwner) {
+    public <I extends Item> I updateGroupAccess(I item, AccessRight oldGroup) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <I extends Item> I updateOtherAccess(I item, AccessRight oldOwner) {
+    public <I extends Item> I updateOtherAccess(I item, AccessRight oldOther) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public <I extends Item> I deleteItem(I item) {
+    public <I extends Item> void deleteItem(I item) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }

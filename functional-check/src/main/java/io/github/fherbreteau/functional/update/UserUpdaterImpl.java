@@ -21,7 +21,7 @@ public class UserUpdaterImpl implements UserUpdater {
     }
 
     @Override
-    public User deleteUser(User user) {
+    public void deleteUser(User user) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -36,7 +36,7 @@ public class UserUpdaterImpl implements UserUpdater {
     }
 
     @Override
-    public Group deleteGroup(Group group) {
+    public void deleteGroup(Group group) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }
