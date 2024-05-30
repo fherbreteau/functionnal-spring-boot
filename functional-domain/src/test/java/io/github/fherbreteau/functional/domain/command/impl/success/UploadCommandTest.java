@@ -33,7 +33,6 @@ class UploadCommandTest {
     @Mock
     private InputStream inputStream;
 
-    private File file;
     private User actor;
 
     @Captor
@@ -41,7 +40,7 @@ class UploadCommandTest {
 
     @BeforeEach
     public void setup() {
-        file = File.builder()
+        File file = File.builder()
                 .withName("file")
                 .build();
         actor = User.builder("actor").build();

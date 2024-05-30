@@ -35,7 +35,7 @@ public class CreateUserCommand extends AbstractModifyUserCommand<User> {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<User> execute(User actor) {
         User.Builder builder = User.builder(name);
         if (nonNull(userId)) {
             builder.withUserId(userId);
