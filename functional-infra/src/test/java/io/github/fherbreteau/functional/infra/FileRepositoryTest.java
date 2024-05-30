@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.infra;
 
 import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.infra.impl.FileRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,13 +13,11 @@ class FileRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        repository = new FileRepositoryImpl();
+        repository = new FileRepositoryImpl(null);
     }
 
     @Test
     void fakeCoverage() {
-        assertThatThrownBy(() -> repository.exists(null, null))
-                .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.save(null))
                 .isInstanceOf(UnsupportedOperationException.class);
         assertThatThrownBy(() -> repository.findByParentAndUser(null, null))

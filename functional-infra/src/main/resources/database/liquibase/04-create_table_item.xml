@@ -1,0 +1,56 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!-- define property used to -->
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+
+    <changeSet id="20240518000000-5" author="fherbreteau">
+        <createTable tableName="item">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="file_pk"/>
+            </column>
+            <column name="type" type="varchar(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner" type="uuid">
+                <constraints nullable="false" foreignKeyName="owner_fk" referencedColumnNames="id"
+                             referencedTableName="user"/>
+            </column>
+            <column name="group" type="uuid">
+                <constraints nullable="false" foreignKeyName="group_fk" referencedColumnNames="id"
+                             referencedTableName="group"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accessed_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="uuid">
+                <constraints nullable="true" foreignKeyName="parent_item_pk" referencedColumnNames="id"
+                             referencedTableName="item"/>
+            </column>
+            <column name="content_type" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="20240518000000-6" author="fherbreteau">
+        <insert tableName="item">
+            <column name="id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="Folder"/>
+            <column name="name" value=""/>
+            <column name="owner" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="group" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="created_at" value="1970-01-01T00:00:00"/>
+            <column name="modified_at" value="1970-01-01T00:00:00"/>
+            <column name="accessed_at" value="1970-01-01T00:00:00"/>
+            <column name="parent_id" value="null"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

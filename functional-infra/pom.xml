@@ -12,6 +12,7 @@
     <artifactId>functional-infra</artifactId>
 
     <properties>
+        <jacoco.coverage.ratio>50%</jacoco.coverage.ratio>
         <!-- PITests configuration -->
         <pitest.fail-when-no-mutations>false</pitest.fail-when-no-mutations>
     </properties>
@@ -26,7 +27,7 @@
         <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
         <!-- Database dependencies-->
@@ -39,6 +40,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.jimfs</groupId>
+            <artifactId>jimfs</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

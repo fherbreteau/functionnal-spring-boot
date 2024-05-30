@@ -38,7 +38,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User delete(User user) {
+    public void delete(User user) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -58,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Group removeGroupFromUser(Group group) {
+    public void removeGroupFromUser(Group group) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }

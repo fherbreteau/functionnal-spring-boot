@@ -37,6 +37,9 @@
         <!-- Password validity Checker -->
         <passay.version>1.6.4</passay.version>
 
+        <!-- Tests dependencies -->
+        <jimfs.version>1.3.0</jimfs.version>
+
         <!-- Tools dependencies -->
         <compiler.version>3.13.0</compiler.version>
         <jacoco.version>0.8.12</jacoco.version>
@@ -45,6 +48,9 @@
         <surefire.version>3.2.5</surefire.version>
         <pitest.version>1.16.1</pitest.version>
         <pitest-junit5.version>1.2.1</pitest-junit5.version>
+
+        <!-- Jacoco Coverage Ratio -->
+        <jacoco.coverage.ratio>90%</jacoco.coverage.ratio>
 
         <!-- Mutation Testing configuration -->
         <pitest.fail-when-no-mutations>true</pitest.fail-when-no-mutations>
@@ -95,6 +101,14 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+
+            <!-- Test Dependencies -->
+            <dependency>
+                <groupId>com.google.jimfs</groupId>
+                <artifactId>jimfs</artifactId>
+                <version>${jimfs.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>
@@ -152,7 +166,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>90%</minimum>
+                                            <minimum>${jacoco.coverage.ratio}</minimum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>

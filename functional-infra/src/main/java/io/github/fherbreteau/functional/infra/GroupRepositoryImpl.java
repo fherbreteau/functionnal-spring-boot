@@ -37,7 +37,7 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public Group delete(Group group) {
+    public void delete(Group group) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 }
