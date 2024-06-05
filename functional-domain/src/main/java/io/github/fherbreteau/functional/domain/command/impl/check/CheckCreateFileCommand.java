@@ -7,13 +7,13 @@ import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class CheckCreateFileCommand extends AbstractCheckCreateItemCommand<Item, CreateFileCommand> {
 
     private final ContentRepository contentRepository;
 
-    public CheckCreateFileCommand(FileRepository repository, ContentRepository contentRepository,
+    public CheckCreateFileCommand(ItemRepository repository, ContentRepository contentRepository,
                                   AccessChecker accessChecker, AccessUpdater accessUpdater, String name,
                                   Folder parent) {
         super(repository, accessChecker, accessUpdater, name, parent);

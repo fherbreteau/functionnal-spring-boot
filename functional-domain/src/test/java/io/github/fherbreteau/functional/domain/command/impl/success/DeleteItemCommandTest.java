@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.willDoNothing;
 class DeleteItemCommandTest {
     private DeleteItemCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private ContentRepository contentRepository;
     @Mock

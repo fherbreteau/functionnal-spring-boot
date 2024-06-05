@@ -7,7 +7,7 @@ import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorComma
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<InputStream, 
     private final ContentRepository contentRepository;
     private final File item;
 
-    public CheckDownloadCommand(FileRepository repository, AccessChecker accessChecker,
+    public CheckDownloadCommand(ItemRepository repository, AccessChecker accessChecker,
                                 ContentRepository contentRepository, File item) {
         super(repository, accessChecker);
         this.contentRepository = contentRepository;

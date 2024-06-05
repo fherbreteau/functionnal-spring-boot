@@ -76,7 +76,7 @@ class CheckUpdateGroupCommandTest {
     }
 
     @Test
-    void shouldGenerateErrorCommandWhenGroupDontExists() {
+    void shouldGenerateErrorCommandWhenGroupDoNotExists() {
         // GIVEN
         given(userChecker.canUpdateGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);

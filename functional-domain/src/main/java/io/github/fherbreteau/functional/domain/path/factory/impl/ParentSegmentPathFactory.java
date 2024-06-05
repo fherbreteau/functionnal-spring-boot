@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.impl.NavigationPathParser;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.function.Predicate;
 
@@ -22,7 +22,7 @@ public class ParentSegmentPathFactory implements PathFactory {
     }
 
     @Override
-    public PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
+    public PathParser createParser(ItemRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
         return new NavigationPathParser(parentPath, PARENT_PATH, Item::getParent);
     }
 }

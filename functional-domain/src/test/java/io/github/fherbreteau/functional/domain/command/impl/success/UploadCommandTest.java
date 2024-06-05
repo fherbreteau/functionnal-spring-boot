@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 class UploadCommandTest {
     private UploadCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private ContentRepository contentRepository;
     @Mock

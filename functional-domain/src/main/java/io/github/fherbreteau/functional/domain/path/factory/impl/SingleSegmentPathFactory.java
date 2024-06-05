@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.impl.SimplePathParser;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -25,7 +25,7 @@ public class SingleSegmentPathFactory implements PathFactory {
     }
 
     @Override
-    public PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
+    public PathParser createParser(ItemRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
         return new SimplePathParser(repository, accessChecker, parentPath, path);
     }
 }

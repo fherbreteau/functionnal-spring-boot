@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<Item, Chan
     private final Item item;
     private final User newOwner;
 
-    public CheckChangeOwnerCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckChangeOwnerCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                    Item item, User newOwner) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;

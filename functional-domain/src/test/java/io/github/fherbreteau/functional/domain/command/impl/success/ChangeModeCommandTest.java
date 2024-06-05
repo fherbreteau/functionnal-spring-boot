@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ChangeModeCommandTest {
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessUpdater accessUpdater;
     @Mock

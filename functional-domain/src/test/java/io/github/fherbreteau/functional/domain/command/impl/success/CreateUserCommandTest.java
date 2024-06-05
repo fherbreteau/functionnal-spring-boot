@@ -57,7 +57,7 @@ class CreateUserCommandTest {
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createUser(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
@@ -89,7 +89,7 @@ class CreateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
         command = new CreateUserCommand(userRepository, groupRepository, userUpdater, passwordProtector, input);
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

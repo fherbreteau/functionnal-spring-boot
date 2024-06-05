@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, Delet
     private final AccessUpdater accessUpdater;
     private final Item item;
 
-    public CheckDeleteItemCommand(FileRepository repository, ContentRepository contentRepository,
+    public CheckDeleteItemCommand(ItemRepository repository, ContentRepository contentRepository,
                                   AccessChecker accessChecker, AccessUpdater accessUpdater, Item item) {
         super(repository, accessChecker);
         this.contentRepository = contentRepository;

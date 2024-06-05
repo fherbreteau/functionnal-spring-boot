@@ -28,9 +28,9 @@ class UserErrorCommandTest {
     @MethodSource
     void shouldGenerateAnErrorWhenExecutingCommand(UserCommandType type) {
         // GIVEN
-        UserErrorCommand command = new UserErrorCommand(type, UserInput.builder("error").build());
+        UserErrorCommand<Void> command = new UserErrorCommand<>(type, UserInput.builder("error").build());
         // WHEN
-        Output result = command.execute(actor);
+        Output<Void> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)

@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.ListChildren
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.given;
 class CheckListChildrenCommandTest {
     private CheckListChildrenCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessChecker accessChecker;
     private Folder parent;

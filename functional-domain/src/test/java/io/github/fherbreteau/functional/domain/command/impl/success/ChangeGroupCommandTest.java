@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 class ChangeGroupCommandTest {
     private ChangeGroupCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessUpdater accessUpdater;
     @Mock
@@ -54,7 +54,7 @@ class ChangeGroupCommandTest {
         given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Item> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

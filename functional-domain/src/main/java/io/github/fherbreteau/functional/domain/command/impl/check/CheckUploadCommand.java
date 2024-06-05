@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.command.impl.success.UploadComman
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class CheckUploadCommand extends AbstractCheckItemCommand<Item, UploadCom
     private final InputStream content;
     private final String contentType;
 
-    public CheckUploadCommand(FileRepository repository, AccessChecker accessChecker,
+    public CheckUploadCommand(ItemRepository repository, AccessChecker accessChecker,
                               ContentRepository contentRepository, File item, InputStream content, String contentType) {
         super(repository, accessChecker);
         this.contentRepository = contentRepository;

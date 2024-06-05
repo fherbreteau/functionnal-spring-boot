@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
 
@@ -18,7 +18,7 @@ public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
 
     private final AccessRight otherAccess;
 
-    public ChangeModeCommand(FileRepository repository, AccessUpdater accessUpdater, Item item, AccessRight ownerAccess,
+    public ChangeModeCommand(ItemRepository repository, AccessUpdater accessUpdater, Item item, AccessRight ownerAccess,
                              AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessUpdater);
         this.item = item;

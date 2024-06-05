@@ -56,7 +56,7 @@ class UpdateGroupCommandTest {
         given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Group> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

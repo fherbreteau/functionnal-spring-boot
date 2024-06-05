@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class CreateFileCommand extends AbstractModifyItemCommand<Item> {
 
@@ -11,7 +11,7 @@ public class CreateFileCommand extends AbstractModifyItemCommand<Item> {
     private final Folder parent;
     private final ContentRepository contentRepository;
 
-    public CreateFileCommand(FileRepository repository, ContentRepository contentRepository,
+    public CreateFileCommand(ItemRepository repository, ContentRepository contentRepository,
                              AccessUpdater accessUpdater, String name, Folder parent) {
         super(repository, accessUpdater);
         this.contentRepository = contentRepository;

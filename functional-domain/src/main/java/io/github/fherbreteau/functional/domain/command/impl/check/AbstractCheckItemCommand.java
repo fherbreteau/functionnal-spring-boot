@@ -6,17 +6,17 @@ import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorComma
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.List;
 
 public abstract class AbstractCheckItemCommand<T, C extends Command<Output<T>>> implements CheckCommand<T> {
 
-    protected final FileRepository repository;
+    protected final ItemRepository repository;
 
     protected final AccessChecker accessChecker;
 
-    protected AbstractCheckItemCommand(FileRepository repository, AccessChecker accessChecker) {
+    protected AbstractCheckItemCommand(ItemRepository repository, AccessChecker accessChecker) {
         this.repository = repository;
         this.accessChecker = accessChecker;
     }

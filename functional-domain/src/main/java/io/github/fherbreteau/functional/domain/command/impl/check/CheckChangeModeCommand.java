@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<Item, Chang
     private final AccessRight groupAccess;
     private final AccessRight otherAccess;
 
-    public CheckChangeModeCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckChangeModeCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                   Item item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;

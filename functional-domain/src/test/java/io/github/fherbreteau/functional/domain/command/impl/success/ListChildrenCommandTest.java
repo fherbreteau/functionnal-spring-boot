@@ -1,9 +1,10 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import static org.mockito.BDDMockito.given;
 class ListChildrenCommandTest {
     private ListChildrenCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
 
     private Folder parent;
     private User actor;
@@ -39,7 +40,7 @@ class ListChildrenCommandTest {
         // GIVEN
         given(repository.findByParentAndUser(parent, actor)).willReturn(List.of());
         // WHEN
-        Output result = command.execute(actor);
+        Output<List<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

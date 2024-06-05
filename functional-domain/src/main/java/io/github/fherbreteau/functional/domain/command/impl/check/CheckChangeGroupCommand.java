@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, Chan
     private final Item item;
     private final Group newGroup;
 
-    public CheckChangeGroupCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckChangeGroupCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                    Item item, Group newGroup) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;

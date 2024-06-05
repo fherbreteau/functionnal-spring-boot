@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.command.impl.success.ListChildrenCommand;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class CheckListChildrenCommand extends AbstractCheckItemCommand<List<Item
 
     private final Folder item;
 
-    public CheckListChildrenCommand(FileRepository repository, AccessChecker accessChecker, Folder item) {
+    public CheckListChildrenCommand(ItemRepository repository, AccessChecker accessChecker, Folder item) {
         super(repository, accessChecker);
         this.item = item;
     }

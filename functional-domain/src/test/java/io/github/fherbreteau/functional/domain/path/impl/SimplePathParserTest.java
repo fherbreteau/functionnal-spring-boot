@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 class SimplePathParserTest {
 
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
 
     @Mock
     private AccessChecker accessChecker;

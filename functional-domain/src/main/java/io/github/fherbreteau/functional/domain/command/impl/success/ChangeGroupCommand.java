@@ -5,14 +5,14 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class ChangeGroupCommand extends AbstractModifyItemCommand<Item> {
 
     private final Item item;
     private final Group newGroup;
 
-    public ChangeGroupCommand(FileRepository repository, AccessUpdater accessUpdater, Item item, Group newGroup) {
+    public ChangeGroupCommand(ItemRepository repository, AccessUpdater accessUpdater, Item item, Group newGroup) {
         super(repository, accessUpdater);
         this.item = item;
         this.newGroup = newGroup;

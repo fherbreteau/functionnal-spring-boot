@@ -7,7 +7,7 @@ import io.github.fherbreteau.functional.domain.command.impl.check.CheckListChild
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ public class ListChildrenCommandFactory implements ItemCommandFactory<List<Item>
     }
 
     @Override
-    public CheckCommand<List<Item>> createCommand(FileRepository repository, ContentRepository contentRepository,
-                                                           AccessChecker accessChecker, AccessUpdater accessUpdater,
-                                                           ItemCommandType type, ItemInput itemInput) {
+    public CheckCommand<List<Item>> createCommand(ItemRepository repository, ContentRepository contentRepository,
+                                                  AccessChecker accessChecker, AccessUpdater accessUpdater,
+                                                  ItemCommandType type, ItemInput itemInput) {
         return new CheckListChildrenCommand(repository, accessChecker, (Folder) itemInput.getItem());
     }
 }

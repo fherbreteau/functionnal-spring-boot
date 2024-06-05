@@ -38,7 +38,7 @@ class UserManagerTest {
         User user = User.builder("user").build();
         given(userRepository.findByName("user")).willReturn(user);
         // WHEN
-        Output result = userManager.findUserByName("user");
+        Output<User> result = userManager.findUserByName("user");
         // THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
@@ -53,7 +53,7 @@ class UserManagerTest {
         // GIVEN
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Output result = userManager.findUserByName("user");
+        Output<User> result = userManager.findUserByName("user");
         // THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)
@@ -75,7 +75,7 @@ class UserManagerTest {
         Group group = Group.builder("group").build();
         given(groupRepository.findByName("group")).willReturn(group);
         // WHEN
-        Output result = userManager.findGroupByName("group");
+        Output<Group> result = userManager.findGroupByName("group");
         // THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
@@ -90,7 +90,7 @@ class UserManagerTest {
         // GIVEN
         given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        Output result = userManager.findGroupByName("group");
+        Output<Group> result = userManager.findGroupByName("group");
         // THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)

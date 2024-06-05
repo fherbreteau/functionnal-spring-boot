@@ -46,7 +46,7 @@ class CreateGroupCommandTest {
         given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Group> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

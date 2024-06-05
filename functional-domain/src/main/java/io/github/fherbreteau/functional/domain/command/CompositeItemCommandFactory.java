@@ -6,20 +6,20 @@ import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 import java.util.Comparator;
 import java.util.List;
 
 public class CompositeItemCommandFactory {
 
-    private final FileRepository repository;
+    private final ItemRepository repository;
     private final ContentRepository contentRepository;
     private final AccessChecker accessChecker;
     private final AccessUpdater accessUpdater;
     private final List<ItemCommandFactory<?>> factories;
 
-    public CompositeItemCommandFactory(FileRepository repository, ContentRepository contentRepository,
+    public CompositeItemCommandFactory(ItemRepository repository, ContentRepository contentRepository,
                                        AccessChecker accessChecker, AccessUpdater accessUpdater,
                                        List<ItemCommandFactory<?>> factories) {
         this.repository = repository;

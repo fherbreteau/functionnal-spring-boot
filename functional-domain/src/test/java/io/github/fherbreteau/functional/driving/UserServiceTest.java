@@ -54,7 +54,7 @@ class UserServiceTest {
         // GIVEN
         given(userManager.findGroupByName("name")).willReturn(Output.success(Group.builder("name").build()));
         // WHEN
-        Output result = userService.findGroupByName("name");
+        Output<Group> result = userService.findGroupByName("name");
         // THEN
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
@@ -67,7 +67,7 @@ class UserServiceTest {
         given(checkCommand.execute(actor)).willReturn(executeCommand);
         given(executeCommand.execute(actor)).willReturn(Output.success(new Object()));
         // When
-        Output result = userService.processCommand(UserCommandType.USERADD, actor, UserInput.builder("user").build());
+        Output<User> result = userService.processCommand(UserCommandType.USERADD, actor, UserInput.builder("user").build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)

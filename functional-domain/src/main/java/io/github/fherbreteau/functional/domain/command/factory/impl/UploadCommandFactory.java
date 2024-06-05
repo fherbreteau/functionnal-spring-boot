@@ -7,7 +7,7 @@ import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class UploadCommandFactory implements ItemCommandFactory<Item> {
     @Override
@@ -17,9 +17,9 @@ public class UploadCommandFactory implements ItemCommandFactory<Item> {
     }
 
     @Override
-    public CheckCommand<Item> createCommand(FileRepository repository, ContentRepository contentRepository,
-                                                    AccessChecker accessChecker, AccessUpdater accessUpdater,
-                                                    ItemCommandType type, ItemInput itemInput) {
+    public CheckCommand<Item> createCommand(ItemRepository repository, ContentRepository contentRepository,
+                                            AccessChecker accessChecker, AccessUpdater accessUpdater,
+                                            ItemCommandType type, ItemInput itemInput) {
         return new CheckUploadCommand(repository, accessChecker, contentRepository, (File) itemInput.getItem(),
                 itemInput.getContent(), itemInput.getContentType());
     }

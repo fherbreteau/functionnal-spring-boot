@@ -6,14 +6,14 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class DeleteItemCommand extends AbstractSuccessItemCommand<Void> {
     private final ContentRepository contentRepository;
     private final AccessUpdater accessUpdater;
     private final Item item;
 
-    public DeleteItemCommand(FileRepository repository, ContentRepository contentRepository,
+    public DeleteItemCommand(ItemRepository repository, ContentRepository contentRepository,
                              AccessUpdater accessUpdater, Item item) {
         super(repository);
         this.contentRepository = contentRepository;

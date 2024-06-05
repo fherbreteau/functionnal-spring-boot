@@ -6,7 +6,7 @@ public abstract class AbstractModifyItemCommand<T> extends AbstractSuccessItemCo
 
     protected final AccessUpdater accessUpdater;
 
-    protected AbstractModifyItemCommand(FileRepository repository, AccessUpdater accessUpdater) {
+    protected AbstractModifyItemCommand(ItemRepository repository, AccessUpdater accessUpdater) {
         super(repository);
         this.accessUpdater = accessUpdater;
     }

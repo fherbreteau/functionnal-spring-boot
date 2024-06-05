@@ -65,7 +65,7 @@ class UpdateUserCommandTest {
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
@@ -102,7 +102,7 @@ class UpdateUserCommandTest {
         given(passwordProtector.protect(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userRepository.updatePassword(any(), eq("Password"))).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

@@ -6,11 +6,11 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 
 public class CheckCreateFolderCommand extends AbstractCheckCreateItemCommand<Item, CreateFolderCommand> {
 
-    public CheckCreateFolderCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckCreateFolderCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                     String name, Folder parent) {
         super(repository, accessChecker, accessUpdater, name, parent);
     }

@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorComma
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeGroupCommand;
 import io.github.fherbreteau.functional.driven.AccessChecker;
 import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 class CheckChangeGroupCommandTest {
     private CheckChangeGroupCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessChecker accessChecker;
     @Mock
