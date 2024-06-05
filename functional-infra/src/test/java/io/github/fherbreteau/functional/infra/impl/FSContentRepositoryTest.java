@@ -6,7 +6,7 @@ import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.infra.ItemIdFinder;
+import io.github.fherbreteau.functional.infra.ItemFinder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,12 +32,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ContentRepositoryTest {
+class FSContentRepositoryTest {
+    private static final String ROOT_PATH = "/data";
 
     private ContentRepository repository;
 
     @Mock
-    private ItemIdFinder finder;
+    private ItemFinder finder;
 
     private final UUID fakeUUID = UUID.randomUUID();
 
@@ -45,14 +46,17 @@ class ContentRepositoryTest {
 
     @BeforeEach
     public void setup() throws Exception {
-        repository = new ContentRepositoryImpl("/tmp", finder, fs);
+        repository = new FSContentRepository(ROOT_PATH, finder, fs);
         ((InitializingBean) repository).afterPropertiesSet();
         when(finder.getItemId(any())).thenReturn(fakeUUID);
     }
 
     @AfterEach
     public void tearDown() throws IOException {
-        Path basePath = fs.getPath("/tmp");
+        Path basePath = fs.getPath(ROOT_PATH);
+        if (Files.notExists(basePath)) {
+            return;
+        }
         try (Stream<Path> stream = Files.list(basePath)) {
             stream.forEach(this::delete);
         }
@@ -72,13 +76,13 @@ class ContentRepositoryTest {
         Output<Item> result = repository.initContent(file);
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
-        Path filePath = fs.getPath("/tmp", fakeUUID + ".dat");
+        Path filePath = fs.getPath(ROOT_PATH, fakeUUID + ".dat");
         assertThat(filePath).exists();
     }
 
     @Test
     void shouldReadAFileWithTheExpectedNameOnFileSystemWhenReadingContent() throws IOException {
-        Path filePath = fs.getPath("/tmp", fakeUUID + ".dat");
+        Path filePath = fs.getPath(ROOT_PATH, fakeUUID + ".dat");
         Files.copy(new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8)), filePath);
         File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
         Output<InputStream> result = repository.readContent(file);
@@ -91,8 +95,7 @@ class ContentRepositoryTest {
 
     @Test
     void shouldWriteContentToFileWithExpectedNameOnFileSystemWhenWritingContent() throws IOException {
-        Path filePath = fs.getPath("/tmp", fakeUUID + ".dat");
-        Files.createFile(filePath);
+        Path filePath = Files.createFile(fs.getPath(ROOT_PATH, fakeUUID + ".dat"));
         File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
         InputStream input = new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8));
         Output<Item> result = repository.writeContent(file, input);
@@ -106,12 +109,45 @@ class ContentRepositoryTest {
 
     @Test
     void shouldDeleteAFileWithExpectedNameOnFileSystemWhenDeletingContent() throws IOException {
-        Path filePath = fs.getPath("/tmp", fakeUUID + ".dat");
-        Files.createFile(filePath);
+        Path filePath = Files.createFile(fs.getPath(ROOT_PATH, fakeUUID + ".dat"));
         File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
         Output<Void> result = repository.deleteContent(file);
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
         assertThat(filePath).doesNotExist();
+    }
+
+    @Test
+    void shouldFailCreateAsRootContainerDoesNotExists() throws IOException {
+        Files.createFile(fs.getPath(ROOT_PATH, fakeUUID + ".dat"));
+        File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
+        Output<Item> result = repository.initContent(file);
+        assertThat(result).extracting(Output::isError, BOOLEAN)
+                .isTrue();
+    }
+
+    @Test
+    void shouldFailReadAsRootContainerDoesNotExists() {
+        File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
+        Output<InputStream> result = repository.readContent(file);
+        assertThat(result).extracting(Output::isError, BOOLEAN)
+                .isTrue();
+    }
+
+    @Test
+    void shouldFailWriteAsRootContainerDoesNotExists() {
+        File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
+        InputStream input = new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8));
+        Output<Item> result = repository.writeContent(file, input);
+        assertThat(result).extracting(Output::isError, BOOLEAN)
+                .isTrue();
+    }
+
+    @Test
+    void shouldFailDeleteAsRootContainerDoesNotExists() {
+        File file = File.builder().withName("name").withParent(Folder.getRoot()).build();
+        Output<Void> result = repository.deleteContent(file);
+        assertThat(result).extracting(Output::isError, BOOLEAN)
+                .isTrue();
     }
 }

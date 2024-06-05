@@ -4,34 +4,29 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.infra.ItemIdFinder;
+import io.github.fherbreteau.functional.infra.ItemFinder;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.UUID;
 
-@Repository
-public class ContentRepositoryImpl implements ContentRepository, InitializingBean {
+public class FSContentRepository implements ContentRepository, InitializingBean {
 
     private static final String FILE_FORMAT = "%s.dat";
 
     private final Path rootPath;
-    private final ItemIdFinder itemIdFinder;
+    private final ItemFinder itemFinder;
 
-    @Autowired
-    public ContentRepositoryImpl(@Value("content.repository.path") String rootPath,
-                                 ItemIdFinder itemIdFinder) {
-        this(rootPath, itemIdFinder, FileSystems.getDefault());
+    public FSContentRepository(String rootPath, ItemFinder itemFinder) {
+        this(rootPath, itemFinder, FileSystems.getDefault());
     }
 
-    ContentRepositoryImpl(String rootPath, ItemIdFinder itemIdFinder, FileSystem fs) {
+    FSContentRepository(String rootPath, ItemFinder itemFinder, FileSystem fs) {
         this.rootPath = fs.getPath(rootPath);
-        this.itemIdFinder = itemIdFinder;
+        this.itemFinder = itemFinder;
     }
 
     @Override
@@ -58,8 +53,9 @@ public class ContentRepositoryImpl implements ContentRepository, InitializingBea
     @Override
     public Output<Item> writeContent(File item, InputStream content) {
         Path itemPath = getItemPath(item);
-        try {
-            Files.copy(content, itemPath, StandardCopyOption.REPLACE_EXISTING);
+        try (OutputStream oStream = Files.newOutputStream(itemPath, StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE)) {
+            content.transferTo(oStream);
             return Output.success(item);
         } catch (IOException e) {
             return Output.error(e);
@@ -85,7 +81,7 @@ public class ContentRepositoryImpl implements ContentRepository, InitializingBea
     }
 
     private Path getItemPath(File item) {
-        UUID itemId = itemIdFinder.getItemId(item);
+        UUID itemId = itemFinder.getItemId(item);
         return rootPath.resolve(String.format(FILE_FORMAT, itemId.toString()));
     }
 }

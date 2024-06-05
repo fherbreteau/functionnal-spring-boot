@@ -6,7 +6,7 @@ public final class ItemSQLConstant {
 
     public static final String COL_ID = "id";
 
-    public static final String COL_TYPE = "type";
+    public static final String COL_ITEM_TYPE = "type";
 
     public static final String COL_NAME = "name";
 
@@ -25,4 +25,6 @@ public final class ItemSQLConstant {
     public static final String COL_CONTENT_TYPE = "content_type";
 
     public static final String PARAM_PARENT_NAME = "parent_name";
+
+    public static final String PARAM_GROUP_IDS = "group_ids";
 }

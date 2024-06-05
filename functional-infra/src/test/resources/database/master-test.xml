@@ -1,0 +1,50 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <include file="database/master.xml" />
+    <changeSet id="test" author="fherbreteau">
+        <insert tableName="item">
+            <column name="id" value="124ce201-1e75-4624-b865-88844339f12a"/>
+            <column name="type" value="Folder"/>
+            <column name="name" value="folder"/>
+            <column name="owner" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="group" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="created_at" value="1970-01-01T00:00:00"/>
+            <column name="modified_at" value="1970-01-01T00:00:00"/>
+            <column name="accessed_at" value="1970-01-01T00:00:00"/>
+            <column name="parent_id" value="00000000-0000-0000-0000-000000000000"/>
+        </insert>
+        <insert tableName="user">
+            <column name="id" value="22bdb905-73d4-479e-99fc-62d46ad27d67"/>
+            <column name="name" value="Test"/>
+        </insert>
+        <insert tableName="user">
+            <column name="id" value="1115a887-fec2-44fe-9f4d-73d8d6fec46b"/>
+            <column name="name" value="Test2"/>
+        </insert>
+        <insert tableName="user">
+            <column name="id" value="bc321002-b703-424b-9c3f-d47bf15be632"/>
+            <column name="name" value="User"/>
+            <column name="password_hash" value="password"/>
+        </insert>
+        <insert tableName="group">
+            <column name="id" value="bc321002-b703-424b-9c3f-d47bf15be632"/>
+            <column name="name" value="User"/>
+        </insert>
+        <insert tableName="group">
+            <column name="id" value="22bdb905-73d4-479e-99fc-62d46ad27d67"/>
+            <column name="name" value="Test"/>
+        </insert>
+        <insert tableName="group">
+            <column name="id" value="afa62e92-2239-40bf-a0d0-606f20e00b00"/>
+            <column name="name" value="Test2"/>
+        </insert>
+        <insert tableName="user_group">
+            <column name="user_id" value="22bdb905-73d4-479e-99fc-62d46ad27d67"/>
+            <column name="group_id" value="22bdb905-73d4-479e-99fc-62d46ad27d67"/>
+        </insert>
+        <insert tableName="user_group">
+            <column name="user_id" value="22bdb905-73d4-479e-99fc-62d46ad27d67"/>
+            <column name="group_id" value="bc321002-b703-424b-9c3f-d47bf15be632"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

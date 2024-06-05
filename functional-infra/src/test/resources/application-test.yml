@@ -1,0 +1,11 @@
+spring:
+  main.banner-mode: "off"
+  liquibase.change-log: classpath:/database/master-test.xml
+  h2.console.enabled: true
+
+logging.level:
+  root: error
+  org.postgresql: debug
+  com.google.common.jimfs: trace
+
+content.repository.path: /tmp
