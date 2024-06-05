@@ -37,131 +37,131 @@ public class FileSystemService {
     }
 
     public List<ItemDTO> listItems(String path, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
-        output = fileService.processCommand(ItemCommandType.LIST, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<List<Item>> itemsOutput = fileService.processCommand(ItemCommandType.LIST, actor, itemInput);
+        if (itemsOutput.isError()) {
+            throw new CommandException(itemsOutput.getError());
         }
-        return entityMapper.mapToItemList(output.getValue());
+        return entityMapper.mapToItemList(itemsOutput.getValue());
     }
 
     public ItemDTO createFile(String path, String name, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
-        output = fileService.processCommand(ItemCommandType.TOUCH, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Item> itemOutput = fileService.processCommand(ItemCommandType.TOUCH, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
+        return entityMapper.mapToItem(itemOutput.getValue());
 
     }
 
     public ItemDTO createFolder(String path, String name, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
-        output = fileService.processCommand(ItemCommandType.MKDIR, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Item> itemOutput = fileService.processCommand(ItemCommandType.MKDIR, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
+        return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeOwner(String path, String name, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        output = userService.findUserByName(name);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        userOutput = userService.findUserByName(name);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User owner = (User) output.getValue();
+        User owner = userOutput.getValue();
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withUser(owner).build();
-        output = fileService.processCommand(ItemCommandType.CHOWN, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHOWN, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
+        return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeGroup(String path, String name, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
-        output = userService.findGroupByName(name);
-        if (output.isError()) {
-            throw new GroupException(output.getError());
+        Output<Group> groupOutput = userService.findGroupByName(name);
+        if (groupOutput.isError()) {
+            throw new GroupException(groupOutput.getError());
         }
-        Group group = (Group) output.getValue();
+        Group group = groupOutput.getValue();
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withGroup(group).build();
-        output = fileService.processCommand(ItemCommandType.CHGRP, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHGRP, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
+        return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeMode(String path, String right, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
         ItemInput itemInput = accessParserService.parseAccessRights(right, itemPath.getItem());
-        output = fileService.processCommand(ItemCommandType.CHMOD, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHMOD, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
+        return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO upload(String path, MultipartFile file, String username) {
         try (InputStream content = file.getInputStream()) {
-            Output output = userService.findUserByName(username);
-            if (output.isError()) {
-                throw new UserException(output.getError());
+            Output<User> userOutput = userService.findUserByName(username);
+            if (userOutput.isError()) {
+                throw new UserException(userOutput.getError());
             }
-            User actor = (User) output.getValue();
+            User actor = userOutput.getValue();
             Path itemPath = fileService.getPath(path, actor);
             if (itemPath.isError()) {
                 throw new PathException(itemPath.getError());
@@ -173,22 +173,22 @@ public class FileSystemService {
                     .withContent(content)
                     .withContentType(contentType)
                     .build();
-            output = fileService.processCommand(ItemCommandType.UPLOAD, actor, itemInput);
-            if (output.isError()) {
-                throw new CommandException(output.getError());
+            Output<Item> itemOutput = fileService.processCommand(ItemCommandType.UPLOAD, actor, itemInput);
+            if (itemOutput.isError()) {
+                throw new CommandException(itemOutput.getError());
             }
-            return entityMapper.mapToItem(output.getValue());
+            return entityMapper.mapToItem(itemOutput.getValue());
         } catch (IOException e) {
             throw new CommandException(e);
         }
     }
 
     public ResponseEntity<InputStreamResource> download(String path, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
@@ -196,28 +196,27 @@ public class FileSystemService {
         ItemInput itemInput = ItemInput.builder(itemPath.getItem())
                 .withContentType(itemPath.getContentType())
                 .build();
-        output = fileService.processCommand(ItemCommandType.DOWNLOAD, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<InputStream> streamOutput = fileService.processCommand(ItemCommandType.DOWNLOAD, actor, itemInput);
+        if (streamOutput.isError()) {
+            throw new CommandException(streamOutput.getError());
         }
-        return entityMapper.mapStream(output.getValue(), itemInput.getContentType());
+        return entityMapper.mapStream(streamOutput.getValue(), itemInput.getContentType());
     }
 
-    public ItemDTO delete(String path, String username) {
-        Output output = userService.findUserByName(username);
-        if (output.isError()) {
-            throw new UserException(output.getError());
+    public void delete(String path, String username) {
+        Output<User> userOutput = userService.findUserByName(username);
+        if (userOutput.isError()) {
+            throw new UserException(userOutput.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
         if (itemPath.isError()) {
             throw new PathException(itemPath.getError());
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
-        output = fileService.processCommand(ItemCommandType.DELETE, actor, itemInput);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Void> itemOutput = fileService.processCommand(ItemCommandType.DELETE, actor, itemInput);
+        if (itemOutput.isError()) {
+            throw new CommandException(itemOutput.getError());
         }
-        return entityMapper.mapToItem(output.getValue());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = FunctionalApplication.class)
+@ActiveProfiles("test")
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class UserControllerTest {
 
@@ -156,12 +158,7 @@ class UserControllerTest {
                 .willReturn(Output.success(User.builder("user1").build()));
 
         mvc.perform(delete("/users/user1").with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("user1"))
-                .andExpect(jsonPath("$.groups").isArray())
-                .andExpect(jsonPath("$.groups", hasSize(1)))
-                .andExpect(jsonPath("$.groups[0].name").value("user1"));
+                .andExpect(status().isNoContent());
     }
 
     @WithMockUser

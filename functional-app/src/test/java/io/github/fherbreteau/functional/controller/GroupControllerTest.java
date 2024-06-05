@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = FunctionalApplication.class)
+@ActiveProfiles("test")
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class GroupControllerTest {
 
@@ -126,10 +128,7 @@ class GroupControllerTest {
                 .willReturn(Output.success(group));
 
         mvc.perform(delete("/groups/group").with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("group"))
-                .andExpect(jsonPath("$.gid").value(groupId.toString()));
+                .andExpect(status().isNoContent());
     }
 
     @WithMockUser

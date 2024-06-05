@@ -1,9 +1,6 @@
 package io.github.fherbreteau.functional.service;
 
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.UserCommandType;
-import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.exception.CommandException;
 import io.github.fherbreteau.functional.exception.UserException;
@@ -28,11 +25,11 @@ public class UserManagementService {
     }
 
     public UserDTO getUser(String name, UUID userId, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withUserId(userId)
                 .build();
@@ -44,11 +41,11 @@ public class UserManagementService {
     }
 
     public UserDTO createUser(InputUserDTO userDTO, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(userDTO.getName())
                 .withUserId(userDTO.getUid())
                 .withGroupId(userDTO.getGid())
@@ -63,11 +60,11 @@ public class UserManagementService {
     }
 
     public UserDTO modifyUser(String name, InputUserDTO userDTO, boolean append, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withUserId(userDTO.getUid())
                 .withGroupId(userDTO.getGid())
@@ -84,11 +81,11 @@ public class UserManagementService {
     }
 
     public UserDTO updatePassword(String name, String password, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withPassword(password)
                 .build();
@@ -99,83 +96,81 @@ public class UserManagementService {
         return entityMapper.mapToUser(output.getValue());
     }
 
-    public UserDTO deleteUser(String name, String username) {
-        Output output = userService.findUserByName(username);
+    public void deleteUser(String name, String username) {
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .build();
         output = userService.processCommand(UserCommandType.USERDEL, actor, input);
         if (output.isError()) {
             throw new CommandException(output.getError());
         }
-        return entityMapper.mapToUser(output.getValue());
     }
 
     public List<GroupDTO> getGroups(String name, UUID userId, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withUserId(userId)
                 .build();
-        output = userService.processCommand(UserCommandType.GROUPS, actor, input);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Group> groupOutput = userService.processCommand(UserCommandType.GROUPS, actor, input);
+        if (groupOutput.isError()) {
+            throw new CommandException(groupOutput.getError());
         }
-        return entityMapper.mapToGroupList(output.getValue());
+        return entityMapper.mapToGroupList(groupOutput.getValue());
     }
 
     public GroupDTO createGroup(GroupDTO groupDTO, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(groupDTO.getName())
                 .withGroupId(groupDTO.getGid())
                 .build();
-        output = userService.processCommand(UserCommandType.GROUPADD, actor, input);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Group> groupOutput = userService.processCommand(UserCommandType.GROUPADD, actor, input);
+        if (groupOutput.isError()) {
+            throw new CommandException(groupOutput.getError());
         }
-        return entityMapper.mapToGroup(output.getValue());
+        return entityMapper.mapToGroup(groupOutput.getValue());
     }
 
     public GroupDTO modifyGroup(String name, GroupDTO groupDTO, String username) {
-        Output output = userService.findUserByName(username);
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withGroupId(groupDTO.getGid())
                 .withNewName(groupDTO.getName())
                 .build();
-        output = userService.processCommand(UserCommandType.GROUPMOD, actor, input);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Group> groupOutput = userService.processCommand(UserCommandType.GROUPMOD, actor, input);
+        if (groupOutput.isError()) {
+            throw new CommandException(groupOutput.getError());
         }
-        return entityMapper.mapToGroup(output.getValue());
+        return entityMapper.mapToGroup(groupOutput.getValue());
     }
 
-    public GroupDTO deleteGroup(String name, boolean force, String username) {
-        Output output = userService.findUserByName(username);
+    public void deleteGroup(String name, boolean force, String username) {
+        Output<User> output = userService.findUserByName(username);
         if (output.isError()) {
             throw new UserException(output.getError());
         }
-        User actor = (User) output.getValue();
+        User actor = output.getValue();
         UserInput input = UserInput.builder(name)
                 .withForce(force)
                 .build();
-        output = userService.processCommand(UserCommandType.GROUPDEL, actor, input);
-        if (output.isError()) {
-            throw new CommandException(output.getError());
+        Output<Group> groupOutput = userService.processCommand(UserCommandType.GROUPDEL, actor, input);
+        if (groupOutput.isError()) {
+            throw new CommandException(groupOutput.getError());
         }
-        return entityMapper.mapToGroup(output.getValue());
     }
 }

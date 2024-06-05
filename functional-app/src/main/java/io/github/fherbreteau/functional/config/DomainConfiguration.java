@@ -46,19 +46,19 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CompositeItemCommandFactory compositeCommandFactory(FileRepository fileRepository,
+    public CompositeItemCommandFactory compositeCommandFactory(ItemRepository itemRepository,
                                                                ContentRepository contentRepository,
                                                                AccessChecker accessChecker,
                                                                AccessUpdater accessUpdater,
                                                                List<ItemCommandFactory<?>> commandFactories) {
-        return new CompositeItemCommandFactory(fileRepository, contentRepository, accessChecker, accessUpdater,
+        return new CompositeItemCommandFactory(itemRepository, contentRepository, accessChecker, accessUpdater,
                 commandFactories);
     }
 
     @Bean
-    public CompositePathFactory compositePathFactory(FileRepository fileRepository, AccessChecker accessChecker,
+    public CompositePathFactory compositePathFactory(ItemRepository itemRepository, AccessChecker accessChecker,
                                                      List<PathFactory> pathFactories) {
-        CompositePathFactory factory = new CompositePathFactory(fileRepository, accessChecker, pathFactories);
+        CompositePathFactory factory = new CompositePathFactory(itemRepository, accessChecker, pathFactories);
         factory.configureRecursive();
         return factory;
     }

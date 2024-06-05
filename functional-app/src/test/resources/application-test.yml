@@ -10,3 +10,5 @@ spring.datasource:
   password: sa
 
 spring.liquibase.change-log: classpath:/database/master.xml
+
+content.repository.path: /tmp
