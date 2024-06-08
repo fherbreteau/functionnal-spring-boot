@@ -4,8 +4,8 @@ import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.impl.NavigationPathParser;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -22,7 +22,7 @@ public class CurrentSegmentPathFactory implements PathFactory {
     }
 
     @Override
-    public PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
+    public PathParser createParser(ItemRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
         return new NavigationPathParser(parentPath, CURRENT_PATH, UnaryOperator.identity());
     }
 }

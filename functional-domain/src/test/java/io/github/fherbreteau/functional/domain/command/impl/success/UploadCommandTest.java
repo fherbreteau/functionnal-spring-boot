@@ -1,10 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +16,7 @@ import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -25,13 +24,12 @@ import static org.mockito.Mockito.verify;
 class UploadCommandTest {
     private UploadCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private ContentRepository contentRepository;
     @Mock
     private InputStream inputStream;
 
-    private File file;
     private User actor;
 
     @Captor
@@ -39,8 +37,10 @@ class UploadCommandTest {
 
     @BeforeEach
     public void setup() {
-        file = File.builder()
+        File file = File.builder()
                 .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         actor = User.builder("actor").build();
         command = new UploadCommand(repository, contentRepository, file, inputStream, "contentType");
@@ -49,15 +49,17 @@ class UploadCommandTest {
     @Test
     void shouldWriteContentWhenExecutingCommand() {
         // GIVEN
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(contentRepository.writeContent(any(), any()))
+                .willAnswer(invocation -> Output.success(invocation.getArgument(0)));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Item> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(contentRepository).writeContent(file, inputStream);
-        verify(repository).save(itemCaptor.capture());
+        verify(contentRepository).writeContent(any(), eq(inputStream));
+        verify(repository).update(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .isInstanceOf(File.class)
                 .extracting(File::getContentType)

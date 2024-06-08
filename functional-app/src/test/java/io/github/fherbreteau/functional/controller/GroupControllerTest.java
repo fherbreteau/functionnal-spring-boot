@@ -2,7 +2,6 @@ package io.github.fherbreteau.functional.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -17,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = FunctionalApplication.class)
+@ActiveProfiles("test")
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class GroupControllerTest {
 
@@ -57,7 +58,7 @@ class GroupControllerTest {
                 .apply(springSecurity())
                 .build();
         actor = User.builder("user").build();
-        given(userService.findUserByName("user")).willReturn(new Output(actor));
+        given(userService.findUserByName("user")).willReturn(Output.success(actor));
     }
 
     @WithMockUser
@@ -65,7 +66,7 @@ class GroupControllerTest {
     void shouldReturnCurrentUserWithGivenName() throws Exception {
         given(userService.processCommand(eq(UserCommandType.GROUPS), eq(actor),
                 argThat(argument -> Objects.isNull(argument.getName()) && Objects.isNull(argument.getUserId()))))
-                .willReturn(new Output(actor.getGroups()));
+                .willReturn(Output.success(actor.getGroups()));
         mvc.perform(get("/groups").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -81,7 +82,7 @@ class GroupControllerTest {
         UUID groupId = UUID.randomUUID();
         given(userService.processCommand(eq(UserCommandType.GROUPADD), eq(actor), argThat(argument ->
                 Objects.equals(argument.getGroupId(), groupId) && Objects.equals(argument.getName(), "group"))))
-                .willReturn(new Output(Group.builder("group").withGroupId(groupId).build()));
+                .willReturn(Output.success(Group.builder("group").withGroupId(groupId).build()));
 
         GroupDTO dto = GroupDTO.builder()
                 .withName("group")
@@ -103,7 +104,7 @@ class GroupControllerTest {
         Group group = Group.builder("group").withGroupId(groupId).build();
         given(userService.processCommand(eq(UserCommandType.GROUPMOD), eq(actor), argThat(argument ->
                 Objects.equals(argument.getGroupId(), groupId) && Objects.equals(argument.getName(), "group"))))
-                .willReturn(new Output(group));
+                .willReturn(Output.success(group));
 
         GroupDTO dto = GroupDTO.builder()
                 .withGid(groupId)
@@ -124,19 +125,16 @@ class GroupControllerTest {
         Group group = Group.builder("group").withGroupId(groupId).build();
         given(userService.processCommand(eq(UserCommandType.GROUPDEL), eq(actor), argThat(argument ->
                 Objects.equals(argument.getName(), "group"))))
-                .willReturn(new Output(group));
+                .willReturn(Output.success(group));
 
         mvc.perform(delete("/groups/group").with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("group"))
-                .andExpect(jsonPath("$.gid").value(groupId.toString()));
+                .andExpect(status().isNoContent());
     }
 
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
+        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
 
         mvc.perform(get("/groups").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -174,7 +172,7 @@ class GroupControllerTest {
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
-                .willReturn(new Output(Error.error("Command Failed")));
+                .willReturn(Output.error("Command Failed"));
 
         mvc.perform(get("/groups").with(csrf()))
                 .andExpect(status().isBadRequest())

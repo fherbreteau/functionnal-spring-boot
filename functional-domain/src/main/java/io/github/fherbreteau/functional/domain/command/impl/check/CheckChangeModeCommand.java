@@ -7,14 +7,14 @@ import io.github.fherbreteau.functional.domain.command.impl.success.ChangeModeCo
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeCommand> {
+public class CheckChangeModeCommand extends AbstractCheckItemCommand<Item, ChangeModeCommand> {
 
     private final AccessUpdater accessUpdater;
     private final Item item;
@@ -22,7 +22,7 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeC
     private final AccessRight groupAccess;
     private final AccessRight otherAccess;
 
-    public CheckChangeModeCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckChangeModeCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                   Item item, AccessRight ownerAccess, AccessRight groupAccess, AccessRight otherAccess) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;
@@ -47,12 +47,12 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<ChangeModeC
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<Item> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item)
                 .withOwnerAccess(ownerAccess)
                 .withGroupAccess(groupAccess)
                 .withOtherAccess(otherAccess)
                 .build();
-        return new ItemErrorCommand(ItemCommandType.CHMOD, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.CHMOD, itemInput, reasons);
     }
 }

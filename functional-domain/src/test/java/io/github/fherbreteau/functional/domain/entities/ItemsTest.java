@@ -3,15 +3,21 @@ package io.github.fherbreteau.functional.domain.entities;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
 class ItemsTest {
 
     @Test
     void testItemsHaveTheGoodTypes() {
-        File file = File.builder().withName("file").withContentType("contentType").build();
+        File file = File.builder()
+                .withName("file")
+                .withContentType("contentType")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         assertThat(file).extracting(Item::isFile, BOOLEAN).isTrue();
         assertThat(file).extracting(Item::isFolder, BOOLEAN).isFalse();
         assertThat(file).extracting(File::getContentType, STRING).isEqualTo("contentType");
@@ -23,7 +29,11 @@ class ItemsTest {
         assertThat(file).extracting(Item::getLastAccessed, LOCAL_DATE_TIME).isNotNull().isBeforeOrEqualTo(LocalDateTime.now());
         assertThat(file).extracting(Item::getLastModified, LOCAL_DATE_TIME).isNotNull().isBeforeOrEqualTo(LocalDateTime.now());
 
-        Folder folder = Folder.builder().withName("folder").build();
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         assertThat(folder).extracting(Item::isFile, BOOLEAN).isFalse();
         assertThat(folder).extracting(Item::isFolder, BOOLEAN).isTrue();
         assertThat(folder.copyBuilder().build())
@@ -34,14 +44,35 @@ class ItemsTest {
         assertThat((Item) folder).isNotEqualTo(file);
         assertThat((Object) file).isNotEqualTo(new Object());
         assertThat((Object) folder).isNotEqualTo(new Object());
+
+        assertThat(File.builder().withHandle(UUID.randomUUID()).withName("").withOwner(User.root()).build())
+                .extracting(AbstractItem::getHandle)
+                .isNotNull();
     }
 
     @Test
     void testThatAllItemHaveAPath() {
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        File file = File.builder().withName("file").withParent(folder).build();
+        Folder folder = Folder.builder()
+                .withHandle(UUID.randomUUID())
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
+        File file = File.builder()
+                .withHandle(UUID.randomUUID())
+                .withName("file")
+                .withParent(folder)
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         assertThat(file).extracting(AbstractItem::getPath, STRING).isEqualTo("/folder/file");
-        folder = Folder.builder().withName("folder").build();
+        folder = Folder.builder()
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("folder")
+                .build();
         assertThat(folder).extracting(AbstractItem::getPath, STRING).isEqualTo("folder");
     }
 
@@ -51,8 +82,10 @@ class ItemsTest {
         User user = User.builder("user").withGroup(group).build();
         File file1 = File.builder()
                 .withName("file")
+                .withHandle(UUID.randomUUID())
                 .withParent(Folder.getRoot())
                 .withOwner(user)
+                .withGroup(Group.root())
                 .withContentType("test")
                 .build();
 
@@ -66,7 +99,8 @@ class ItemsTest {
         assertThat(file1).isNotEqualTo(file2);
         file2 = file1.copyBuilder().withOtherAccess(AccessRight.full()).build();
         assertThat(file1).isNotEqualTo(file2);
-        file2 = file1.copyBuilder().withParent(Folder.builder().build()).build();
+        Folder parent = Folder.builder().withName("").withOwner(User.root()).withGroup(Group.root()).build();
+        file2 = file1.copyBuilder().withParent(parent).build();
         assertThat(file1).isNotEqualTo(file2);
         file2 = file1.copyBuilder().withCreated(LocalDateTime.now()).build();
         assertThat(file1).isNotEqualTo(file2);
@@ -81,11 +115,35 @@ class ItemsTest {
 
         LocalDateTime time = LocalDateTime.MIN;
         File file = File.builder()
+                .withName("")
+                .withGroup(Group.root())
+                .withOwner(User.root())
                 .withContentType("file")
                 .withCreated(time)
                 .withLastAccessed(time)
                 .withLastModified(time)
                 .build();
-        assertThat(file).extracting(File::hashCode).isEqualTo(2073823016);
+        assertThat(file).extracting(File::hashCode).isEqualTo(1287996204);
+    }
+
+    @Test
+    void shouldCheckItemValidity() {
+        ThrowingCallable itemBuilder = () -> File.builder().build();
+        assertThatCode(itemBuilder)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("name is required");
+        itemBuilder = () -> File.builder().withName("").build();
+        assertThatCode(itemBuilder)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("owner is required");
+
+        itemBuilder = () -> Folder.builder().build();
+        assertThatCode(itemBuilder)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("name is required");
+        itemBuilder = () -> Folder.builder().withName("").build();
+        assertThatCode(itemBuilder)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("owner is required");
     }
 }

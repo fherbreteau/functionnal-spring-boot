@@ -5,12 +5,15 @@ import io.github.fherbreteau.functional.domain.command.impl.success.DeleteUserCo
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteUserCommand extends AbstractCheckUserCommand<DeleteUserCommand> {
+public class CheckDeleteUserCommand extends AbstractCheckUserCommand<Void, DeleteUserCommand> {
     private final String name;
 
     public CheckDeleteUserCommand(UserRepository userRepository, GroupRepository groupRepository,
@@ -37,8 +40,8 @@ public class CheckDeleteUserCommand extends AbstractCheckUserCommand<DeleteUserC
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
+    protected UserErrorCommand<Void> createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).build();
-        return new UserErrorCommand(UserCommandType.USERDEL, userInput, reasons);
+        return new UserErrorCommand<>(UserCommandType.USERDEL, userInput, reasons);
     }
 }

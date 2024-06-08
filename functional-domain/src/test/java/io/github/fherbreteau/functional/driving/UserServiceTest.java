@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("rawtypes")
 class UserServiceTest {
     private UserService userService;
     @Mock
@@ -26,7 +27,7 @@ class UserServiceTest {
     @Mock
     private CompositeUserCommandFactory commandFactory;
     @Mock
-    private CheckCommand<Output> checkCommand;
+    private CheckCommand checkCommand;
     @Mock
     private Command<Output> executeCommand;
     @Mock
@@ -40,9 +41,9 @@ class UserServiceTest {
     @Test
     void findUserByNameShouldDelegateToUserService() {
         // GIVEN
-        given(userManager.findUserByName("name")).willReturn(new Output("name"));
+        given(userManager.findUserByName("name")).willReturn(Output.success(User.builder("name").build()));
         // WHEN
-        Output result = userService.findUserByName("name");
+        Output<User> result = userService.findUserByName("name");
         // THEN
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
@@ -51,9 +52,9 @@ class UserServiceTest {
     @Test
     void findGroupByNameShouldDelegateToUserService() {
         // GIVEN
-        given(userManager.findGroupByName("name")).willReturn(new Output("name"));
+        given(userManager.findGroupByName("name")).willReturn(Output.success(Group.builder("name").build()));
         // WHEN
-        Output result = userService.findGroupByName("name");
+        Output<Group> result = userService.findGroupByName("name");
         // THEN
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
@@ -64,9 +65,9 @@ class UserServiceTest {
         // Given
         given(commandFactory.createCommand(any(), any())).willReturn(checkCommand);
         given(checkCommand.execute(actor)).willReturn(executeCommand);
-        given(executeCommand.execute(actor)).willReturn(new Output(new Object()));
+        given(executeCommand.execute(actor)).willReturn(Output.success(new Object()));
         // When
-        Output result = userService.processCommand(UserCommandType.USERADD, actor, UserInput.builder("user").build());
+        Output<User> result = userService.processCommand(UserCommandType.USERADD, actor, UserInput.builder("user").build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)

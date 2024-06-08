@@ -3,8 +3,8 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,9 +31,9 @@ class GetUserCommandTest {
         User user = User.builder("user").withUserId(userId).build();
         given(userRepository.findById(userId)).willReturn(user);
 
-        Command<Output> executeCommand = new GetUserCommand(userRepository, groupRepository,
+        Command<Output<User>> executeCommand = new GetUserCommand(userRepository, groupRepository,
                 null, userId);
-        Output output = executeCommand.execute(actor);
+        Output<User> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, type(User.class))
                 .isNotNull()
@@ -43,9 +43,9 @@ class GetUserCommandTest {
 
     @Test
     void shouldGetActor() {
-        Command<Output> executeCommand = new GetUserCommand(userRepository, groupRepository,
+        Command<Output<User>> executeCommand = new GetUserCommand(userRepository, groupRepository,
                 null, null);
-        Output output = executeCommand.execute(actor);
+        Output<User> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, type(User.class))
                 .isNotNull()

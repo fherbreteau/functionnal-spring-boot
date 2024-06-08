@@ -7,20 +7,20 @@ import io.github.fherbreteau.functional.domain.command.impl.success.ChangeGroupC
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGroupCommand> {
+public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, ChangeGroupCommand> {
 
     private final AccessUpdater accessUpdater;
     private final Item item;
     private final Group newGroup;
 
-    public CheckChangeGroupCommand(FileRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
+    public CheckChangeGroupCommand(ItemRepository repository, AccessChecker accessChecker, AccessUpdater accessUpdater,
                                    Item item, Group newGroup) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;
@@ -43,8 +43,8 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<ChangeGrou
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<Item> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).withGroup(newGroup).build();
-        return new ItemErrorCommand(ItemCommandType.CHGRP, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.CHGRP, itemInput, reasons);
     }
 }

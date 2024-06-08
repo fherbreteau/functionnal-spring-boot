@@ -3,9 +3,13 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateGroupCommand;
+import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +47,7 @@ class CheckCreateGroupCommandTest {
         given(userChecker.canCreateGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(CreateGroupCommand.class);
     }
@@ -53,7 +57,7 @@ class CheckCreateGroupCommandTest {
         // GIVEN
         given(userChecker.canCreateGroup("group", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -64,7 +68,7 @@ class CheckCreateGroupCommandTest {
         given(userChecker.canCreateGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -79,7 +83,7 @@ class CheckCreateGroupCommandTest {
         // WHEN
         command = new CheckCreateGroupCommand(userRepository, groupRepository, userChecker, userUpdater, "group",
                 groupId);
-        Command<Output> result = command.execute(actor);
+        Command<Output<Group>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

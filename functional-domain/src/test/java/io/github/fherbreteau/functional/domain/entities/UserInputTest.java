@@ -15,4 +15,12 @@ class UserInputTest {
                 .extracting(UserInput::isForce, BOOLEAN)
                 .isFalse();
     }
+
+    @Test
+    void outputItemFromThrowableShouldUseThrowableMessage() {
+        assertThat(Output.error(new Exception("message")))
+                .extracting(Output::getError)
+                .extracting(Error::getMessage)
+                .isEqualTo("message");
+    }
 }

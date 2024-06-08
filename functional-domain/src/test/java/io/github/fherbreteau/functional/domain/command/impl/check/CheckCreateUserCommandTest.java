@@ -7,6 +7,10 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +53,7 @@ class CheckCreateUserCommandTest {
         given(userRepository.exists("user")).willReturn(false);
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(CreateUserCommand.class);
     }
@@ -65,7 +69,7 @@ class CheckCreateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
         command = new CheckCreateUserCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,
                 input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(CreateUserCommand.class);
     }
@@ -75,7 +79,7 @@ class CheckCreateUserCommandTest {
         // GIVEN
         given(userChecker.canCreateUser("user", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -86,7 +90,7 @@ class CheckCreateUserCommandTest {
         given(userChecker.canCreateUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -98,7 +102,7 @@ class CheckCreateUserCommandTest {
         given(userRepository.exists("user")).willReturn(false);
         given(groupRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -115,7 +119,7 @@ class CheckCreateUserCommandTest {
         UserInput input = UserInput.builder("user").withUserId(userId).withGroupId(groupId).build();
         command = new CheckCreateUserCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,
                 input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -132,7 +136,7 @@ class CheckCreateUserCommandTest {
         UserInput input = UserInput.builder("user").withUserId(userId).withGroups(List.of("group1")).build();
         command = new CheckCreateUserCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,
                 input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -150,7 +154,7 @@ class CheckCreateUserCommandTest {
         UserInput input = UserInput.builder("user").withUserId(userId).withGroupId(groupId).build();
         command = new CheckCreateUserCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,
                 input);
-        Command<Output> result = command.execute(actor);
+        Command<Output<User>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

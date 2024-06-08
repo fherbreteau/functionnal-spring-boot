@@ -6,20 +6,20 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteItemCommand extends AbstractCheckItemCommand<DeleteItemCommand> {
+public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, DeleteItemCommand> {
     private final ContentRepository contentRepository;
     private final AccessUpdater accessUpdater;
     private final Item item;
 
-    public CheckDeleteItemCommand(FileRepository repository, ContentRepository contentRepository,
+    public CheckDeleteItemCommand(ItemRepository repository, ContentRepository contentRepository,
                                   AccessChecker accessChecker, AccessUpdater accessUpdater, Item item) {
         super(repository, accessChecker);
         this.contentRepository = contentRepository;
@@ -42,8 +42,8 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<DeleteItemC
     }
 
     @Override
-    protected final ItemErrorCommand createError(List<String> reasons) {
+    protected final ItemErrorCommand<Void> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.DELETE, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.DELETE, itemInput, reasons);
     }
 }

@@ -6,6 +6,10 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CheckCreateUserCommand extends AbstractCheckUserCommand<CreateUserCommand> {
+public class CheckCreateUserCommand extends AbstractCheckUserCommand<User, CreateUserCommand> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -68,7 +72,7 @@ public class CheckCreateUserCommand extends AbstractCheckUserCommand<CreateUserC
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
-        return new UserErrorCommand(UserCommandType.USERADD, input, reasons);
+    protected UserErrorCommand<User> createError(List<String> reasons) {
+        return new UserErrorCommand<>(UserCommandType.USERADD, input, reasons);
     }
 }

@@ -1,0 +1,23 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_type" value="uuid" dbms="h2"/>
+
+    <changeSet id="20240518000000-01-1" author="fherbreteau">
+        <createTable tableName="group">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" primaryKeyName="group_pk"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="20240518000000-01-2" author="fherbreteau">
+        <insert tableName="group">
+            <column name="id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="name" value="wheel"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

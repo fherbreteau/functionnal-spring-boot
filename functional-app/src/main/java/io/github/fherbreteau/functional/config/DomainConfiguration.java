@@ -10,6 +10,11 @@ import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.user.UserManager;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.*;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.driving.UserService;
@@ -46,19 +51,19 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CompositeItemCommandFactory compositeCommandFactory(FileRepository fileRepository,
+    public CompositeItemCommandFactory compositeCommandFactory(ItemRepository itemRepository,
                                                                ContentRepository contentRepository,
                                                                AccessChecker accessChecker,
                                                                AccessUpdater accessUpdater,
-                                                               List<ItemCommandFactory> commandFactories) {
-        return new CompositeItemCommandFactory(fileRepository, contentRepository, accessChecker, accessUpdater,
+                                                               List<ItemCommandFactory<?>> commandFactories) {
+        return new CompositeItemCommandFactory(itemRepository, contentRepository, accessChecker, accessUpdater,
                 commandFactories);
     }
 
     @Bean
-    public CompositePathFactory compositePathFactory(FileRepository fileRepository, AccessChecker accessChecker,
+    public CompositePathFactory compositePathFactory(ItemRepository itemRepository, AccessChecker accessChecker,
                                                      List<PathFactory> pathFactories) {
-        CompositePathFactory factory = new CompositePathFactory(fileRepository, accessChecker, pathFactories);
+        CompositePathFactory factory = new CompositePathFactory(itemRepository, accessChecker, pathFactories);
         factory.configureRecursive();
         return factory;
     }
@@ -76,7 +81,7 @@ public class DomainConfiguration {
                                                                    UserChecker userChecker,
                                                                    UserUpdater userUpdater,
                                                                    PasswordProtector passwordProtector,
-                                                                   List<UserCommandFactory> userFactories) {
+                                                                   List<UserCommandFactory<?>> userFactories) {
         return new CompositeUserCommandFactory(userRepository, groupRepository, userChecker, userUpdater,
                 passwordProtector, userFactories);
     }

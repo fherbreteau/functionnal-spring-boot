@@ -1,15 +1,12 @@
 package io.github.fherbreteau.functional.driving;
 
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.UserCommandType;
-import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.domain.entities.*;
 
 public interface UserService {
 
-    Output findUserByName(String name);
+    Output<User> findUserByName(String name);
 
-    Output findGroupByName(String name);
+    Output<Group> findGroupByName(String name);
 
-    Output processCommand(UserCommandType type, User currentUser, UserInput userInput);
+    <T> Output<T> processCommand(UserCommandType type, User currentUser, UserInput userInput);
 }

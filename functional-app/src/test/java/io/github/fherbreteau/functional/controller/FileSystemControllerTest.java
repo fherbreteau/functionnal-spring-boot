@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
         classes = FunctionalApplication.class)
+@ActiveProfiles("test")
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class FileSystemControllerTest {
 
@@ -87,7 +89,7 @@ class FileSystemControllerTest {
                 .withOtherAccess(AccessRight.none())
                 .build();
         actor = User.builder("user").build();
-        given(userService.findUserByName("user")).willReturn(new Output(actor));
+        given(userService.findUserByName("user")).willReturn(Output.success(actor));
     }
 
     @WithMockUser
@@ -95,7 +97,7 @@ class FileSystemControllerTest {
     void shouldReturnAListOfItemWhenFileServiceCanListElement() throws Exception {
         given(fileService.getPath("/", actor)).willReturn(Path.ROOT);
         given(fileService.processCommand(eq(ItemCommandType.LIST), eq(actor), argThat(argument -> Objects.equals(argument.getItem(), Folder.getRoot()))))
-                .willReturn(new Output(List.of(file, folder)));
+                .willReturn(Output.success(List.of(file, folder)));
 
         mvc.perform(get("/files")
                         .param("path", "/"))
@@ -115,7 +117,7 @@ class FileSystemControllerTest {
 
         given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
         given(fileService.processCommand(eq(ItemCommandType.LIST), eq(actor), argThat(argument -> Objects.equals(argument.getItem(), folder))))
-                .willReturn(new Output(List.of()));
+                .willReturn(Output.success(List.of()));
 
         mvc.perform(get("/files")
                         .param("path", "/folder"))
@@ -132,7 +134,7 @@ class FileSystemControllerTest {
         given(fileService.processCommand(eq(ItemCommandType.TOUCH), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), Folder.getRoot())
                         && Objects.equals(argument.getName(), "file"))))
-                .willReturn(new Output(file));
+                .willReturn(Output.success(file));
 
         mvc.perform(post("/files/file").with(csrf())
                         .param("path", "/")
@@ -150,7 +152,7 @@ class FileSystemControllerTest {
         given(fileService.processCommand(eq(ItemCommandType.MKDIR), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), Folder.getRoot())
                         && Objects.equals(argument.getName(), "folder"))))
-                .willReturn(new Output(folder));
+                .willReturn(Output.success(folder));
 
         mvc.perform(post("/files/folder").with(csrf())
                         .param("path", "/")
@@ -165,12 +167,12 @@ class FileSystemControllerTest {
     @Test
     void shouldChangeOwnerWhenFileServiceCanChangeOwner() throws Exception {
         User user2 = User.builder("user2").build();
-        given(userService.findUserByName("user2")).willReturn(new Output(user2));
+        given(userService.findUserByName("user2")).willReturn(Output.success(user2));
         given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
         Folder updated = folder.copyBuilder().withOwner(user2).build();
         given(fileService.processCommand(eq(ItemCommandType.CHOWN), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), folder) && Objects.equals(argument.getUser(), user2))))
-                .willReturn(new Output(updated));
+                .willReturn(Output.success(updated));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/folder")
@@ -184,12 +186,12 @@ class FileSystemControllerTest {
     @Test
     void shouldChangeGroupWhenFileServiceCanChangeGroup() throws Exception {
         Group group2 = Group.builder("group2").build();
-        given(userService.findGroupByName("group2")).willReturn(new Output(group2));
+        given(userService.findGroupByName("group2")).willReturn(Output.success(group2));
         given(fileService.getPath("/folder", actor)).willReturn(Path.success(folder));
         Folder updated = folder.copyBuilder().withGroup(group2).build();
         given(fileService.processCommand(eq(ItemCommandType.CHGRP), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), folder) && Objects.equals(argument.getGroup(), group2))))
-                .willReturn(new Output(updated));
+                .willReturn(Output.success(updated));
 
         mvc.perform(patch("/files/group").with(csrf())
                         .param("path", "/folder")
@@ -207,7 +209,7 @@ class FileSystemControllerTest {
         given(accessParserService.parseAccessRights("-wx", folder)).willReturn(input);
         Folder updated = folder.copyBuilder().withOwnerAccess(AccessRight.readOnly()).build();
         given(fileService.processCommand(ItemCommandType.CHMOD, actor, input))
-                .willReturn(new Output(updated));
+                .willReturn(Output.success(updated));
 
         mvc.perform(patch("/files/mode").with(csrf())
                         .param("path", "/folder")
@@ -223,7 +225,7 @@ class FileSystemControllerTest {
         given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
         given(fileService.processCommand(eq(ItemCommandType.DOWNLOAD), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), file) && Objects.equals(argument.getContentType(), file.getContentType()))))
-                .willReturn(new Output(new ByteArrayInputStream("content".getBytes())));
+                .willReturn(Output.success(new ByteArrayInputStream("content".getBytes())));
 
         mvc.perform(get("/files/download").with(csrf())
                         .param("path", "/file"))
@@ -238,7 +240,7 @@ class FileSystemControllerTest {
         given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
         given(fileService.processCommand(eq(ItemCommandType.UPLOAD), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), file))))
-                .willReturn(new Output(file));
+                .willReturn(Output.success(file));
 
         mvc.perform(multipart("/files/upload")
                         .file("file", "content".getBytes())
@@ -255,19 +257,17 @@ class FileSystemControllerTest {
         given(fileService.getPath("/file", actor)).willReturn(Path.success(file));
         given(fileService.processCommand(eq(ItemCommandType.DELETE), eq(actor), argThat(argument ->
                 Objects.equals(argument.getItem(), file))))
-                .willReturn(new Output(file));
+                .willReturn(Output.success(file));
         mvc.perform(delete("/files")
                         .with(csrf())
                         .param("path", "/file"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("file"));
+                .andExpect(status().isNoContent());
     }
 
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
+        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
@@ -419,10 +419,14 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenParamDoesNotExists() throws Exception {
-        Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
+        Folder path = Folder.builder()
+                .withName("path")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .build();
         given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
-        given(userService.findUserByName("user2")).willReturn(new Output(Error.error("user2 not found")));
-        given(userService.findGroupByName("group2")).willReturn(new Output(Error.error("group2 not found")));
+        given(userService.findUserByName("user2")).willReturn(Output.error("user2 not found"));
+        given(userService.findGroupByName("group2")).willReturn(Output.error("group2 not found"));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/path")
@@ -445,16 +449,20 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
-        Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
+        Folder path = Folder.builder()
+                .withName("path")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .build();
         given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
         ItemInput input = ItemInput.builder(path).withOwnerAccess(AccessRight.writeOnly().addExecute()).build();
         given(accessParserService.parseAccessRights("-wx", path)).willReturn(input);
         User user2 = User.builder("user2").build();
-        given(userService.findUserByName("user2")).willReturn(new Output(user2));
+        given(userService.findUserByName("user2")).willReturn(Output.success(user2));
         Group group2 = Group.builder("group2").build();
-        given(userService.findGroupByName("group2")).willReturn(new Output(group2));
+        given(userService.findGroupByName("group2")).willReturn(Output.success(group2));
         given(fileService.processCommand(any(), eq(actor), any())).willAnswer(invocation ->
-                new Output(Error.error("Command Failed", List.of("Error"))));
+                Output.error("Command Failed", List.of("Error")));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))

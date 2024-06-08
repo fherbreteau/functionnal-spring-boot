@@ -1,15 +1,12 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeOwnerCommand;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 class CheckChangeOwnerCommandTest {
     private CheckChangeOwnerCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessChecker accessChecker;
     @Mock
@@ -50,7 +47,7 @@ class CheckChangeOwnerCommandTest {
         // GIVEN
         given(accessChecker.canChangeOwner(item, actor)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(ChangeOwnerCommand.class);
     }
@@ -60,7 +57,7 @@ class CheckChangeOwnerCommandTest {
         // GIVEN
         given(accessChecker.canChangeOwner(item, actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(ItemErrorCommand.class);
     }

@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.check;
 
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import org.springframework.stereotype.Service;
 
 @Service

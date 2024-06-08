@@ -3,15 +3,15 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public class UpdateGroupCommand extends AbstractModifyUserCommand {
+public class UpdateGroupCommand extends AbstractModifyUserCommand<Group> {
     private final String name;
     private final UUID groupId;
     private final String newName;
@@ -25,7 +25,7 @@ public class UpdateGroupCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Group> execute(User actor) {
         Group group = groupRepository.findByName(name);
         Group.Builder builder = group.copy();
         if (nonNull(groupId)) {
@@ -34,7 +34,7 @@ public class UpdateGroupCommand extends AbstractModifyUserCommand {
         if (nonNull(newName)) {
             builder.withName(newName);
         }
-        Group newGroup = groupRepository.save(userUpdater.updateGroup(group, builder.build()));
-        return new Output(newGroup);
+        Group newGroup = groupRepository.update(userUpdater.updateGroup(group, builder.build()));
+        return Output.success(newGroup);
     }
 }

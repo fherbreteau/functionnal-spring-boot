@@ -22,6 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("rawtypes")
 class FileServiceTest {
     private FileService fileService;
     @Mock
@@ -31,7 +32,7 @@ class FileServiceTest {
     @Mock
     private User actor;
     @Mock
-    private CheckCommand<Output> checkCommand;
+    private CheckCommand checkCommand;
     @Mock
     private Command<Output> executeCommand;
     @Mock
@@ -69,7 +70,7 @@ class FileServiceTest {
         // THEN
         assertThat(path).isNotNull()
                 .satisfies(p -> assertThat(p.isError()).isTrue())
-                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' null:null ------rwx null' for actor"))
+                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) ------rwx null' for actor"))
                 .satisfies(p -> assertThat(p.getError().getReasons()).isEmpty());
     }
 
@@ -78,9 +79,9 @@ class FileServiceTest {
         // Given
         given(commandFactory.createCommand(any(), any())).willReturn(checkCommand);
         given(checkCommand.execute(actor)).willReturn(executeCommand);
-        given(executeCommand.execute(actor)).willReturn(new Output(new Object()));
+        given(executeCommand.execute(actor)).willReturn(Output.success(new Object()));
         // When
-        Output result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
+        Output<File> result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
@@ -106,7 +107,7 @@ class FileServiceTest {
                     return new CheckUnsupportedItemCommand(null, null, type, itemInput);
                 });
         // When
-        Output result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
+        Output<File> result = fileService.processCommand(ItemCommandType.TOUCH, actor, ItemInput.builder(item).build());
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)

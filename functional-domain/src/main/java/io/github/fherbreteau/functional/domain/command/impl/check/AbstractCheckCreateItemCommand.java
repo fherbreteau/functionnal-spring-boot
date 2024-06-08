@@ -3,19 +3,19 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractCheckCreateItemCommand<C extends Command<Output>> extends AbstractCheckItemCommand<C> {
+public abstract class AbstractCheckCreateItemCommand<T, C extends Command<Output<T>>> extends AbstractCheckItemCommand<T, C> {
     protected final String name;
     protected final Folder parent;
     protected final AccessUpdater accessUpdater;
 
-    protected AbstractCheckCreateItemCommand(FileRepository repository, AccessChecker accessChecker,
+    protected AbstractCheckCreateItemCommand(ItemRepository repository, AccessChecker accessChecker,
                                              AccessUpdater accessUpdater, String name, Folder parent) {
         super(repository, accessChecker);
         this.accessUpdater = accessUpdater;
@@ -38,11 +38,11 @@ public abstract class AbstractCheckCreateItemCommand<C extends Command<Output>> 
     protected abstract String getCantWriteFormat();
 
     @Override
-    protected final ItemErrorCommand createError(List<String> reasons) {
+    protected final ItemErrorCommand<T> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(parent)
                 .withName(name)
                 .build();
-        return new ItemErrorCommand(getType(), itemInput, reasons);
+        return new ItemErrorCommand<>(getType(), itemInput, reasons);
     }
 
     protected abstract ItemCommandType getType();

@@ -6,8 +6,8 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.RecursiveFactory;
 import io.github.fherbreteau.functional.domain.path.impl.ComplexPathParser;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.function.Predicate;
 
@@ -27,7 +27,7 @@ public class ComplexSegmentPathFactory implements PathFactory, RecursiveFactory 
     }
 
     @Override
-    public PathParser createParser(FileRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
+    public PathParser createParser(ItemRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
         return new ComplexPathParser(compositePathFactory, parentPath, path);
     }
 }

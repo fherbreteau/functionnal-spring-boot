@@ -4,17 +4,17 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public class UpdateUserCommand extends AbstractModifyUserCommand {
+public class UpdateUserCommand extends AbstractModifyUserCommand<User> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -38,7 +38,7 @@ public class UpdateUserCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<User> execute(User actor) {
         User user = userRepository.findByName(name);
         User.Builder builder = user.copy();
         if (nonNull(userId)) {
@@ -59,10 +59,10 @@ public class UpdateUserCommand extends AbstractModifyUserCommand {
                 builder.withGroups(newGroups);
             }
         }
-        User newUser = userRepository.save(userUpdater.updateUser(user, builder.build()));
+        User newUser = userRepository.update(userUpdater.updateUser(user, builder.build()));
         if (nonNull(password)) {
             newUser = userRepository.updatePassword(newUser, passwordProtector.protect(password));
         }
-        return new Output(newUser);
+        return Output.success(newUser);
     }
 }

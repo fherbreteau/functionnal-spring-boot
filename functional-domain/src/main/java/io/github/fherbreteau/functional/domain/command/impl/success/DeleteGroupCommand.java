@@ -3,11 +3,11 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
-public class DeleteGroupCommand extends AbstractModifyUserCommand {
+public class DeleteGroupCommand extends AbstractModifyUserCommand<Void> {
     private final String name;
     private final boolean force;
 
@@ -19,11 +19,13 @@ public class DeleteGroupCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Void> execute(User actor) {
         Group group = groupRepository.findByName(name);
         if (force) {
-            group = userRepository.removeGroupFromUser(group);
+            userRepository.removeGroupFromUser(group);
         }
-        return new Output(groupRepository.delete(userUpdater.deleteGroup(group)));
+        userUpdater.deleteGroup(group);
+        groupRepository.delete(group);
+        return Output.success(null);
     }
 }

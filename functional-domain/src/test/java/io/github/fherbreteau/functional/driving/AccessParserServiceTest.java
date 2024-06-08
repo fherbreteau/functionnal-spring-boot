@@ -3,10 +3,7 @@ package io.github.fherbreteau.functional.driving;
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.factory.impl.*;
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driving.impl.AccessParserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +21,11 @@ public class AccessParserServiceTest {
     private AccessParserService accessParserService;
 
     public static Stream<Arguments> shouldMapAnAccessStringToRequiredAccessRight() {
-        File fileNoAccess = File.builder().build();
+        File fileNoAccess = File.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         File fileFullAccess = fileNoAccess.copyBuilder()
                 .withOwnerAccess(full())
                 .withGroupAccess(full())
@@ -77,17 +78,22 @@ public class AccessParserServiceTest {
     }
 
     public static Stream<Arguments> shouldThrowAnIllegalStateException() {
+        File file = File.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         return Stream.of(
-                Arguments.of(null, File.builder().build()),
-                Arguments.of("", File.builder().build()),
-                Arguments.of("a", File.builder().build()),
-                Arguments.of("g", File.builder().build()),
-                Arguments.of("r", File.builder().build()),
-                Arguments.of("u", File.builder().build()),
-                Arguments.of("w", File.builder().build()),
-                Arguments.of("x", File.builder().build()),
+                Arguments.of(null, file),
+                Arguments.of("", file),
+                Arguments.of("a", file),
+                Arguments.of("g", file),
+                Arguments.of("r", file),
+                Arguments.of("u", file),
+                Arguments.of("w", file),
+                Arguments.of("x", file),
                 Arguments.of("+rwx", null),
-                Arguments.of("l", File.builder().build())
+                Arguments.of("l", file)
                 );
     }
 

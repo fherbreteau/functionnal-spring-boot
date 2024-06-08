@@ -5,18 +5,22 @@ import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactor
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedUserCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
-public class UnsupportedUserCommandFactory implements UserCommandFactory {
+public class UnsupportedUserCommandFactory implements UserCommandFactory<Void> {
     @Override
     public boolean supports(UserCommandType type, UserInput userInput) {
         return true;
     }
 
     @Override
-    public CheckCommand<Output> createCommand(UserRepository repository, GroupRepository groupRepository,
-                                              UserChecker userChecker, UserUpdater userUpdater,
-                                              PasswordProtector passwordProtector, UserCommandType type,
-                                              UserInput userInput) {
+    public CheckCommand<Void> createCommand(UserRepository repository, GroupRepository groupRepository,
+                                            UserChecker userChecker, UserUpdater userUpdater,
+                                            PasswordProtector passwordProtector, UserCommandType type,
+                                            UserInput userInput) {
         return new CheckUnsupportedUserCommand(repository, groupRepository, userChecker, userUpdater, type,
                 userInput);
     }

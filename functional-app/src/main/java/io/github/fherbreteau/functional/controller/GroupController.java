@@ -41,10 +41,10 @@ public class GroupController {
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<GroupDTO> deleteGroup(@PathVariable("name") String name,
+    public ResponseEntity<Void> deleteGroup(@PathVariable("name") String name,
                                                 @RequestParam(value = "force", required = false, defaultValue = "false") boolean force,
                                                 Principal user) {
-        GroupDTO response = userManagementService.deleteGroup(name, force, user.getName());
-        return ResponseEntity.ok(response);
+        userManagementService.deleteGroup(name, force, user.getName());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,12 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.error;
 
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.User;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +33,16 @@ class ItemErrorCommandTest {
     @MethodSource
     void shouldGenerateAnErrorWhenExecutingCommand(ItemCommandType itemCommandType) {
         // GIVEN
-        Item item = File.builder().build();
+        Item item = File.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withHandle(UUID.randomUUID())
+                .withName("")
+                .build();
         List<String> reasons = List.of("error1", "error2");
-        ItemErrorCommand command = new ItemErrorCommand(itemCommandType, ItemInput.builder(item).build(), reasons);
+        ItemErrorCommand<Void> command = new ItemErrorCommand<>(itemCommandType, ItemInput.builder(item).build(), reasons);
         // WHEN
-        Output result = command.execute(actor);
+        Output<Void> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)

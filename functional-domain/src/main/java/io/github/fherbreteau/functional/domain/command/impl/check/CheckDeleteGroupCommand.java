@@ -5,12 +5,15 @@ import io.github.fherbreteau.functional.domain.command.impl.success.DeleteGroupC
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<DeleteGroupCommand> {
+public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<Void, DeleteGroupCommand> {
     private final String name;
     private final boolean force;
 
@@ -43,8 +46,8 @@ public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<DeleteGrou
     }
 
     @Override
-    protected UserErrorCommand createError(List<String> reasons) {
+    protected UserErrorCommand<Void> createError(List<String> reasons) {
         UserInput userInput = UserInput.builder(name).withForce(force).build();
-        return new UserErrorCommand(UserCommandType.GROUPDEL, userInput, reasons);
+        return new UserErrorCommand<>(UserCommandType.GROUPDEL, userInput, reasons);
     }
 }

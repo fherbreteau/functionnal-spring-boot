@@ -3,21 +3,21 @@ package io.github.fherbreteau.functional.domain.path;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.RecursiveFactory;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.Comparator;
 import java.util.List;
 
 public class CompositePathFactory {
 
-    private final FileRepository repository;
+    private final ItemRepository repository;
 
     private final AccessChecker accessChecker;
 
     private final List<PathFactory> pathFactories;
 
-    public CompositePathFactory(FileRepository repository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
+    public CompositePathFactory(ItemRepository repository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
         this.repository = repository;
         this.accessChecker = accessChecker;
         this.pathFactories = pathFactories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();

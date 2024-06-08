@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
-public abstract class AbstractModifyUserCommand extends AbstractSuccessUserCommand {
+public abstract class AbstractModifyUserCommand<T> extends AbstractSuccessUserCommand<T> {
 
     protected final UserUpdater userUpdater;
 

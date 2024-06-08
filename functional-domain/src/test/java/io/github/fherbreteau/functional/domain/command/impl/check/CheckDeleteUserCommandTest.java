@@ -5,7 +5,10 @@ import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorComma
 import io.github.fherbreteau.functional.domain.command.impl.success.DeleteUserCommand;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +43,7 @@ class CheckDeleteUserCommandTest {
         given(userChecker.canDeleteUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(DeleteUserCommand.class);
     }
@@ -50,7 +53,7 @@ class CheckDeleteUserCommandTest {
         // GIVEN
         given(userChecker.canDeleteUser("user", actor)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -61,7 +64,7 @@ class CheckDeleteUserCommandTest {
         given(userChecker.canDeleteUser("user", actor)).willReturn(true);
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<Void>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

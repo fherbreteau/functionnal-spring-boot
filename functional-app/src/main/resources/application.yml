@@ -5,3 +5,9 @@ spring:
             location: ${java.io.tmpdir}
             max-file-size: 128KB
             max-request-size: 128KB
+    liquibase:
+        change-log: classpath:/database/master.xml
+    datasource:
+        url: jdbc:postgresql://localhost:5432/functional_db
+        username: functional_user
+        password: Functi0nalS3cret

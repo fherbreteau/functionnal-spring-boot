@@ -33,9 +33,16 @@
 
         <!-- Database dependencies -->
         <liquibase.version>4.27.0</liquibase.version>
+        <postgresql.version>42.7.3</postgresql.version>
 
         <!-- Password validity Checker -->
         <passay.version>1.6.4</passay.version>
+
+        <java-diff-utils.version>4.12</java-diff-utils.version>
+
+        <!-- Tests dependencies -->
+        <jimfs.version>1.3.0</jimfs.version>
+        <testcontainers.version>1.19.8</testcontainers.version>
 
         <!-- Tools dependencies -->
         <compiler.version>3.13.0</compiler.version>
@@ -45,6 +52,9 @@
         <surefire.version>3.2.5</surefire.version>
         <pitest.version>1.16.1</pitest.version>
         <pitest-junit5.version>1.2.1</pitest-junit5.version>
+
+        <!-- Jacoco Coverage Ratio -->
+        <jacoco.coverage.ratio>90%</jacoco.coverage.ratio>
 
         <!-- Mutation Testing configuration -->
         <pitest.fail-when-no-mutations>true</pitest.fail-when-no-mutations>
@@ -64,6 +74,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Testcontainers Dependencies -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Project Dependencies -->
             <dependency>
                 <groupId>io.github.fherbreteau</groupId>
@@ -87,13 +106,29 @@
                 <artifactId>passay</artifactId>
                 <version>${passay.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>io.github.java-diff-utils</groupId>
+                <artifactId>java-diff-utils</artifactId>
+                <version>${java-diff-utils.version}</version>
+            </dependency>
 
             <!-- Liquibase -->
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
+            </dependency>
+            <!-- Databases drivers -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+            <!-- Test Dependencies -->
+            <dependency>
+                <groupId>com.google.jimfs</groupId>
+                <artifactId>jimfs</artifactId>
+                <version>${jimfs.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -136,6 +171,7 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                             <formats>
                                 <format>XML</format>
+                                <format>HTML</format>
                             </formats>
                         </configuration>
                     </execution>
@@ -152,7 +188,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>90%</minimum>
+                                            <minimum>${jacoco.coverage.ratio}</minimum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>

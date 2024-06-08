@@ -2,7 +2,6 @@ package io.github.fherbreteau.functional.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.model.InputUserDTO;
@@ -14,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = FunctionalApplication.class)
+@ActiveProfiles("test")
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 class UserControllerTest {
 
@@ -52,7 +53,7 @@ class UserControllerTest {
                 .apply(springSecurity())
                 .build();
         actor = User.builder("user").build();
-        given(userService.findUserByName("user")).willReturn(new Output(actor));
+        given(userService.findUserByName("user")).willReturn(Output.success(actor));
     }
 
     @WithMockUser
@@ -60,7 +61,7 @@ class UserControllerTest {
     void shouldReturnCurrentUserWithGivenName() throws Exception {
         given(userService.processCommand(eq(UserCommandType.ID), eq(actor),
                 argThat(argument -> Objects.isNull(argument.getName()) && Objects.isNull(argument.getUserId()))))
-                .willReturn(new Output(actor));
+                .willReturn(Output.success(actor));
         mvc.perform(get("/users").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -84,7 +85,7 @@ class UserControllerTest {
                 && Objects.equals(argument.getGroupId(), groupId)
                 && Objects.equals(argument.getPassword(), "Password")
                 && isEqualCollection(argument.getGroups(), List.of("group1", "group2")))))
-                .willReturn(new Output(User.builder("user1").withUserId(userId).build()));
+                .willReturn(Output.success(User.builder("user1").withUserId(userId).build()));
 
         InputUserDTO dto = InputUserDTO.builder()
                 .withName("user1")
@@ -114,7 +115,7 @@ class UserControllerTest {
         given(userService.processCommand(eq(UserCommandType.USERMOD), eq(actor),
                 argThat(argument -> Objects.equals(argument.getName(), "user1") &&
                         Objects.equals(argument.getGroupId(), groupId))))
-                .willReturn(new Output(User.builder("user1").withGroup(group).build()));
+                .willReturn(Output.success(User.builder("user1").withGroup(group).build()));
 
         InputUserDTO dto = InputUserDTO.builder()
                 .withGid(groupId)
@@ -136,7 +137,7 @@ class UserControllerTest {
         given(userService.processCommand(eq(UserCommandType.PASSWD), eq(actor),
                 argThat(argument -> Objects.equals(argument.getName(), "user1") &&
                         Objects.equals(argument.getPassword(), "Pa$sw0rd"))))
-                .willReturn(new Output(User.builder("user1").build()));
+                .willReturn(Output.success(User.builder("user1").build()));
 
         mvc.perform(put("/users/user1/password").with(csrf())
                 .content("Pa$sw0rd")
@@ -154,21 +155,16 @@ class UserControllerTest {
     void shouldDeleteUser() throws Exception {
         given(userService.processCommand(eq(UserCommandType.USERDEL), eq(actor),
                 argThat(argument -> Objects.equals(argument.getName(), "user1"))))
-                .willReturn(new Output(User.builder("user1").build()));
+                .willReturn(Output.success(User.builder("user1").build()));
 
         mvc.perform(delete("/users/user1").with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("user1"))
-                .andExpect(jsonPath("$.groups").isArray())
-                .andExpect(jsonPath("$.groups", hasSize(1)))
-                .andExpect(jsonPath("$.groups[0].name").value("user1"));
+                .andExpect(status().isNoContent());
     }
 
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(new Output(Error.error("user not found")));
+        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
 
         mvc.perform(get("/users").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -212,7 +208,7 @@ class UserControllerTest {
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
-                .willReturn(new Output(Error.error("Command Failed")));
+                .willReturn(Output.error("Command Failed"));
 
         mvc.perform(get("/users").with(csrf()))
                 .andExpect(status().isBadRequest())

@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,24 +52,24 @@ class CreateUserCommandTest {
     @Test
     void shouldCreateUserAndCreateGroupWhenExecutingCommand() {
         // GIVEN
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(groupRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createUser(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(groupRepository).save(groupCaptor.capture());
+        verify(groupRepository).create(groupCaptor.capture());
         assertThat(groupCaptor.getValue())
                 .extracting(Group::getGroupId)
                 .isNotNull();
         assertThat(groupCaptor.getValue())
                 .extracting(Group::getName)
                 .isEqualTo("user");
-        verify(userRepository).save(userCaptor.capture());
+        verify(userRepository).create(userCaptor.capture());
         assertThat(userCaptor.getValue())
                 .extracting(User::getUserId)
                 .isNotNull();
@@ -81,7 +81,7 @@ class CreateUserCommandTest {
     @Test
     void shouldCreateUserAndUseExistingGroupWhenExecutingCommand() {
         // GIVEN
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         Group group = Group.builder("group").build();
         given(groupRepository.findByName("group")).willReturn(group);
         given(userUpdater.createUser(any())).willAnswer(invocation -> invocation.getArgument(0));
@@ -89,12 +89,12 @@ class CreateUserCommandTest {
         UserInput input = UserInput.builder("user").withGroups(List.of("group")).build();
         command = new CreateUserCommand(userRepository, groupRepository, userUpdater, passwordProtector, input);
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(userRepository).save(userCaptor.capture());
+        verify(userRepository).create(userCaptor.capture());
         assertThat(userCaptor.getValue())
                 .extracting(User::getUserId)
                 .isNotNull();

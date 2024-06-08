@@ -1,9 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -20,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 class ListChildrenCommandTest {
     private ListChildrenCommand command;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
 
     private Folder parent;
     private User actor;
@@ -29,6 +28,9 @@ class ListChildrenCommandTest {
     public void setup() {
         parent = Folder.builder()
                 .withName("parent")
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         actor = User.builder("actor").build();
         command = new ListChildrenCommand(repository, parent);
@@ -39,7 +41,7 @@ class ListChildrenCommandTest {
         // GIVEN
         given(repository.findByParentAndUser(parent, actor)).willReturn(List.of());
         // WHEN
-        Output result = command.execute(actor);
+        Output<List<Item>> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)

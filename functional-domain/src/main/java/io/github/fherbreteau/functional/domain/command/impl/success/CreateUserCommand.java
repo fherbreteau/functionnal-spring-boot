@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CreateUserCommand extends AbstractModifyUserCommand {
+public class CreateUserCommand extends AbstractModifyUserCommand<User> {
     private final PasswordProtector passwordProtector;
     private final String name;
     private final UUID userId;
@@ -35,7 +35,7 @@ public class CreateUserCommand extends AbstractModifyUserCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<User> execute(User actor) {
         User.Builder builder = User.builder(name);
         if (nonNull(userId)) {
             builder.withUserId(userId);
@@ -50,13 +50,13 @@ public class CreateUserCommand extends AbstractModifyUserCommand {
         }
         // Use user's name as group's name, if none defined.
         if (isNull(groupId) && groups.isEmpty()) {
-            Group group = groupRepository.save(userUpdater.createGroup(Group.builder(name).build()));
+            Group group = groupRepository.create(userUpdater.createGroup(Group.builder(name).build()));
             builder.withGroup(group);
         }
-        User user = userRepository.save(userUpdater.createUser(builder.build()));
+        User user = userRepository.create(userUpdater.createUser(builder.build()));
         if (nonNull(password)) {
             userRepository.updatePassword(user, passwordProtector.protect(password));
         }
-        return new Output(user);
+        return Output.success(user);
     }
 }

@@ -3,9 +3,9 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,15 +43,15 @@ class CreateGroupCommandTest {
     @Test
     void shouldUpdateAddGroupWhenExecutingCommand() {
         // GIVEN
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(groupRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<Group> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(groupRepository).save(groupCaptor.capture());
+        verify(groupRepository).create(groupCaptor.capture());
         assertThat(groupCaptor.getValue())
                 .extracting(Group::getGroupId)
                 .isNotNull();

@@ -1,0 +1,8 @@
+spring:
+  main.banner-mode: "off"
+  liquibase.change-log: classpath:/database/master-test.xml
+
+logging.level:
+  root: off
+
+content.repository.path: /tmp

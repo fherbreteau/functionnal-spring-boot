@@ -3,15 +3,20 @@ package io.github.fherbreteau.functional.domain.command.impl.check;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.GetGroupCommand;
+import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +47,7 @@ class CheckGetGroupCommandTest {
         // GIVEN
         given(userRepository.exists(userId)).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<List<Group>>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GetGroupCommand.class);
     }
@@ -54,7 +59,7 @@ class CheckGetGroupCommandTest {
         // GIVEN
         given(userRepository.exists("user")).willReturn(true);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<List<Group>>> result = command.execute(actor);
         // THEN
         assertThat(result).isInstanceOf(GetGroupCommand.class);
     }
@@ -67,7 +72,7 @@ class CheckGetGroupCommandTest {
         // GIVEN
         given(userRepository.exists(userId)).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<List<Group>>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }
@@ -79,7 +84,7 @@ class CheckGetGroupCommandTest {
         // GIVEN
         given(userRepository.exists("user")).willReturn(false);
         // WHEN
-        Command<Output> result = command.execute(actor);
+        Command<Output<List<Group>>> result = command.execute(actor);
         //THEN
         assertThat(result).isInstanceOf(UserErrorCommand.class);
     }

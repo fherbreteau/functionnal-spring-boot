@@ -1,0 +1,80 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_type" value="uuid" dbms="h2"/>
+
+    <changeSet id="20240518000000-05-1" author="fherbreteau">
+        <createTable tableName="item_access" remarks="User Group Link table">
+            <column name="item_id" type="${uuid_type}">
+                <constraints primaryKey="true" primaryKeyName="item_access_pk" foreignKeyName="item_access_fk"
+                             referencedTableName="item" referencedColumnNames="id"/>
+            </column>
+            <column name="type" type="varchar(7)">
+                <constraints primaryKey="true" primaryKeyName="item_access_pk"/>
+            </column>
+            <column name="attribution" type="nchar(5)">
+                <constraints primaryKey="true" primaryKeyName="item_access_pk"/>
+            </column>
+            <column name="value" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="20240518000000-03-2" author="fherbreteau">
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="READ"/>
+            <column name="attribution" value="OWNER"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="WRITE"/>
+            <column name="attribution" value="OWNER"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="EXECUTE"/>
+            <column name="attribution" value="OWNER"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="READ"/>
+            <column name="attribution" value="GROUP"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="WRITE"/>
+            <column name="attribution" value="GROUP"/>
+            <column name="value" value="false"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="EXECUTE"/>
+            <column name="attribution" value="GROUP"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="READ"/>
+            <column name="attribution" value="OTHER"/>
+            <column name="value" value="true"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="WRITE"/>
+            <column name="attribution" value="OTHER"/>
+            <column name="value" value="false"/>
+        </insert>
+        <insert tableName="item_access">
+            <column name="item_id" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="type" value="EXECUTE"/>
+            <column name="attribution" value="OTHER"/>
+            <column name="value" value="true"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

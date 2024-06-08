@@ -1,8 +1,18 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import java.util.UUID;
+
 public final class Folder extends AbstractItem<Folder, Folder.Builder> {
 
-    private static final Folder ROOT = builder().withName("").withOtherAccess(AccessRight.full()).build();
+    private static final UUID ROOT_HANDLE = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+    private static final Folder ROOT = builder()
+            .withHandle(ROOT_HANDLE)
+            .withName("")
+            .withOwner(User.root())
+            .withGroup(Group.root())
+            .withOtherAccess(AccessRight.full())
+            .build();
 
     private Folder(Builder builder) {
         super(builder);
@@ -37,6 +47,7 @@ public final class Folder extends AbstractItem<Folder, Folder.Builder> {
 
         @Override
         public Folder build() {
+            validate();
             return new Folder(this);
         }
     }

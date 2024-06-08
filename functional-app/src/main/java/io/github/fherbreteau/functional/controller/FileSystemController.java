@@ -74,8 +74,9 @@ public class FileSystemController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ItemDTO> delete(@RequestParam("path") String path,
+    public ResponseEntity<Void> delete(@RequestParam("path") String path,
                                           Principal user) {
-        return ResponseEntity.ok(fileSystemService.delete(path, user.getName()));
+        fileSystemService.delete(path, user.getName());
+        return ResponseEntity.noContent().build();
     }
 }

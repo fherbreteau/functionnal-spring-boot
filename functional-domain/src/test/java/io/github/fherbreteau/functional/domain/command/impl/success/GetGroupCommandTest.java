@@ -2,8 +2,8 @@ package io.github.fherbreteau.functional.domain.command.impl.success;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.GroupRepository;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,8 +31,8 @@ class GetGroupCommandTest {
         User user = User.builder("user").withUserId(userId).withGroup(Group.builder("group").build()).build();
         given(userRepository.findById(userId)).willReturn(user);
 
-        Command<Output> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, userId);
-        Output output = executeCommand.execute(actor);
+        Command<Output<List<Group>>> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, userId);
+        Output<List<Group>> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, list(Group.class))
                 .isNotNull()
@@ -46,8 +46,8 @@ class GetGroupCommandTest {
     void shouldGetGroupsOfActor() {
         given(actor.getGroups()).willReturn(List.of(Group.builder("group").build()));
 
-        Command<Output> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, null);
-        Output output = executeCommand.execute(actor);
+        Command<Output<List<Group>>> executeCommand = new GetGroupCommand(userRepository, groupRepository, null, null);
+        Output<List<Group>> output = executeCommand.execute(actor);
 
         assertThat(output).extracting(Output::getValue, list(Group.class))
                 .isNotNull()

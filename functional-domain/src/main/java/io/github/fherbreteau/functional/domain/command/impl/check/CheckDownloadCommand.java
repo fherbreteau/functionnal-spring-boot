@@ -5,18 +5,19 @@ import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.command.impl.success.DownloadCommand;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadCommand> {
+public class CheckDownloadCommand extends AbstractCheckItemCommand<InputStream, DownloadCommand> {
     private final ContentRepository contentRepository;
     private final File item;
 
-    public CheckDownloadCommand(FileRepository repository, AccessChecker accessChecker,
+    public CheckDownloadCommand(ItemRepository repository, AccessChecker accessChecker,
                                 ContentRepository contentRepository, File item) {
         super(repository, accessChecker);
         this.contentRepository = contentRepository;
@@ -38,8 +39,8 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<DownloadComma
     }
 
     @Override
-    protected ItemErrorCommand createError(List<String> reasons) {
+    protected ItemErrorCommand<InputStream> createError(List<String> reasons) {
         ItemInput itemInput = ItemInput.builder(item).build();
-        return new ItemErrorCommand(ItemCommandType.DOWNLOAD, itemInput, reasons);
+        return new ItemErrorCommand<>(ItemCommandType.DOWNLOAD, itemInput, reasons);
     }
 }

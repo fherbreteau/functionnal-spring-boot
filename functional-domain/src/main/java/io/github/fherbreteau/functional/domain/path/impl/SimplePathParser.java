@@ -5,14 +5,14 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.Optional;
 
 public class SimplePathParser implements PathParser {
 
-    private final FileRepository repository;
+    private final ItemRepository repository;
 
     private final AccessChecker accessChecker;
 
@@ -20,7 +20,7 @@ public class SimplePathParser implements PathParser {
 
     private final String segment;
 
-    public SimplePathParser(FileRepository repository, AccessChecker accessChecker, Path current, String segment) {
+    public SimplePathParser(ItemRepository repository, AccessChecker accessChecker, Path current, String segment) {
         this.repository = repository;
         this.accessChecker = accessChecker;
         this.current = current;

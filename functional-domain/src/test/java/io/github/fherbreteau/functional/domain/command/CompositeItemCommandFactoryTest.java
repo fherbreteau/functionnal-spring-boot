@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactor
 import io.github.fherbreteau.functional.domain.command.factory.impl.*;
 import io.github.fherbreteau.functional.domain.command.impl.check.*;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class CompositeItemCommandFactoryTest {
     @Mock
     private AccessUpdater accessUpdater;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private ContentRepository contentRepository;
 
@@ -88,7 +88,7 @@ class CompositeItemCommandFactoryTest {
 
     @BeforeEach
     public void setup() {
-        List<ItemCommandFactory> factories = List.of(
+        List<ItemCommandFactory<?>> factories = List.of(
                 new ChangeOwnerCommandFactory(),
                 new ChangeGroupCommandFactory(),
                 new ChangeModeCommandFactory(),
@@ -104,7 +104,7 @@ class CompositeItemCommandFactoryTest {
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
     @MethodSource("validCommandArguments")
     void testCommandCreatedForSpecificTypeAndValidInput(ItemCommandType type, ItemInput itemInput,
-                                                        Class<? extends Command<Command<Output>>> expected) {
+                                                        Class<? extends CheckCommand<?>> expected) {
         Command<?> command = factory.createCommand(type, itemInput);
 
         assertThat(command).isNotNull().isInstanceOf(expected);
@@ -120,12 +120,12 @@ class CompositeItemCommandFactoryTest {
 
     @Test
     void testOrderOfCommandFactoriesIsRespected() {
-        List<ItemCommandFactory> factories = List.of(
+        List<ItemCommandFactory<?>> factories = List.of(
                 new UnsupportedItemCommandFactory(),
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory()
         );
-        List<ItemCommandFactory> sortedFactories = factories.stream()
+        List<ItemCommandFactory<?>> sortedFactories = factories.stream()
                 .sorted(Comparator.comparing(ItemCommandFactory::order))
                 .toList();
         assertThat(sortedFactories).last(type(ItemCommandFactory.class))

@@ -4,16 +4,16 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
-public class DeleteItemCommand extends AbstractSuccessItemCommand {
+public class DeleteItemCommand extends AbstractSuccessItemCommand<Void> {
     private final ContentRepository contentRepository;
     private final AccessUpdater accessUpdater;
     private final Item item;
 
-    public DeleteItemCommand(FileRepository repository, ContentRepository contentRepository,
+    public DeleteItemCommand(ItemRepository repository, ContentRepository contentRepository,
                              AccessUpdater accessUpdater, Item item) {
         super(repository);
         this.contentRepository = contentRepository;
@@ -22,10 +22,12 @@ public class DeleteItemCommand extends AbstractSuccessItemCommand {
     }
 
     @Override
-    public Output execute(User actor) {
+    public Output<Void> execute(User actor) {
+        repository.delete(item);
+        accessUpdater.deleteItem(item);
         if (item instanceof File file) {
-            contentRepository.deleteContent(file);
+            return contentRepository.deleteContent(file);
         }
-        return new Output(accessUpdater.deleteItem(repository.delete(item)));
+        return Output.success(null);
     }
 }

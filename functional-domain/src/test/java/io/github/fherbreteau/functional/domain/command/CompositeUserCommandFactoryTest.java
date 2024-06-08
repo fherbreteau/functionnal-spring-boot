@@ -4,10 +4,13 @@ import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactor
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.impl.*;
 import io.github.fherbreteau.functional.domain.command.impl.check.*;
-import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,7 +100,7 @@ class CompositeUserCommandFactoryTest {
 
     @BeforeEach
     public void setup() {
-        List<UserCommandFactory> factories = List.of(
+        List<UserCommandFactory<?>> factories = List.of(
                 new CreateGroupCommandFactory(),
                 new DeleteGroupCommandFactory(),
                 new GetGroupCommandFactory(),
@@ -114,7 +117,7 @@ class CompositeUserCommandFactoryTest {
 
     @ParameterizedTest(name = "Command of {0} with args {1} is supported")
     @MethodSource("validCommandArguments")
-    void testCommandCreatedForSpecificTypeAndValidInput(UserCommandType type, UserInput itemInput, Class<? extends CheckCommand<Output>> expected) {
+    void testCommandCreatedForSpecificTypeAndValidInput(UserCommandType type, UserInput itemInput, Class<? extends CheckCommand<?>> expected) {
         Command<?> command = factory.createCommand(type, itemInput);
 
         assertThat(command).isNotNull().isInstanceOf(expected);
@@ -130,12 +133,12 @@ class CompositeUserCommandFactoryTest {
 
     @Test
     void testOrderOfCommandFactoriesIsRespected() {
-        List<ItemCommandFactory> factories = List.of(
+        List<ItemCommandFactory<?>> factories = List.of(
                 new UnsupportedItemCommandFactory(),
                 new ListChildrenCommandFactory(),
                 new UploadCommandFactory()
         );
-        List<ItemCommandFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(ItemCommandFactory::order)).toList();
+        List<ItemCommandFactory<?>> sortedFactories = factories.stream().sorted(Comparator.comparing(ItemCommandFactory::order)).toList();
         assertThat(sortedFactories).last(type(ItemCommandFactory.class))
                 .isInstanceOf(UnsupportedItemCommandFactory.class);
 

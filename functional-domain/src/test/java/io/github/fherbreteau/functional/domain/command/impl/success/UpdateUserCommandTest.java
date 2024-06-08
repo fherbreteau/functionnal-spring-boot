@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,15 +62,15 @@ class UpdateUserCommandTest {
         given(userRepository.findByName("user")).willReturn(user);
         given(groupRepository.findById(groupId)).willReturn(group);
         given(groupRepository.findByName("group1")).willReturn(group1);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(userRepository).save(newUserCaptor.capture());
+        verify(userRepository).update(newUserCaptor.capture());
         assertThat(newUserCaptor.getValue())
                 .extracting(User::getGroup)
                 .extracting(Group::getGroupId)
@@ -97,17 +97,17 @@ class UpdateUserCommandTest {
         // GIVEN
         User user = User.builder("user").withGroup(Group.builder("group").build()).build();
         given(userRepository.findByName("user")).willReturn(user);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
         given(passwordProtector.protect(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userRepository.updatePassword(any(), eq("Password"))).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
-        Output result = command.execute(actor);
+        Output<User> result = command.execute(actor);
         //THEN
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(userRepository).save(newUserCaptor.capture());
+        verify(userRepository).update(newUserCaptor.capture());
         assertThat(newUserCaptor.getValue())
                 .isEqualTo(user);
     }

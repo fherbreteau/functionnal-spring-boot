@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.check;
 
-import io.github.fherbreteau.functional.driven.UserChecker;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

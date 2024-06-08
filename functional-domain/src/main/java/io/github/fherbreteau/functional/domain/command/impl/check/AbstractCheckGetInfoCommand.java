@@ -6,7 +6,10 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-public abstract class AbstractCheckGetInfoCommand<C extends Command<Output>> extends AbstractCheckUserCommand<C>  {
+public abstract class AbstractCheckGetInfoCommand<T, C extends Command<Output<T>>> extends AbstractCheckUserCommand<T, C>  {
     protected final String name;
     protected final UUID userId;
     private final UserCommandType type;
@@ -41,8 +44,8 @@ public abstract class AbstractCheckGetInfoCommand<C extends Command<Output>> ext
     }
 
     @Override
-    protected final UserErrorCommand createError(List<String> reasons) {
+    protected final UserErrorCommand<T> createError(List<String> reasons) {
         UserInput input = UserInput.builder(name).withUserId(userId).build();
-        return new UserErrorCommand(type, input, reasons);
+        return new UserErrorCommand<>(type, input, reasons);
     }
 }

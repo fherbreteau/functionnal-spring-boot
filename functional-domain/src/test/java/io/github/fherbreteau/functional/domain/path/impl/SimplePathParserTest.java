@@ -1,16 +1,15 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Path;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.PathParser;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.UUID;
 
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +24,7 @@ import static org.mockito.Mockito.verify;
 class SimplePathParserTest {
 
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
 
     @Mock
     private AccessChecker accessChecker;
@@ -36,7 +35,13 @@ class SimplePathParserTest {
     @Test
     void testParserReturnsAnErrorWhenCurrentItemIsAFile() {
         // GIVEN
-        Path path = Path.success(File.builder().withName("file").build());
+        File file = File.builder()
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("file")
+                .build();
+        Path path = Path.success(file);
         String segment = "unused";
         PathParser parser = new SimplePathParser(repository, accessChecker, path, segment);
         // WHEN
@@ -50,7 +55,13 @@ class SimplePathParserTest {
     @Test
     void testParserReturnsAnErrorWhenCurrentItemIsAFolderNotExecutable() {
         // GIVEN
-        Path path = Path.success(Folder.builder().withName("folder").build());
+        Folder folder = Folder.builder()
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("folder")
+                .build();
+        Path path = Path.success(folder);
         String segment = "unused";
         PathParser parser = new SimplePathParser(repository, accessChecker, path, segment);
         given(accessChecker.canExecute(path.getItem(), actor)).willReturn(false);
@@ -65,7 +76,13 @@ class SimplePathParserTest {
     @Test
     void testParserReturnsAnErrorWhenCurrentFolderDoesNotContainGivenItem() {
         // GIVEN
-        Path path = Path.success(Folder.builder().withName("folder").build());
+        Folder folder = Folder.builder()
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("folder")
+                .build();
+        Path path = Path.success(folder);
         String segment = "notFound";
         PathParser parser = new SimplePathParser(repository, accessChecker, path, segment);
         given(accessChecker.canExecute(path.getItem(), actor)).willReturn(true);
@@ -82,11 +99,22 @@ class SimplePathParserTest {
     @Test
     void testParserReturnsASuccessWhenCurrentFolderContainGivenItem() {
         // GIVEN
-        Path path = Path.success(Folder.builder().withName("folder").build());
+        Folder folder = Folder.builder()
+                .withHandle(UUID.randomUUID())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("folder")
+                .build();
+        Path path = Path.success(folder);
         String segment = "file";
         PathParser parser = new SimplePathParser(repository, accessChecker, path, segment);
         given(accessChecker.canExecute(path.getItem(), actor)).willReturn(true);
-        File result = File.builder().withName(segment).withParent(path.getAsFolder()).build();
+        File result = File.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName(segment)
+                .withParent(path.getAsFolder())
+                .build();
         given(repository.findByNameAndParentAndUser(segment, path.getAsFolder(), actor))
                 .willReturn(of(result));
         // WHEN

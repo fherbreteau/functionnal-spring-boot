@@ -5,8 +5,8 @@ import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.impl.*;
 import io.github.fherbreteau.functional.domain.path.impl.InvalidPathParser;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.FileRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,15 +32,25 @@ import static org.mockito.BDDMockito.given;
 class CompositePathFactoryTest {
     private CompositePathFactory compositePathFactory;
     @Mock
-    private FileRepository repository;
+    private ItemRepository repository;
     @Mock
     private AccessChecker accessChecker;
     @Mock
     private User actor;
 
     public static Stream<Arguments> validPathArguments() {
-        Path folder = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
-        Path file = Path.success(File.builder().withName("file").withParent(Folder.getRoot()).build());
+        Path folder = Path.success(Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
+        Path file = Path.success(File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
         return Stream.of(
                 // Element checker
                 Arguments.of(Path.ROOT, "file"),
@@ -58,8 +68,18 @@ class CompositePathFactoryTest {
     }
 
     public static Stream<Arguments> invalidPathArguments() {
-        Path folder = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
-        Path file = Path.success(File.builder().withName("file").withParent(folder.getAsFolder()).build());
+        Path folder = Path.success(Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
+        Path file = Path.success(File.builder()
+                .withName("file")
+                .withParent(folder.getAsFolder())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
         Path error = Path.error(Error.error("error"));
         return Stream.of(
                 // Go up
@@ -107,11 +127,26 @@ class CompositePathFactoryTest {
     void testCreatedParserWillResolveAComplexPath() {
         // GIVEN
         given(accessChecker.canExecute(any(), eq(actor))).willReturn(true);
-        File file1 = File.builder().withName("file").withParent(Folder.getRoot()).build();
+        File file1 = File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(of(file1));
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(of(folder));
-        File file2 = File.builder().withName("file").withParent(folder).build();
+        File file2 = File.builder()
+                .withName("file")
+                .withParent(folder)
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("file", folder, actor)).willReturn(of(file2));
         // WHEN
         PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./file");
@@ -130,11 +165,26 @@ class CompositePathFactoryTest {
     void testCreatedParserWillResolveAComplexPathWithFolder() {
         // GIVEN
         given(accessChecker.canExecute(any(), eq(actor))).willReturn(true);
-        File file1 = File.builder().withName("file").withParent(Folder.getRoot()).build();
+        File file1 = File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("file", Folder.getRoot(), actor)).willReturn(of(file1));
-        Folder folder1 = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
+        Folder folder1 = Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("folder", Folder.getRoot(), actor)).willReturn(of(folder1));
-        Folder folder2 = Folder.builder().withName("folder").withParent(folder1).build();
+        Folder folder2 = Folder.builder()
+                .withName("folder")
+                .withParent(folder1)
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         given(repository.findByNameAndParentAndUser("folder", folder1, actor)).willReturn(of(folder2));
         // WHEN
         PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./folder/");

@@ -4,8 +4,14 @@ import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBui
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, B>> implements Item {
+
+    private final UUID handle;
 
     private final String name;
 
@@ -28,6 +34,7 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
     private final Folder parent;
 
     protected AbstractItem(AbstractBuilder<T, B> builder) {
+        this.handle = builder.handle;
         this.name = builder.name;
         this.owner = builder.owner;
         this.group = builder.group;
@@ -38,6 +45,10 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
         this.lastModified = builder.lastModified;
         this.lastAccessed = builder.lastAccessed;
         this.parent = builder.parent;
+    }
+
+    public UUID getHandle() {
+        return handle;
     }
 
     @Override
@@ -109,6 +120,7 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
     protected B copy(B builder) {
         return builder
                 .withName(name)
+                .withHandle(handle)
                 .withOwner(owner)
                 .withGroup(group)
                 .withOwnerAccess(ownerAccess)
@@ -149,6 +161,8 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
     @SuppressWarnings("unchecked")
     public abstract static class AbstractBuilder<I extends Item, B extends AbstractBuilder<I, B>> {
 
+        private UUID handle;
+
         private String name;
 
         private User owner;
@@ -172,57 +186,71 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
         protected AbstractBuilder() {
         }
 
+        public B withHandle(UUID handle) {
+            this.handle = handle;
+            return (B) this;
+        }
+
         public B withName(String name) {
-            this.name = name;
+            this.name = requireNonNull(name);
             return (B) this;
         }
 
         public B withOwner(User owner) {
-            this.owner = owner;
-            if (group == null && owner != null) {
+            this.owner = requireNonNull(owner);
+            if (group == null) {
                 this.group = owner.getGroup();
             }
             return (B) this;
         }
 
         public B withGroup(Group group) {
-            this.group = group;
+            this.group = requireNonNull(group);
             return (B) this;
         }
 
         public B withOwnerAccess(AccessRight access) {
-            this.ownerAccess = access;
+            this.ownerAccess = requireNonNull(access);
             return (B) this;
         }
 
         public B withGroupAccess(AccessRight access) {
-            this.groupAccess = access;
+            this.groupAccess = requireNonNull(access);
             return (B) this;
         }
 
         public B withOtherAccess(AccessRight access) {
-            this.otherAccess = access;
+            this.otherAccess = requireNonNull(access);
             return (B) this;
         }
 
         public B withCreated(LocalDateTime created) {
-            this.created = created;
+            this.created = requireNonNull(created);
             return (B) this;
         }
 
         public B withLastModified(LocalDateTime lastModified) {
-            this.lastModified = lastModified;
+            this.lastModified = requireNonNull(lastModified);
             return (B) this;
         }
 
         public B withLastAccessed(LocalDateTime lastAccessed) {
-            this.lastAccessed = lastAccessed;
+            this.lastAccessed = requireNonNull(lastAccessed);
             return (B) this;
         }
 
         public B withParent(Folder parent) {
             this.parent = parent;
             return (B) this;
+        }
+
+        protected void validate() {
+            if (isNull(name)) {
+                throw new NullPointerException("name is required");
+            }
+            if (isNull(owner)) {
+                throw new NullPointerException("owner is required");
+            }
         }
 
         public abstract I build();
