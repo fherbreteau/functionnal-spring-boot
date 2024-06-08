@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.driven;
+package io.github.fherbreteau.functional.driven.rules;
 
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;

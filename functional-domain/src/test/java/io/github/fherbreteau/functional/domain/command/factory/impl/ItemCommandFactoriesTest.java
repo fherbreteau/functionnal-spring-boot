@@ -3,10 +3,10 @@ package io.github.fherbreteau.functional.domain.command.factory.impl;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,14 +39,20 @@ class ItemCommandFactoriesTest {
     @Test
     void shouldCreateAFileWithTheGivenName() {
         ItemCommandFactory<Item> factory = new CreateItemCommandFactory();
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         ItemInput itemInput = ItemInput.builder(folder).withName("file").build();
 
         given(accessChecker.canWrite(folder, actor)).willReturn(true);
         given(repository.exists(folder, "file")).willReturn(false);
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.createItem(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(contentRepository.initContent(any())).willAnswer(invocation -> success(invocation.getArgument(0)));
+        given(actor.getGroup()).willReturn(Group.root());
 
         Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
                 accessUpdater, ItemCommandType.TOUCH, itemInput);
@@ -62,7 +68,12 @@ class ItemCommandFactoriesTest {
     @Test
     void shouldChangeTheAccessOfTheFileWithTheGivenAccessRight() {
         ItemCommandFactory<Item> factory = new ChangeModeCommandFactory();
-        File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
+        File file = File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         ItemInput itemInput = ItemInput.builder(file)
                 .withOwnerAccess(AccessRight.full())
                 .withGroupAccess(AccessRight.readExecute())
@@ -73,7 +84,7 @@ class ItemCommandFactoriesTest {
         given(accessUpdater.updateOwnerAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.updateGroupAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.updateOtherAccess(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
                 accessUpdater, ItemCommandType.CHMOD, itemInput);
@@ -92,14 +103,20 @@ class ItemCommandFactoriesTest {
     @Test
     void shouldUpdateTheContentTypeOfTheFileWithTheGivenContentType() {
         ItemCommandFactory<Item> factory = new UploadCommandFactory();
-        File file = File.builder().withName("file").withParent(Folder.getRoot()).withContentType("oldValue").build();
+        File file = File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withContentType("oldValue")
+                .build();
         ItemInput itemInput = ItemInput.builder(file)
                 .withContentType("newValue")
                 .withContent(InputStream.nullInputStream())
                 .build();
 
         given(accessChecker.canWrite(file, actor)).willReturn(true);
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(contentRepository.writeContent(any(), any())).willAnswer(invocation -> success(invocation.getArgument(0)));
 
         Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
@@ -116,7 +133,12 @@ class ItemCommandFactoriesTest {
     @Test
     void shouldDeleteTheGivenItem() {
         ItemCommandFactory<Void> factory = new DeleteItemCommandFactory();
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         ItemInput itemInput = ItemInput.builder(folder).build();
 
         given(accessChecker.canWrite(Folder.getRoot(), actor)).willReturn(true);
@@ -134,9 +156,14 @@ class ItemCommandFactoriesTest {
 
     @Test
     void testInputHasRequiredInfoInToString() {
-        File file = File.builder().withName("file").withParent(Folder.getRoot()).build();
+        File file = File.builder()
+                .withName("file")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         ItemInput itemInput = ItemInput.builder(file).build();
-        assertThat(itemInput).hasToString("Input{item='file null:null --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null}");
+        assertThat(itemInput).hasToString("Input{item='file root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- ', name='null', user=null, group=null, ownerAccess=null, groupAccess=null, otherAccess=null, contentType=null}");
     }
 
     @Test

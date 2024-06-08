@@ -2,24 +2,29 @@ package io.github.fherbreteau.functional.infra.impl;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import io.github.fherbreteau.functional.infra.mapper.BooleanResultExtractor;
+import io.github.fherbreteau.functional.infra.mapper.UserExtractor;
+import io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant;
 import io.github.fherbreteau.functional.infra.mapper.UserResultExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
 import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.*;
+import static java.util.Optional.ofNullable;
 
 @Transactional
 public class JdbcUserRepository implements UserRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final UserResultExtractor userResultExtractor = new UserResultExtractor();
+    private final UserExtractor userExtractor = new UserExtractor();
     private final BooleanResultExtractor existsExtractor = new BooleanResultExtractor();
 
     public JdbcUserRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -79,8 +84,43 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public User create(User user) {
+        String query = """
+                INSERT INTO "user"(id, name) VALUES (:id, :name)
+                """;
+        jdbcTemplate.update(query, userExtractor.map(user));
+        query = """
+                INSERT INTO user_group(user_id, group_id) VALUES (:user_id, :group_id)
+                """;
+        jdbcTemplate.batchUpdate(query, userExtractor.mapGroups(user));
+        return user;
+    }
+
+    @Override
+    public User update(User user) {
+        User oldUser = ofNullable(findById(user.getUserId())).orElseGet(() -> findByName(user.getName()));
+        String query = """
+                DELETE FROM user_group WHERE user_id = :user_id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(UserGroupSQLConstant.COL_USER_ID, oldUser.getUserId());
+        jdbcTemplate.update(query, params);
+        if (!Objects.equals(user.getName(), oldUser.getName())) {
+            query = """
+                    UPDATE "user" SET name = :name WHERE id = :id
+                    """;
+            jdbcTemplate.update(query, userExtractor.map(user));
+        } else if (!Objects.equals(user.getUserId(), oldUser.getUserId())) {
+            query = """
+                    UPDATE "user" SET id = :id WHERE name = :name
+                    """;
+            jdbcTemplate.update(query, userExtractor.map(user));
+        }
+        query = """
+                INSERT INTO user_group(user_id, group_id) VALUES (:user_id, :group_id)
+                """;
+        jdbcTemplate.batchUpdate(query, userExtractor.mapGroups(user));
+        return user;
     }
 
     @Override

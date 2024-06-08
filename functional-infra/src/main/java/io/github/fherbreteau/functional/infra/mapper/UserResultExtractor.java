@@ -15,7 +15,6 @@ import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL
 import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_GROUP_NAME;
 import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_USER_ID;
 import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_USER_NAME;
-import static java.util.Objects.nonNull;
 
 public class UserResultExtractor implements ResultSetExtractor<User> {
     @Override
@@ -25,10 +24,7 @@ public class UserResultExtractor implements ResultSetExtractor<User> {
         }
         User.Builder builder = User.builder(rs.getString(COL_USER_NAME))
                 .withUserId(rs.getObject(COL_USER_ID, UUID.class));
-        Group group = processGroup(rs);
-        if (nonNull(group)) {
-            builder.withGroup(group);
-        }
+        builder.withGroup(processGroup(rs));
         return builder.addGroups(processRemainingGroup(rs))
                 .build();
     }
@@ -36,23 +32,14 @@ public class UserResultExtractor implements ResultSetExtractor<User> {
     private List<Group> processRemainingGroup(ResultSet rs) throws SQLException {
         List<Group> groups = new ArrayList<>();
         while (rs.next()) {
-            Group group = processGroup(rs);
-            if (nonNull(group)) {
-                groups.add(group);
-            }
+            groups.add(processGroup(rs));
         }
         return groups;
     }
 
     private Group processGroup(ResultSet rs) throws SQLException {
-        String name = rs.getString(COL_GROUP_NAME);
-        if (rs.wasNull()) {
-            return null;
-        }
-        UUID uuid = rs.getObject(COL_GROUP_ID, UUID.class);
-        if (rs.wasNull()) {
-            return null;
-        }
-        return Group.builder(name).withGroupId(uuid).build();
+        return Group.builder(rs.getString(COL_GROUP_NAME))
+                .withGroupId(rs.getObject(COL_GROUP_ID, UUID.class))
+                .build();
     }
 }

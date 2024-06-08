@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.DeleteItemCommand;
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,10 +37,14 @@ class CheckDeleteItemCommandTest {
     public void setup() {
         parent = Folder.builder()
                 .withName("parent")
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         Item item = File.builder()
                 .withName("to_delete")
                 .withParent(parent)
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         actor = User.builder("actor").build();
         command = new CheckDeleteItemCommand(repository, contentRepository, accessChecker, accessUpdater, item);
@@ -66,6 +70,6 @@ class CheckDeleteItemCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().matches(s -> s.endsWith(" can't delete 'to_delete null:null --------- parent'"));
+                .first().matches(s -> s.endsWith(" can't delete 'to_delete root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- parent'"));
     }
 }

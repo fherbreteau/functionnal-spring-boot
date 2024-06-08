@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.UserRepository;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 import java.util.List;
 import java.util.UUID;
@@ -59,7 +59,7 @@ public class UpdateUserCommand extends AbstractModifyUserCommand<User> {
                 builder.withGroups(newGroups);
             }
         }
-        User newUser = userRepository.save(userUpdater.updateUser(user, builder.build()));
+        User newUser = userRepository.update(userUpdater.updateUser(user, builder.build()));
         if (nonNull(password)) {
             newUser = userRepository.updatePassword(newUser, passwordProtector.protect(password));
         }

@@ -1,9 +1,6 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Path;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import org.junit.jupiter.api.Test;
@@ -60,7 +57,12 @@ class ComplexPathParserTest {
         PathParser parser = new ComplexPathParser(compositePathFactory, path, segment);
         PathParser elementParser = mock(PathParser.class);
         given(compositePathFactory.createParser(path, "file")).willReturn(elementParser);
-        Path partial = Path.success(File.builder().withName("file").withParent(Folder.getRoot()).build());
+        Path partial = Path.success(File.builder()
+                .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(Folder.getRoot())
+                .build());
         given(elementParser.resolve(actor)).willReturn(partial);
         given(compositePathFactory.createParser(partial, "folder"))
                 .willReturn(new InvalidPathParser(partial, "folder"));
@@ -81,12 +83,22 @@ class ComplexPathParserTest {
 
         PathParser elementParser = mock(PathParser.class);
         given(compositePathFactory.createParser(path, "folder")).willReturn(elementParser);
-        Path partial = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
+        Path partial = Path.success(Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(Folder.getRoot())
+                .build());
         given(elementParser.resolve(actor)).willReturn(partial);
 
         PathParser restParser = mock(PathParser.class);
         given(compositePathFactory.createParser(partial, "file")).willReturn(restParser);
-        Path result = Path.success(Folder.builder().withName("file").withParent(partial.getAsFolder()).build());
+        Path result = Path.success(Folder.builder()
+                .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(partial.getAsFolder())
+                .build());
         given(restParser.resolve(actor)).willReturn(result);
         // WHEN
         Path resolved = parser.resolve(actor);
@@ -105,7 +117,12 @@ class ComplexPathParserTest {
 
         PathParser elementParser = mock(PathParser.class);
         given(compositePathFactory.createParser(path, "folder")).willReturn(elementParser);
-        Path partial = Path.success(Folder.builder().withName("folder").withParent(Folder.getRoot()).build());
+        Path partial = Path.success(Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(Folder.getRoot())
+                .build());
         given(elementParser.resolve(actor)).willReturn(partial);
 
         PathParser restParser = mock(PathParser.class);

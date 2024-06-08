@@ -1,11 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +39,8 @@ class UploadCommandTest {
     public void setup() {
         File file = File.builder()
                 .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         actor = User.builder("actor").build();
         command = new UploadCommand(repository, contentRepository, file, inputStream, "contentType");
@@ -50,7 +49,7 @@ class UploadCommandTest {
     @Test
     void shouldWriteContentWhenExecutingCommand() {
         // GIVEN
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(contentRepository.writeContent(any(), any()))
                 .willAnswer(invocation -> Output.success(invocation.getArgument(0)));
         // WHEN
@@ -60,7 +59,7 @@ class UploadCommandTest {
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         verify(contentRepository).writeContent(any(), eq(inputStream));
-        verify(repository).save(itemCaptor.capture());
+        verify(repository).update(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .isInstanceOf(File.class)
                 .extracting(File::getContentType)

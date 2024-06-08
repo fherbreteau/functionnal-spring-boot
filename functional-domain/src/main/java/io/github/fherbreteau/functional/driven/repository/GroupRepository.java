@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.driven;
+package io.github.fherbreteau.functional.driven.repository;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 
@@ -14,7 +14,9 @@ public interface GroupRepository {
 
     Group findById(UUID groupId);
 
-    Group save(Group group);
+    Group create(Group group);
+
+    Group update(Group group);
 
     void delete(Group group);
 }

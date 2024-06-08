@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import org.springframework.stereotype.Service;
 
 @Service

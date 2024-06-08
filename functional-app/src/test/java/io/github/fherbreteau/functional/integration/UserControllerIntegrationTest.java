@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.integration;
 
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.driven.UserRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

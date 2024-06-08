@@ -1,13 +1,14 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <!-- define property used to -->
     <property name="uuid_type" value="uuid" dbms="postgresql"/>
-    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+    <property name="uuid_type" value="uuid" dbms="h2"/>
+    <property name="uuid_function" value="gen_random_uuid()" dbms="postgresql"/>
+    <property name="uuid_function" value="RANDOM_UUID()" dbms="h2"/>
 
     <changeSet id="20240518000000-5" author="fherbreteau">
         <createTable tableName="item">
-            <column name="id" type="uuid">
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}" >
                 <constraints primaryKey="true" primaryKeyName="file_pk"/>
             </column>
             <column name="type" type="varchar(8)">
@@ -16,11 +17,11 @@
             <column name="name" type="varchar(64)">
                 <constraints nullable="false"/>
             </column>
-            <column name="owner" type="uuid">
+            <column name="owner" type="${uuid_type}">
                 <constraints nullable="false" foreignKeyName="owner_fk" referencedColumnNames="id"
                              referencedTableName="user"/>
             </column>
-            <column name="group" type="uuid">
+            <column name="group" type="${uuid_type}">
                 <constraints nullable="false" foreignKeyName="group_fk" referencedColumnNames="id"
                              referencedTableName="group"/>
             </column>
@@ -33,7 +34,7 @@
             <column name="accessed_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP()">
                 <constraints nullable="false"/>
             </column>
-            <column name="parent_id" type="uuid">
+            <column name="parent_id" type="${uuid_type}">
                 <constraints nullable="true" foreignKeyName="parent_item_pk" referencedColumnNames="id"
                              referencedTableName="item"/>
             </column>

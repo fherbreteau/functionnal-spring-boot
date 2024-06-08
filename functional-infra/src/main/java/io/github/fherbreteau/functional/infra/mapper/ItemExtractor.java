@@ -1,9 +1,6 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.infra.ItemFinder;
+import io.github.fherbreteau.functional.domain.entities.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
@@ -13,18 +10,13 @@ import java.util.UUID;
 
 import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.*;
 import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.*;
+import static java.util.Optional.ofNullable;
 
 public class ItemExtractor {
 
-    private ItemFinder itemFinder;
-
-    public void setItemFinder(ItemFinder itemFinder) {
-        this.itemFinder = itemFinder;
-    }
-
-    public <I extends Item> SqlParameterSource map(UUID itemId, I item) {
+    public <I extends Item> SqlParameterSource map(I item) {
         return new MapSqlParameterSource()
-                .addValue(COL_ID, itemId)
+                .addValue(COL_ID, getItemId(item))
                 .addValue(COL_ITEM_TYPE, item.getClass().getSimpleName())
                 .addValue(COL_NAME, item.getName())
                 .addValue(COL_OWNER_ID, item.getOwner().getUserId())
@@ -32,7 +24,7 @@ public class ItemExtractor {
                 .addValue(COL_CREATED_AT, item.getCreated())
                 .addValue(COL_MODIFIED_AT, item.getLastModified())
                 .addValue(COL_ACCESSED_AT, item.getLastModified())
-                .addValue(COL_PARENT_ID, itemFinder.getItemId(item.getParent()))
+                .addValue(COL_PARENT_ID, getItemId(item.getParent()))
                 .addValue(COL_CONTENT_TYPE, getContentType(item));
     }
 
@@ -43,8 +35,15 @@ public class ItemExtractor {
         return null;
     }
 
-    public SqlParameterSource[] mapAccess(UUID itemId, Item item) {
+    private <I extends Item> UUID getItemId(I parent) {
+        return ofNullable(parent)
+                .map(AbstractItem.class::cast)
+                .map(AbstractItem::getHandle).orElse(null);
+    }
+
+    public <I extends Item> SqlParameterSource[] mapAccess(I item) {
         List<SqlParameterSource> sources = new ArrayList<>();
+        UUID itemId = getItemId(item);
         mapAccess(sources, itemId, item.getOwnerAccess(), ATTR_OWNER);
         mapAccess(sources, itemId, item.getGroupAccess(), ATTR_GROUP);
         mapAccess(sources, itemId, item.getOtherAccess(), ATTR_OTHER);

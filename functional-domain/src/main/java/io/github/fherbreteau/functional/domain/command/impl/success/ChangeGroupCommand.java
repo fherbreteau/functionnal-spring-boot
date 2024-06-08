@@ -4,8 +4,8 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 public class ChangeGroupCommand extends AbstractModifyItemCommand<Item> {
 
@@ -21,6 +21,6 @@ public class ChangeGroupCommand extends AbstractModifyItemCommand<Item> {
     @Override
     public Output<Item> execute(User actor) {
         Item newItem = item.copyBuilder().withGroup(newGroup).build();
-        return Output.success(repository.save(accessUpdater.updateGroup(newItem, item.getGroup())));
+        return Output.success(repository.update(accessUpdater.updateGroup(newItem, item.getGroup())));
     }
 }

@@ -38,6 +38,8 @@
         <!-- Password validity Checker -->
         <passay.version>1.6.4</passay.version>
 
+        <java-diff-utils.version>4.12</java-diff-utils.version>
+
         <!-- Tests dependencies -->
         <jimfs.version>1.3.0</jimfs.version>
         <testcontainers.version>1.19.8</testcontainers.version>
@@ -104,6 +106,11 @@
                 <artifactId>passay</artifactId>
                 <version>${passay.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.java-diff-utils</groupId>
+                <artifactId>java-diff-utils</artifactId>
+                <version>${java-diff-utils.version}</version>
+            </dependency>
 
             <!-- Liquibase -->
             <dependency>
@@ -164,6 +171,7 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                             <formats>
                                 <format>XML</format>
+                                <format>HTML</format>
                             </formats>
                         </configuration>
                     </execution>

@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.driven;
+package io.github.fherbreteau.functional.driven.repository;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -15,7 +15,9 @@ public interface UserRepository {
 
     User findById(UUID userId);
 
-    User save(User user);
+    User create(User user);
+
+    User update(User user);
 
     void delete(User user);
 

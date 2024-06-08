@@ -8,10 +8,18 @@ class PathTest {
 
     @Test
     void shouldBeAValidPath() {
-        Path path = Path.success(Folder.builder().withName("folder").build());
+        Path path = Path.success(Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
         assertThat(path.getName()).isEqualTo("folder");
 
-        File file = File.builder().build();
+        File file = File.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build();
         path = Path.success(file);
         assertThat(path).extracting(Path::getAsFile).isEqualTo(file);
         assertThat(Path.success(file)).isEqualTo(path);
@@ -28,8 +36,18 @@ class PathTest {
 
     @Test
     void allPathShouldHaveAParentExceptRoot() {
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        File file = File.builder().withName("file").withParent(folder).build();
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(Folder.getRoot())
+                .build();
+        File file = File.builder()
+                .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(folder)
+                .build();
         Path path = Path.success(file);
         assertThat(path.getParent())
                 .isEqualTo(Path.success(folder))
@@ -52,17 +70,30 @@ class PathTest {
 
     @Test
     void testPathHasRequiredInfoInToString() {
-        Path path = Path.success(File.builder().build());
-        assertThat(path).hasToString("Path{item='null null:null --------- null'}");
+        Path path = Path.success(File.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
+        assertThat(path).hasToString("Path{item=' root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'}");
         path = Path.error(Error.error("error"));
         assertThat(path).hasToString("Path{error=Error{message='error', reasons=[]}}");
     }
 
     @Test
     void testPathCanHaveAContentType() {
-        Path path = Path.success(File.builder().withContentType("Content-Type").build());
+        Path path = Path.success(File.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withContentType("Content-Type")
+                .build());
         assertThat(path.getContentType()).isEqualTo("Content-Type");
-        path = Path.success(Folder.builder().build());
+        path = Path.success(Folder.builder()
+                .withName("")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .build());
         assertThat(path.getContentType()).isNull();
     }
 }

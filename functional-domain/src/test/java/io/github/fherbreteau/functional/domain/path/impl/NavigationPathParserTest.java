@@ -21,7 +21,11 @@ class NavigationPathParserTest {
     @Test
     void testParserReturnsAnErrorWhenPathStayInSamePlaceAndItemIsFile() {
         // GIVEN
-        Path path = Path.success(File.builder().withName("file").build());
+        Path path = Path.success(File.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("file")
+                .build());
         String segment = ".";
         PathParser parser = new NavigationPathParser(path, segment, UnaryOperator.identity());
         // WHEN
@@ -33,7 +37,11 @@ class NavigationPathParserTest {
     @Test
     void testParserReturnsAnErrorWhenFunctionReturnsNoItem() {
         // GIVEN
-        Path path = Path.success(Folder.builder().withName("file").build());
+        Path path = Path.success(Folder.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("file")
+                .build());
         String segment = ".";
         PathParser parser = new NavigationPathParser(path, segment, i -> null);
         // WHEN
@@ -45,8 +53,18 @@ class NavigationPathParserTest {
     @Test
     void testParserReturnsASuccessWhenFunctionReturnsAnItem() {
         // GIVEN
-        Folder folder = Folder.builder().withName("folder").withParent(Folder.getRoot()).build();
-        Path path = Path.success(File.builder().withName("file").withParent(folder).build());
+        Folder folder = Folder.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("folder")
+                .withParent(Folder.getRoot())
+                .build();
+        Path path = Path.success(File.builder()
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withName("file")
+                .withParent(folder)
+                .build());
         String segment = "..";
         PathParser parser = new NavigationPathParser(path, segment, Item::getParent);
         // WHEN

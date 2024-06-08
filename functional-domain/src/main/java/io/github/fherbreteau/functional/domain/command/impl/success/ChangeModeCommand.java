@@ -5,8 +5,8 @@ import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBui
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
 
@@ -42,6 +42,6 @@ public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
             builder.withOtherAccess(otherAccess);
             builder = accessUpdater.updateOtherAccess(builder.build(), item.getOtherAccess()).copyBuilder();
         }
-        return Output.success(repository.save(builder.build()));
+        return Output.success(repository.update(builder.build()));
     }
 }

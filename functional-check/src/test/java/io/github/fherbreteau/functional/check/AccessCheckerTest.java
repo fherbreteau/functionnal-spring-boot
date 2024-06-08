@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.check;
 
-import io.github.fherbreteau.functional.driven.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

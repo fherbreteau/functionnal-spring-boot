@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.update;
 
-import io.github.fherbreteau.functional.driven.AccessUpdater;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

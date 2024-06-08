@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.driven;
+package io.github.fherbreteau.functional.driven.repository;
 
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -10,7 +10,9 @@ import java.util.Optional;
 public interface ItemRepository {
     boolean exists(Folder parent, String name);
 
-    <I extends Item> I save(I item);
+    <I extends Item> I create(I item);
+
+    <I extends Item> I update(I item);
 
     List<Item> findByParentAndUser(Folder folder, User actor);
 

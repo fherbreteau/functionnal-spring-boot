@@ -1,13 +1,12 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <!-- define property used to -->
     <property name="uuid_type" value="uuid" dbms="postgresql"/>
-    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+    <property name="uuid_type" value="uuid" dbms="h2"/>
 
     <changeSet id="20240518000000-02-1" author="fherbreteau">
         <createTable tableName="user">
-            <column name="id" type="uuid">
+            <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" primaryKeyName="user_pk"/>
             </column>
             <column name="name" type="varchar(64)">

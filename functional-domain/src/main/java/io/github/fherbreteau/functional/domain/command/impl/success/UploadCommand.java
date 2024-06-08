@@ -4,8 +4,8 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.io.InputStream;
 
@@ -26,6 +26,6 @@ public class UploadCommand extends AbstractSuccessItemCommand<Item> {
     @Override
     public Output<Item> execute(User actor) {
         File newItem = item.copyBuilder().withContentType(contentType).build();
-        return contentRepository.writeContent(repository.save(newItem), content);
+        return contentRepository.writeContent(repository.update(newItem), content);
     }
 }

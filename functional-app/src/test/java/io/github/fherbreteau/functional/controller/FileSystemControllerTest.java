@@ -419,7 +419,11 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenParamDoesNotExists() throws Exception {
-        Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
+        Folder path = Folder.builder()
+                .withName("path")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .build();
         given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
         given(userService.findUserByName("user2")).willReturn(Output.error("user2 not found"));
         given(userService.findGroupByName("group2")).willReturn(Output.error("group2 not found"));
@@ -445,7 +449,11 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
-        Folder path = Folder.builder().withName("path").withParent(Folder.getRoot()).build();
+        Folder path = Folder.builder()
+                .withName("path")
+                .withParent(Folder.getRoot())
+                .withOwner(User.root())
+                .build();
         given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
         ItemInput input = ItemInput.builder(path).withOwnerAccess(AccessRight.writeOnly().addExecute()).build();
         given(accessParserService.parseAccessRights("-wx", path)).willReturn(input);

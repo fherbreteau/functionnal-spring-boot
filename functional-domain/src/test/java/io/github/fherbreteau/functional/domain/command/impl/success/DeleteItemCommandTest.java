@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,12 @@ class DeleteItemCommandTest {
 
     @BeforeEach
     public void setup() {
-        file = File.builder().withName("file").withParent(Folder.getRoot()).build();
+        file = File.builder()
+                .withName("file")
+                .withOwner(User.root())
+                .withGroup(Group.root())
+                .withParent(Folder.getRoot())
+                .build();
         actor = User.builder("actor").build();
         command = new DeleteItemCommand(repository, contentRepository, accessUpdater, file);
     }

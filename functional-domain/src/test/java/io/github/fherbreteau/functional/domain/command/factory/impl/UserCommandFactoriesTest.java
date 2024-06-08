@@ -5,6 +5,10 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -54,7 +58,7 @@ class UserCommandFactoriesTest {
         given(groupRepository.findById(groupId)).willReturn(group);
 
         given(userRepository.exists("user")).willReturn(false);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userRepository.updatePassword(any(), eq("password")))
                 .willAnswer(invocation -> invocation.getArgument(0));
         given(passwordProtector.validate("password")).willReturn(List.of());
@@ -101,7 +105,7 @@ class UserCommandFactoriesTest {
         given(userRepository.exists(userId)).willReturn(false);
         given(userRepository.exists("user1")).willReturn(false);
         given(userRepository.findByName("user")).willReturn(user);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userRepository.updatePassword(any(), eq("password")))
                 .willAnswer(invocation -> invocation.getArgument(0));
         given(groupRepository.exists(groupId)).willReturn(true);
@@ -146,7 +150,7 @@ class UserCommandFactoriesTest {
         given(userRepository.findByName("user")).willReturn(user);
         given(groupRepository.exists("group1")).willReturn(true);
         given(groupRepository.findByName("group1")).willReturn(group);
-        given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(userRepository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateUser(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
 
         CheckCommand<User> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
@@ -211,7 +215,7 @@ class UserCommandFactoriesTest {
         given(userChecker.canCreateGroup("group", actor)).willReturn(true);
         given(groupRepository.exists("group")).willReturn(false);
         given(groupRepository.exists(groupId)).willReturn(false);
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(groupRepository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.createGroup(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         CheckCommand<Group> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
@@ -242,7 +246,7 @@ class UserCommandFactoriesTest {
         given(groupRepository.exists("group1")).willReturn(false);
         given(groupRepository.exists(groupId)).willReturn(false);
         given(groupRepository.findByName("group")).willReturn(group);
-        given(groupRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(groupRepository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(userUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(1));
 
         CheckCommand<Group> checkCommand = factory.createCommand(userRepository, groupRepository, userChecker,
@@ -277,6 +281,7 @@ class UserCommandFactoriesTest {
 
         assertThat(output).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();
+        verify(userRepository).removeGroupFromUser(group);
     }
 
     @Test

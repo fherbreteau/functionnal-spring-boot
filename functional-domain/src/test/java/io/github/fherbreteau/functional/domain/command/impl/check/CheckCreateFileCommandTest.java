@@ -4,10 +4,10 @@ import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFileCommand;
-import io.github.fherbreteau.functional.driven.AccessChecker;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +37,8 @@ class CheckCreateFileCommandTest {
     public void setup() {
         parent = Folder.builder()
                 .withName("parent")
+                .withOwner(User.root())
+                .withGroup(Group.root())
                 .build();
         actor = User.builder("actor").build();
         command = new CheckCreateFileCommand(repository, contentRepository, accessChecker, accessUpdater, "file", parent);
@@ -62,7 +64,7 @@ class CheckCreateFileCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().matches(s -> s.endsWith(" can't create file in 'parent null:null --------- null'"));
+                .first().matches(s -> s.endsWith(" can't create file in 'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'"));
     }
 
     @Test
@@ -76,7 +78,7 @@ class CheckCreateFileCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().isEqualTo("file already exists in  'parent null:null --------- null'");
+                .first().isEqualTo("file already exists in  'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'");
         assertThat(result).extracting("type")
                 .isEqualTo(ItemCommandType.TOUCH);
     }

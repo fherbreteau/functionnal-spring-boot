@@ -70,7 +70,7 @@ class FileServiceTest {
         // THEN
         assertThat(path).isNotNull()
                 .satisfies(p -> assertThat(p.isError()).isTrue())
-                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' null:null ------rwx null' for actor"))
+                .satisfies(p -> assertThat(p.getError().getMessage()).isEqualTo("unknown not found in ' root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) ------rwx null' for actor"))
                 .satisfies(p -> assertThat(p.getError().getReasons()).isEmpty());
     }
 

@@ -2,6 +2,8 @@ package io.github.fherbreteau.functional.domain.entities;
 
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 public final class File extends AbstractItem<File, File.Builder> {
 
     private final String contentType;
@@ -63,12 +65,13 @@ public final class File extends AbstractItem<File, File.Builder> {
         private Builder() { }
 
         public Builder withContentType(String contentType) {
-            this.contentType = contentType;
+            this.contentType = requireNonNull(contentType);
             return this;
         }
 
         @Override
         public File build() {
+            validate();
             return new File(this);
         }
     }

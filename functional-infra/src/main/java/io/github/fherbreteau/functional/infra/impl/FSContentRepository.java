@@ -3,30 +3,26 @@ package io.github.fherbreteau.functional.infra.impl;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.driven.ContentRepository;
-import io.github.fherbreteau.functional.infra.ItemFinder;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.*;
-import java.util.UUID;
 
 public class FSContentRepository implements ContentRepository, InitializingBean {
 
     private static final String FILE_FORMAT = "%s.dat";
 
     private final Path rootPath;
-    private final ItemFinder itemFinder;
 
-    public FSContentRepository(String rootPath, ItemFinder itemFinder) {
-        this(rootPath, itemFinder, FileSystems.getDefault());
+    public FSContentRepository(String rootPath) {
+        this(rootPath, FileSystems.getDefault());
     }
 
-    FSContentRepository(String rootPath, ItemFinder itemFinder, FileSystem fs) {
+    FSContentRepository(String rootPath, FileSystem fs) {
         this.rootPath = fs.getPath(rootPath);
-        this.itemFinder = itemFinder;
     }
 
     @Override
@@ -81,7 +77,6 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
     }
 
     private Path getItemPath(File item) {
-        UUID itemId = itemFinder.getItemId(item);
-        return rootPath.resolve(String.format(FILE_FORMAT, itemId.toString()));
+        return rootPath.resolve(String.format(FILE_FORMAT, item.getHandle()));
     }
 }

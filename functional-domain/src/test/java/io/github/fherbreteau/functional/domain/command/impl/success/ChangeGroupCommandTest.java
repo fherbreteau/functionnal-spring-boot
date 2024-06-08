@@ -5,8 +5,8 @@ import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class ChangeGroupCommandTest {
     @Test
     void shouldEditGroupWhenExecutingCommand() {
         // GIVEN
-        given(repository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
+        given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
         given(accessUpdater.updateGroup(any(), any())).willAnswer(invocation -> invocation.getArgument(0));
         // WHEN
         Output<Item> result = command.execute(actor);
@@ -59,7 +59,7 @@ class ChangeGroupCommandTest {
         assertThat(result).isNotNull()
                 .extracting(Output::isSuccess, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
-        verify(repository).save(itemCaptor.capture());
+        verify(repository).update(itemCaptor.capture());
         assertThat(itemCaptor.getValue())
                 .extracting(Item::getGroup)
                 .isEqualTo(newGroup);

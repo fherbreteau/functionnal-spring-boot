@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.driven;
+package io.github.fherbreteau.functional.driven.repository;
 
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;

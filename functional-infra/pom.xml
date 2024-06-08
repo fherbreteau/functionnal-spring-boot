@@ -11,12 +11,6 @@
 
     <artifactId>functional-infra</artifactId>
 
-    <properties>
-        <jacoco.coverage.ratio>50%</jacoco.coverage.ratio>
-        <!-- PITests configuration -->
-        <pitest.fail-when-no-mutations>false</pitest.fail-when-no-mutations>
-    </properties>
-
     <dependencies>
         <!-- Project dependencies-->
         <dependency>

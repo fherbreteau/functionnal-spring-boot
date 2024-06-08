@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.AccessUpdater;
-import io.github.fherbreteau.functional.driven.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 public class CreateFolderCommand extends AbstractModifyItemCommand<Item> {
 
@@ -25,6 +25,6 @@ public class CreateFolderCommand extends AbstractModifyItemCommand<Item> {
                 .withGroupAccess(AccessRight.readExecute())
                 .withOtherAccess(AccessRight.none())
                 .build();
-        return Output.success(repository.save(accessUpdater.createItem(newFolder)));
+        return Output.success(repository.create(accessUpdater.createItem(newFolder)));
     }
 }

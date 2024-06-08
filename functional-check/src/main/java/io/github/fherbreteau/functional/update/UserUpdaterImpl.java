@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.update;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.UserUpdater;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.springframework.stereotype.Service;
 
 @Service
