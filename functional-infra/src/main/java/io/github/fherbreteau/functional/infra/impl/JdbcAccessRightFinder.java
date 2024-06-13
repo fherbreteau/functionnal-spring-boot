@@ -6,14 +6,14 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
 import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.*;
 
-@Transactional
+@Repository
 public class JdbcAccessRightFinder implements AccessRightFinder {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -24,13 +24,8 @@ public class JdbcAccessRightFinder implements AccessRightFinder {
 
     @Override
     public AccessRight getAccess(UUID itemId, String attribution) {
-        String query = """
-                SELECT type
-                FROM item_access
-                WHERE item_id = :item_id
-                AND attribution = :attribution
-                AND value = TRUE;
-                """;
+        String query = "SELECT TYPE FROM ITEM_ACCESS WHERE ITEM_ID = :item_id AND ATTRIBUTION = :attribution AND" +
+                " \"VALUE\" = TRUE";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ITEM_ID, itemId)
                 .addValue(COL_ATTRIBUTION, attribution);

@@ -2,37 +2,28 @@ package io.github.fherbreteau.functional.infra.impl;
 
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-import io.github.fherbreteau.functional.infra.config.RepositoryConfiguration;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.full;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.none;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = RepositoryConfiguration.class)
-@Testcontainers
+@ContextConfiguration(classes = {JdbcItemRepository.class, JdbcAccessRightFinder.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcItemRepositoryTest {
-
-    @Container
-    @ServiceConnection
-    private static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:16")
-            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("postgresql")));
 
     @Autowired
     private ItemRepository itemRepository;
@@ -48,9 +39,9 @@ class JdbcItemRepositoryTest {
                 .withName("file")
                 .withOwner(User.root())
                 .withParent(Folder.getRoot())
-                .withOwnerAccess(AccessRight.full())
-                .withGroupAccess(AccessRight.none())
-                .withOtherAccess(AccessRight.none())
+                .withOwnerAccess(full())
+                .withGroupAccess(full())
+                .withOtherAccess(full())
                 .withContentType("content-type")
                 .build();
         assertThat(itemRepository.create(file))
@@ -58,6 +49,8 @@ class JdbcItemRepositoryTest {
                 .isNotNull();
         assertThat(itemRepository.exists(Folder.getRoot(), "file"))
                 .isTrue();
+        Optional<Item> item =  itemRepository.findByNameAndParentAndUser("file", Folder.getRoot(), User.root());
+        assertThat(item).isPresent().hasValue(file);
     }
 
     @Test
@@ -68,6 +61,8 @@ class JdbcItemRepositoryTest {
         assertThat(itemRepository.update(folder)).isNotNull();
         assertThat(itemRepository.exists(Folder.getRoot(), "folder"))
                 .isFalse();
+        Optional<Item> item =  itemRepository.findByNameAndParentAndUser("folder2", Folder.getRoot(), User.root());
+        assertThat(item).isPresent().hasValue(folder);
     }
 
     @Test
@@ -75,9 +70,9 @@ class JdbcItemRepositoryTest {
         Folder folder = itemRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), User.root())
                 .map(Folder.class::cast).orElseThrow();
         folder = folder.copyBuilder()
-                .withOwnerAccess(AccessRight.full())
-                .withGroupAccess(AccessRight.full())
-                .withOtherAccess(AccessRight.full())
+                .withOwnerAccess(full())
+                .withGroupAccess(full())
+                .withOtherAccess(full())
                 .build();
         assertThat(itemRepository.update(folder)).isNotNull();
         assertThat(itemRepository.exists(Folder.getRoot(), "folder"))
@@ -106,10 +101,34 @@ class JdbcItemRepositoryTest {
     }
 
     @Test
-    void shouldFindItemInFolder() {
+    void shouldListItemsInFolderForSpecificUser() {
+        UUID userId = UUID.fromString("22bdb905-73d4-479e-99fc-62d46ad27d67");
+        User user = User.builder("Test").withUserId(userId).build();
+        Folder folder = (Folder) itemRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), user).orElseThrow();
+        List<Item> children = itemRepository.findByParentAndUser(folder, user);
+        assertThat(children).hasSizeGreaterThanOrEqualTo(1)
+                .extracting(Item::getName)
+                .containsOnlyOnce("to_select");
+    }
+
+    @Test
+    void shouldFindItemInRootFolder() {
         Optional<Item> found = itemRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), User.root());
         assertThat(found).isPresent()
                 .map(Item::getName)
                 .hasValue("folder");
+    }
+
+    @Test
+    void shouldFindItemInFolder() {
+        Folder found = (Folder) itemRepository.findByNameAndParentAndUser("folder", Folder.getRoot(), User.root()).orElseThrow();
+        Optional<Item> item = itemRepository.findByNameAndParentAndUser("to_select", found, User.root());
+
+        assertThat(item).isPresent();
+        assertThat(item.get())
+                .asInstanceOf(type(File.class))
+                .extracting(Item::getName, File::getContentType, Item::getOwnerAccess, Item::getGroupAccess,
+                        Item::getOtherAccess)
+                .containsExactly("to_select", "content-type", none(), none(), none());
     }
 }

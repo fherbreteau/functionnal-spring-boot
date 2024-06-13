@@ -23,7 +23,7 @@ public class ItemExtractor {
                 .addValue(COL_GROUP_ID, item.getGroup().getGroupId())
                 .addValue(COL_CREATED_AT, item.getCreated())
                 .addValue(COL_MODIFIED_AT, item.getLastModified())
-                .addValue(COL_ACCESSED_AT, item.getLastModified())
+                .addValue(COL_ACCESSED_AT, item.getLastAccessed())
                 .addValue(COL_PARENT_ID, getItemId(item.getParent()))
                 .addValue(COL_CONTENT_TYPE, getContentType(item));
     }

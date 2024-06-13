@@ -17,7 +17,7 @@
     <changeSet id="20240518000000-01-2" author="fherbreteau">
         <insert tableName="group">
             <column name="id" value="00000000-0000-0000-0000-000000000000"/>
-            <column name="name" value="wheel"/>
+            <column name="name" value="root"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

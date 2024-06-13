@@ -5,19 +5,26 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.*;
 
+import static java.nio.file.StandardOpenOption.*;
+
+@Service
 public class FSContentRepository implements ContentRepository, InitializingBean {
 
     private static final String FILE_FORMAT = "%s.dat";
 
     private final Path rootPath;
 
-    public FSContentRepository(String rootPath) {
+    @Autowired
+    public FSContentRepository(@Value("${content.repository.path}") String rootPath) {
         this(rootPath, FileSystems.getDefault());
     }
 
@@ -40,7 +47,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
     public Output<InputStream> readContent(File item) {
         Path itemPath = getItemPath(item);
         try {
-            return Output.success(Files.newInputStream(itemPath, StandardOpenOption.READ));
+            return Output.success(Files.newInputStream(itemPath, READ));
         } catch (IOException e) {
             return Output.error(e);
         }
@@ -49,8 +56,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
     @Override
     public Output<Item> writeContent(File item, InputStream content) {
         Path itemPath = getItemPath(item);
-        try (OutputStream oStream = Files.newOutputStream(itemPath, StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.WRITE)) {
+        try (OutputStream oStream = Files.newOutputStream(itemPath, TRUNCATE_EXISTING, WRITE)) {
             content.transferTo(oStream);
             return Output.success(item);
         } catch (IOException e) {
