@@ -8,7 +8,7 @@ import io.github.fherbreteau.functional.infra.mapper.GroupMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL
 import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_NAME;
 import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
 
-@Transactional
+@Repository
 public class JdbcGroupRepository implements GroupRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -32,11 +32,7 @@ public class JdbcGroupRepository implements GroupRepository {
 
     @Override
     public boolean exists(String name) {
-        String query = """
-                SELECT 1
-                FROM "group"
-                WHERE name = :name
-                """;
+        String query = "SELECT 1 FROM \"GROUP\" WHERE NAME = :name";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name);
         return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
@@ -48,11 +44,7 @@ public class JdbcGroupRepository implements GroupRepository {
     }
 
     private Optional<Group> findByNameOptional(String name) {
-        String query = """
-                SELECT id, name
-                FROM "group"
-                WHERE name = :name
-                """;
+        String query = "SELECT ID, NAME FROM \"GROUP\" WHERE NAME = :name";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name);
         return jdbcTemplate.queryForStream(query, params, groupMapper)
@@ -61,11 +53,7 @@ public class JdbcGroupRepository implements GroupRepository {
 
     @Override
     public boolean exists(UUID groupId) {
-        String query = """
-                SELECT 1
-                FROM "group"
-                WHERE id = :id
-                """;
+        String query = "SELECT 1 FROM \"GROUP\" WHERE ID = :id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, groupId);
         return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
@@ -77,11 +65,7 @@ public class JdbcGroupRepository implements GroupRepository {
     }
 
     private Optional<Group> findByIdOptional(UUID groupId) {
-        String query = """
-                SELECT id, name
-                FROM "group"
-                WHERE id = :id
-                """;
+        String query = "SELECT ID, NAME FROM \"GROUP\" WHERE ID = :id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, groupId);
         return jdbcTemplate.queryForStream(query, params, groupMapper)
@@ -90,9 +74,7 @@ public class JdbcGroupRepository implements GroupRepository {
 
     @Override
     public Group create(Group group) {
-        String query = """
-                INSERT INTO "group"(id, name) VALUES (:id, :name)
-                """;
+        String query = "INSERT INTO \"GROUP\"(ID, NAME) VALUES (:id, :name)";
         jdbcTemplate.update(query, groupExtractor.map(group));
         return group;
     }
@@ -103,20 +85,14 @@ public class JdbcGroupRepository implements GroupRepository {
                 .or(() -> findByNameOptional(group.getName()))
                 .orElseThrow();
         if (!Objects.equals(group.getName(), oldGroup.getName())) {
-            String query = """
-                    UPDATE "group" SET name = :name WHERE id = :id
-                    """;
+            String query = "UPDATE \"GROUP\" SET NAME = :name WHERE ID = :id";
             jdbcTemplate.update(query, groupExtractor.map(group));
         } else if (!Objects.equals(group.getGroupId(), oldGroup.getGroupId())) {
-            String query = """
-                    DELETE FROM user_group WHERE group_id = :group_id
-                    """;
+            String query = "DELETE FROM USER_GROUP WHERE GROUP_id = :group_id";
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue(COL_GROUP_ID, oldGroup.getGroupId());
             jdbcTemplate.update(query, params);
-            query = """
-                    UPDATE "group" SET id = :id WHERE name = :name
-                    """;
+            query = "UPDATE \"GROUP\" SET ID = :id WHERE NAME = :name";
             jdbcTemplate.update(query, groupExtractor.map(group));
         }
         return group;
@@ -124,11 +100,7 @@ public class JdbcGroupRepository implements GroupRepository {
 
     @Override
     public void delete(Group group) {
-        String query = """
-                DELETE FROM "group"
-                WHERE id = :id
-                AND name = :name
-                """;
+        String query = "DELETE FROM \"GROUP\" WHERE ID = :id AND NAME = :name";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, group.getGroupId())
                 .addValue(COL_NAME, group.getName());

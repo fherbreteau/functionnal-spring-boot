@@ -11,16 +11,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.*;
 
-@Transactional
+@Repository
 public class JdbcItemRepository implements ItemRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -36,12 +33,7 @@ public class JdbcItemRepository implements ItemRepository {
 
     @Override
     public boolean exists(Folder parent, String name) {
-        String query = """
-                SELECT 1
-                FROM item
-                WHERE name = :name
-                AND parent_id = :parent_id
-                """;
+        String query = "SELECT 1 FROM ITEM WHERE NAME = :name AND PARENT_ID = :parent_id";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_PARENT_ID, parent.getHandle())
                 .addValue(COL_NAME, name);
@@ -51,74 +43,51 @@ public class JdbcItemRepository implements ItemRepository {
     @Override
     @SuppressWarnings("unchecked")
     public <I extends Item> I create(I item) {
-        String query = """
-                INSERT INTO item(name, type, owner, "group", created_at, modified_at, accessed_at, parent_id, content_type)
-                VALUES (:name, :type, :owner, :group, :created_at, :modified_at, :accessed_at, :parent_id, :content_type)
-                 RETURNING id
-                """;
+        String query = "INSERT INTO ITEM(NAME, TYPE, OWNER, \"GROUP\", CREATED_AT, MODIFIED_AT, ACCESSED_AT, " +
+                "PARENT_ID, CONTENT_TYPE) VALUES (:name, :type, :owner, :group, :created_at, :modified_at, " +
+                ":accessed_at, :parent_id, :content_type)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(query, itemExtractor.map(item), keyHolder);
+        jdbcTemplate.update(query, itemExtractor.map(item), keyHolder, new String[]{COL_ID});
         I inserted = (I) item.copyBuilder().withHandle(keyHolder.getKeyAs(UUID.class)).build();
-        query = """
-                INSERT INTO item_access(item_id, type, attribution, value)
-                VALUES(:item_id, :type, :attribution, :value)
-                """;
+        query = "INSERT INTO item_access(ITEM_ID, TYPE, ATTRIBUTION, \"VALUE\") " +
+                "VALUES(:item_id, :type, :attribution, :value)";
         jdbcTemplate.batchUpdate(query, itemExtractor.mapAccess(inserted));
         return inserted;
     }
 
     @Override
-    public  <I extends Item> I update(I item) {
-        String query = """
-                UPDATE item
-                SET name = :name,
-                    type = :type,
-                    owner = :owner,
-                    "group" = :group,
-                    created_at = :created_at,
-                    modified_at = :modified_at,
-                    accessed_at = :accessed_at,
-                    parent_id = :parent_id,
-                    content_type = :content_type
-                WHERE id = :id
-                """;
+    public <I extends Item> I update(I item) {
+        String query = "UPDATE ITEM SET NAME = :name, TYPE = :type, OWNER = :owner, \"GROUP\" = :group, CREATED_AT = " +
+                ":created_at, MODIFIED_AT = :modified_at, ACCESSED_AT = :accessed_at, PARENT_ID = :parent_id, " +
+                "CONTENT_TYPE = :content_type WHERE id = :id";
         jdbcTemplate.update(query, itemExtractor.map(item));
-        query = """
-                UPDATE item_access
-                SET value = :value
-                WHERE item_id = :item_id
-                AND type = :type
-                AND attribution = :attribution
-                """;
+        query = "UPDATE item_access SET \"VALUE\" = :value WHERE ITEM_ID = :item_id AND TYPE = :type AND ATTRIBUTION = " +
+                ":attribution";
         jdbcTemplate.batchUpdate(query, itemExtractor.mapAccess(item));
         return item;
     }
 
     @Override
     public <I extends Item> void delete(I item) {
-        String query = """
-                DELETE FROM item
-                WHERE id = :id
-                """;
+        // Delete all item_access of the item
+        String query = "DELETE FROM ITEM_ACCESS WHERE ITEM_ID = :id";
         SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(COL_ID, getItemHandle(item));
+        jdbcTemplate.update(query, params);
+        // Delete the item
+        query = "DELETE FROM ITEM WHERE id = :id";
+        params = new MapSqlParameterSource()
                 .addValue(COL_ID, getItemHandle(item));
         jdbcTemplate.update(query, params);
     }
 
     @Override
     public List<Item> findByParentAndUser(Folder folder, User actor) {
-        String query = """
-                SELECT DISTINCT i.id as id, i.type as type, i.name as name, u.id as uid, u.name as uname, g.id as gid,
-                       g.name as gname, created_at, modified_at, accessed_at, content_type, parent_id
-                FROM item i
-                JOIN "user" u ON i.owner = u.id
-                JOIN "group" g ON i.group = g.id
-                LEFT JOIN item_access a ON i.id = a.item_id
-                WHERE parent_id = :parent_id
-                AND (u.id = :owner OR g.id in (:group_ids) OR
-                    (a.type = 'READ' AND a.attribution = 'OTHER' AND a.value = TRUE) OR
-                    :force)
-                """;
+        String query = "SELECT DISTINCT i.ID as id, i.TYPE as type, i.NAME as name, u.ID as uid, u.NAME as uname, " +
+                "g.ID as gid, g.NAME as gname, CREATED_AT, MODIFIED_AT, ACCESSED_AT, CONTENT_TYPE, PARENT_ID FROM" +
+                " ITEM i JOIN \"USER\" u ON i.OWNER = u.ID JOIN \"GROUP\" g ON i.\"GROUP\" = g.ID LEFT JOIN " +
+                "ITEM_ACCESS a ON i.ID = a.ITEM_ID WHERE PARENT_ID = :parent_id AND (u.ID = :owner OR g.ID in " +
+                "(:group_ids) OR (a.TYPE = 'READ' AND a.ATTRIBUTION = 'OTHER' AND a.\"VALUE\" = TRUE) OR :force)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_PARENT_ID, getItemHandle(folder))
                 .addValue(COL_OWNER_ID, actor.getUserId())
@@ -129,19 +98,11 @@ public class JdbcItemRepository implements ItemRepository {
 
     @Override
     public Optional<Item> findByNameAndParentAndUser(String name, Folder folder, User actor) {
-        String query = """
-                SELECT i.id as id, i.type as type, i.name as name, u.id as uid, u.name as uname, g.id as gid,
-                       g.name as gname, created_at, modified_at, accessed_at, content_type, parent_id
-                FROM item i
-                JOIN "user" u ON i.owner = u.id
-                JOIN "group" g ON i.group = g.id
-                LEFT JOIN item_access a ON i.id = a.item_id
-                WHERE i.name = :name
-                AND parent_id = :parent_id
-                AND (u.id = :owner OR g.id in (:group_ids) OR
-                    (a.type = 'READ' AND a.attribution = 'OTHER' AND a.value = TRUE) OR
-                    :force)
-                """;
+        String query = " SELECT i.ID as id, i.TYPE as type, i.NAME as name, u.ID as uid, u.NAME as uname, g.ID as " +
+                "gid, g.NAME as gname, CREATED_AT, MODIFIED_AT, ACCESSED_AT, CONTENT_TYPE, PARENT_ID FROM ITEM i JOIN" +
+                " \"USER\" u ON i.OWNER = u.ID JOIN \"GROUP\" g ON i.\"GROUP\" = g.ID LEFT JOIN ITEM_ACCESS a " +
+                "ON i.ID = a.ITEM_ID WHERE i.NAME = :name AND PARENT_ID = :parent_id AND (u.ID = :owner OR g.ID in " +
+                "(:group_ids) OR (a.TYPE = 'READ' AND a.ATTRIBUTION = 'OTHER' AND a.\"VALUE\" = TRUE) OR :force)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name)
                 .addValue(COL_PARENT_ID, getItemHandle(folder))
@@ -155,7 +116,7 @@ public class JdbcItemRepository implements ItemRepository {
         return actor.getGroups().stream().map(Group::getGroupId).toList();
     }
 
-    private <I extends  Item> UUID getItemHandle(I item) {
+    private <I extends Item> UUID getItemHandle(I item) {
         return ((AbstractItem<?, ?>) item).getHandle();
     }
 }
