@@ -50,7 +50,10 @@ class JdbcItemRepositoryTest {
         assertThat(itemRepository.exists(Folder.getRoot(), "file"))
                 .isTrue();
         Optional<Item> item =  itemRepository.findByNameAndParentAndUser("file", Folder.getRoot(), User.root());
-        assertThat(item).isPresent().hasValue(file);
+        assertThat(item).isPresent().hasValueSatisfying(val -> assertThat(val)
+                .usingRecursiveComparison()
+                .ignoringFields("created", "lastModified", "lastAccessed", "handle")
+                .isEqualTo(file));
     }
 
     @Test
