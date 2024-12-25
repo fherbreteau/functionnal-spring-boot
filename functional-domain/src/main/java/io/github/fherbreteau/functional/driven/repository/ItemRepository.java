@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface ItemRepository {
     boolean exists(Folder parent, String name);
 
+    boolean exists(Item item);
+
     <I extends Item> I create(I item);
 
     <I extends Item> I update(I item);

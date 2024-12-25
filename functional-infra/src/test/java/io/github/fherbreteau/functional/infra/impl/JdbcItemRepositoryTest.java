@@ -34,6 +34,21 @@ class JdbcItemRepositoryTest {
     }
 
     @Test
+    void shouldCheckExistenceOfRoot() {
+        assertTrue(itemRepository.exists(Folder.getRoot()));
+    }
+
+    @Test
+    void shouldCheckExistenceOfGivenFolder() {
+        Folder folder = Folder.builder()
+                .withName("folder")
+                .withOwner(User.root())
+                .withParent(Folder.getRoot())
+                .build();
+        assertTrue(itemRepository.exists(folder));
+    }
+
+    @Test
     void shouldCreateItemInDatabase() {
         File file = File.builder()
                 .withName("file")
