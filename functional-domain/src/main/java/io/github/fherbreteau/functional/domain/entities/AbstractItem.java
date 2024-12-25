@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
+import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 
 public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, B>> implements Item {
 
@@ -47,6 +47,7 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
         this.parent = builder.parent;
     }
 
+    @Override
     public UUID getHandle() {
         return handle;
     }

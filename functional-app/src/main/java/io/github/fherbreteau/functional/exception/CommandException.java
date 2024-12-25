@@ -1,24 +1,27 @@
 package io.github.fherbreteau.functional.exception;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
-
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 
-public class CommandException extends RuntimeException {
-    private final List<String> reasons;
+import io.github.fherbreteau.functional.domain.entities.Failure;
 
-    public CommandException(Error error) {
-        super(error.getMessage());
-        reasons = error.getReasons();
+public class CommandException extends RuntimeException {
+    @Serial
+    private static final long serialVersionUID = -5103743186680944314L;
+    private final String[] reasons;
+
+    public CommandException(Failure failure) {
+        super(failure.getMessage());
+        reasons = failure.getReasons().toArray(String[]::new);
     }
 
     public CommandException(IOException exception) {
         super(exception.getMessage());
-        reasons = List.of();
+        reasons = new String[0];
     }
 
     public List<String> getReasons() {
-        return reasons;
+        return List.of(reasons);
     }
 }

@@ -1,5 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
+import static java.util.Objects.nonNull;
+
+import java.util.Objects;
+
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckMoveItemCommand;
@@ -10,10 +14,6 @@ import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-
-import java.util.Objects;
-
-import static java.util.Objects.nonNull;
 
 public class MoveItemCommandFactory implements ItemCommandFactory<Item> {
     @Override

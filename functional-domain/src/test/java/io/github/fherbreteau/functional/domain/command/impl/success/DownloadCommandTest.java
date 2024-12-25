@@ -1,8 +1,13 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
+import java.io.InputStream;
+
+import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
@@ -12,11 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.InputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class DownloadCommandTest {

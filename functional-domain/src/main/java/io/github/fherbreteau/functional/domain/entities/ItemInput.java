@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import static java.util.Objects.isNull;
+
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static java.util.Objects.isNull;
 
 public final class ItemInput {
 
@@ -30,6 +30,10 @@ public final class ItemInput {
         this.inputStream = builder.inputStream;
         this.contentType = builder.contentType;
         this.destination = builder.destination;
+    }
+
+    public static Builder builder(Item item) {
+        return new Builder(item);
     }
 
     public Item getItem() {
@@ -74,10 +78,6 @@ public final class ItemInput {
 
     public Item getDestination() {
         return destination;
-    }
-
-    public static Builder builder(Item item) {
-        return new Builder(item);
     }
 
     @Override

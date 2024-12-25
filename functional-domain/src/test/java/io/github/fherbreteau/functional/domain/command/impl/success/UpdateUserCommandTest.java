@@ -1,11 +1,22 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.util.List;
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.PasswordProtector;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -15,17 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateUserCommandTest {

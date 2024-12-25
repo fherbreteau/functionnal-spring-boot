@@ -1,14 +1,13 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.Item;
+import java.util.Optional;
+
+import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.Optional;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class SimplePathParser implements PathParser {
 
@@ -36,8 +35,7 @@ public class SimplePathParser implements PathParser {
                 .map(i -> repository.findByNameAndParentAndUser(segment, i, actor))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(Item.class::cast)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(Error.error(String.format("%s not found in %s for %s", segment, current.getItem(), actor))));
+                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, current.getItem(), actor))));
     }
 }

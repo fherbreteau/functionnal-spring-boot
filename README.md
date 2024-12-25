@@ -1,4 +1,5 @@
 # functional-spring-boot
+
 [![Build](https://github.com/fherbreteau/functional-spring-boot/actions/workflows/maven.yml/badge.svg)]()
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fherbreteau_functional-spring-boot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fherbreteau_functional-spring-boot)
 

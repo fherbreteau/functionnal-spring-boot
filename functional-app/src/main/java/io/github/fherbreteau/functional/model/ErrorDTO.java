@@ -2,6 +2,9 @@ package io.github.fherbreteau.functional.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = ErrorDTO.Builder.class)
 public final class ErrorDTO {
     private final String type;
     private final String message;
@@ -11,6 +14,10 @@ public final class ErrorDTO {
         type = builder.type;
         message = builder.message;
         reasons = builder.reasons;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String getType() {
@@ -23,10 +30,6 @@ public final class ErrorDTO {
 
     public List<String> getReasons() {
         return reasons;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static final class Builder {

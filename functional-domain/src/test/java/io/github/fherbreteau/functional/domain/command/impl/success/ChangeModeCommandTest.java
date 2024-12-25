@@ -1,9 +1,23 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.util.stream.Stream;
+
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,15 +27,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.stream.Stream;
-
-import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ChangeModeCommandTest {

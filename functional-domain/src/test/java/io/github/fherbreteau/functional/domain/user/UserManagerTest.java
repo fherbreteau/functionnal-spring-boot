@@ -1,6 +1,10 @@
 package io.github.fherbreteau.functional.domain.user;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
+import static org.mockito.BDDMockito.given;
+
+import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -12,10 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class UserManagerTest {
@@ -56,15 +56,15 @@ class UserManagerTest {
         Output<User> result = userManager.findUserByName("user");
         // THEN
         assertThat(result).isNotNull()
-                .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)
+                .extracting(Output::isFailure, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         assertThat(result)
-                .extracting(Output::getError)
-                .extracting(Error::getMessage)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
                 .isEqualTo("user not found");
         assertThat(result)
-                .extracting(Output::getError)
-                .extracting(Error::getReasons, list(String.class))
+                .extracting(Output::getFailure)
+                .extracting(Failure::getReasons, list(String.class))
                 .isEmpty();
     }
 
@@ -93,15 +93,15 @@ class UserManagerTest {
         Output<Group> result = userManager.findGroupByName("group");
         // THEN
         assertThat(result).isNotNull()
-                .extracting(Output::isError, InstanceOfAssertFactories.BOOLEAN)
+                .extracting(Output::isFailure, InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         assertThat(result)
-                .extracting(Output::getError)
-                .extracting(Error::getMessage)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
                 .isEqualTo("group not found");
         assertThat(result)
-                .extracting(Output::getError)
-                .extracting(Error::getReasons, list(String.class))
+                .extracting(Output::getFailure)
+                .extracting(Failure::getReasons, list(String.class))
                 .isEmpty();
     }
 

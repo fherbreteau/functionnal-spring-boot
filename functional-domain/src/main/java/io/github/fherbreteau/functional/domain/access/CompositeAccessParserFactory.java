@@ -1,12 +1,12 @@
 package io.github.fherbreteau.functional.domain.access;
 
-import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
-import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFactory;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.access.factory.RecursiveAccessFactory;
-
 import java.util.Comparator;
 import java.util.List;
+
+import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.RecursiveAccessFactory;
+import io.github.fherbreteau.functional.domain.entities.Item;
 
 public class CompositeAccessParserFactory implements CompositeAccessFactory {
 

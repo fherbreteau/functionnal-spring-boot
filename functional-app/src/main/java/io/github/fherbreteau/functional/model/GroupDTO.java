@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = GroupDTO.Builder.class)
 public final class GroupDTO {
@@ -14,16 +14,16 @@ public final class GroupDTO {
         this.name = builder.name;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public UUID getGid() {
         return gid;
     }
 
     public String getName() {
         return name;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static final class Builder {

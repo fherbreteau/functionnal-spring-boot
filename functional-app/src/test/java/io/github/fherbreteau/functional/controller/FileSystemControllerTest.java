@@ -1,8 +1,38 @@
 package io.github.fherbreteau.functional.controller;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
+
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.driving.UserService;
@@ -19,20 +49,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.io.ByteArrayInputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
@@ -267,7 +283,7 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
+        given(userService.findUserByName("user")).willReturn(Output.failure("user not found"));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
@@ -332,8 +348,8 @@ class FileSystemControllerTest {
                 .andExpect(jsonPath("$.type").value("UserException"))
                 .andExpect(jsonPath("$.message").value("user not found"));
         mvc.perform(delete("/files")
-                .with(csrf())
-                .param("path", "/file"))
+                        .with(csrf())
+                        .param("path", "/file"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
@@ -343,7 +359,7 @@ class FileSystemControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenPathDoesNotExists() throws Exception {
-        given(fileService.getPath("/path", actor)).willReturn(Path.error(Error.error("path not found")));
+        given(fileService.getPath("/path", actor)).willReturn(Path.error(Failure.failure("path not found")));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))
@@ -369,40 +385,40 @@ class FileSystemControllerTest {
                 .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/owner").with(csrf())
-                .param("path", "/path")
-                .param("name", "user2"))
+                        .param("path", "/path")
+                        .param("name", "user2"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
                 .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/group").with(csrf())
-                .param("path", "/path")
-                .param("name", "group2"))
+                        .param("path", "/path")
+                        .param("name", "group2"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
                 .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(patch("/files/mode").with(csrf())
-                .param("path", "/path")
-                .param("right", "-wx"))
+                        .param("path", "/path")
+                        .param("right", "-wx"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
                 .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(get("/files/download").with(csrf())
-                .param("path", "/path"))
+                        .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
                 .andExpect(jsonPath("$.message").value("path not found"));
 
         mvc.perform(multipart("/files/upload")
-                .file("file", "content".getBytes())
-                .with(csrf())
-                .param("path", "/path"))
+                        .file("file", "content".getBytes())
+                        .with(csrf())
+                        .param("path", "/path"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("PathException"))
@@ -425,8 +441,8 @@ class FileSystemControllerTest {
                 .withOwner(User.root())
                 .build();
         given(fileService.getPath("/path", actor)).willReturn(Path.success(path));
-        given(userService.findUserByName("user2")).willReturn(Output.error("user2 not found"));
-        given(userService.findGroupByName("group2")).willReturn(Output.error("group2 not found"));
+        given(userService.findUserByName("user2")).willReturn(Output.failure("user2 not found"));
+        given(userService.findGroupByName("group2")).willReturn(Output.failure("group2 not found"));
 
         mvc.perform(patch("/files/owner").with(csrf())
                         .param("path", "/path")
@@ -462,7 +478,7 @@ class FileSystemControllerTest {
         Group group2 = Group.builder("group2").build();
         given(userService.findGroupByName("group2")).willReturn(Output.success(group2));
         given(fileService.processCommand(any(), eq(actor), any())).willAnswer(invocation ->
-                Output.error("Command Failed", List.of("Error")));
+                Output.failure("Command Failed", List.of("Error")));
 
         mvc.perform(get("/files")
                         .param("path", "/path"))

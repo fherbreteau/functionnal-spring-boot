@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import java.util.List;
 import java.util.UUID;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = InputUserDTO.Builder.class)
 public final class InputUserDTO {
@@ -19,6 +19,10 @@ public final class InputUserDTO {
         this.gid = builder.gid;
         this.groups = builder.groups;
         this.password = builder.password;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public UUID getUid() {
@@ -39,10 +43,6 @@ public final class InputUserDTO {
 
     public String getPassword() {
         return password;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static final class Builder {

@@ -1,5 +1,13 @@
 package io.github.fherbreteau.functional.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+
+import java.util.List;
+
 import io.github.fherbreteau.functional.driven.PasswordProtector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,14 +20,6 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 class PasswordProtectorTest {

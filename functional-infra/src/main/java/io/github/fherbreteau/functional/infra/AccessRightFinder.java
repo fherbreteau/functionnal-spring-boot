@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.infra;
 
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
-
 import java.util.UUID;
+
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
 
 public interface AccessRightFinder {
 

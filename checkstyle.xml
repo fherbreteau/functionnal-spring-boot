@@ -40,6 +40,11 @@
         <module name="HideUtilityClassConstructor"/>
         <module name="IllegalImport"/>
         <module name="Indentation"/>
+        <module name="ImportOrder">
+            <property name="groups" value="java"/>
+            <property name="option" value="top"/>
+            <property name="separated" value="true"/>
+        </module>
         <module name="LeftCurly"/>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>

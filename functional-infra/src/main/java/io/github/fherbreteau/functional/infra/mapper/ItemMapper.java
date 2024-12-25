@@ -1,8 +1,15 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.infra.AccessRightFinder;
-import org.springframework.jdbc.core.RowMapper;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.ATTR_GROUP;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.ATTR_OTHER;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.ATTR_OWNER;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_ACCESSED_AT;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_CONTENT_TYPE;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_CREATED_AT;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_ID;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_ITEM_TYPE;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_MODIFIED_AT;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_NAME;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,14 +18,21 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.*;
-import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.*;
+import io.github.fherbreteau.functional.domain.entities.AbstractItem;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.FileItem.Builder;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.infra.AccessRightFinder;
+import org.springframework.jdbc.core.RowMapper;
 
 public class ItemMapper implements RowMapper<Item> {
 
     private final Map<String, Supplier<AbstractItem.AbstractBuilder<?, ?>>> builderMap = Map.of(
-            Folder.class.getSimpleName(), Folder::builder,
-            File.class.getSimpleName(), File::builder);
+            Folder.TYPE, Folder::builder,
+            File.TYPE, File::builder);
 
     private final AccessRightFinder accessRightFinder;
 
@@ -46,7 +60,7 @@ public class ItemMapper implements RowMapper<Item> {
                 .withLastModified(rs.getObject(COL_MODIFIED_AT, LocalDateTime.class))
                 .withLastAccessed(rs.getObject(COL_ACCESSED_AT, LocalDateTime.class))
                 .withParent(parent);
-        if (builder instanceof File.Builder fileBuilder) {
+        if (builder instanceof Builder fileBuilder) {
             fileBuilder.withContentType(rs.getString(COL_CONTENT_TYPE));
         }
         return builder.build();

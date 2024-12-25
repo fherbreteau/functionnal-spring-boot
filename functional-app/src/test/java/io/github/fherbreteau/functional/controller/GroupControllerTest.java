@@ -1,5 +1,23 @@
 package io.github.fherbreteau.functional.controller;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Objects;
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -21,17 +39,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Objects;
-import java.util.UUID;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
@@ -134,7 +141,7 @@ class GroupControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
+        given(userService.findUserByName("user")).willReturn(Output.failure("user not found"));
 
         mvc.perform(get("/groups").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -172,7 +179,7 @@ class GroupControllerTest {
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
-                .willReturn(Output.error("Command Failed"));
+                .willReturn(Output.failure("Command Failed"));
 
         mvc.perform(get("/groups").with(csrf()))
                 .andExpect(status().isBadRequest())

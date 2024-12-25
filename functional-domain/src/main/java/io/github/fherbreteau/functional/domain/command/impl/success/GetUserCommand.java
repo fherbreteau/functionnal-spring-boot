@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.util.Objects.nonNull;
+
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
-
-import java.util.UUID;
-
-import static java.util.Objects.nonNull;
 
 public class GetUserCommand extends AbstractSuccessUserCommand<User> {
     private final String name;

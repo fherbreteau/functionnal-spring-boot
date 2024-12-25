@@ -2,7 +2,11 @@ package io.github.fherbreteau.functional.driving.impl;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserCommandType;
+import io.github.fherbreteau.functional.domain.entities.UserInput;
 import io.github.fherbreteau.functional.domain.user.UserManager;
 import io.github.fherbreteau.functional.driving.UserService;
 

@@ -9,19 +9,19 @@ public final class Path {
 
     private final Item item;
 
-    private final Error error;
+    private final Failure failure;
 
-    private Path(Item item, Error error) {
+    private Path(Item item, Failure failure) {
         this.item = item;
-        this.error = error;
+        this.failure = failure;
     }
 
     public static Path success(Item item) {
         return new Path(item, null);
     }
 
-    public static Path error(Error error) {
-        return new Path(null, error);
+    public static Path error(Failure failure) {
+        return new Path(null, failure);
     }
 
     public String getName() {
@@ -48,12 +48,12 @@ public final class Path {
         return (File) item;
     }
 
-    public Error getError() {
-        return error;
+    public Failure getError() {
+        return failure;
     }
 
     public boolean isError() {
-        return error != null;
+        return failure != null;
     }
 
     public Path getParent() {
@@ -61,7 +61,7 @@ public final class Path {
             return Path.success(item.getParent());
         }
         if (ROOT.equals(this)) {
-            return Path.error(Error.error("Root path has no parent", List.of()));
+            return Path.error(Failure.failure("Root path has no parent", List.of()));
         }
         return this;
     }
@@ -83,14 +83,14 @@ public final class Path {
             return false;
         }
         if (isError()) {
-            return path.isError() && Objects.equals(error, path.error);
+            return path.isError() && Objects.equals(failure, path.failure);
         }
         return !path.isError() && Objects.equals(item, path.item);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(item, error);
+        return Objects.hash(item, failure);
     }
 
     @Override
@@ -99,7 +99,7 @@ public final class Path {
         if (item != null) {
             result += "item=" + item;
         } else {
-            result += "error=" + error;
+            result += "error=" + failure;
         }
         return result + '}';
     }

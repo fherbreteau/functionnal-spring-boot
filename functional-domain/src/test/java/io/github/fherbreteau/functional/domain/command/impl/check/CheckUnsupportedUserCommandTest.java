@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Output;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class CheckUnsupportedUserCommandTest {

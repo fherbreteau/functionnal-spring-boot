@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.security;
 
+import java.util.List;
+
 import io.github.fherbreteau.functional.driven.PasswordProtector;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PasswordProtectorImpl implements PasswordProtector {

@@ -6,43 +6,43 @@ public final class Output<T> {
 
     private final T value;
 
-    private final Error error;
+    private final Failure failure;
 
-    private Output(T value, Error error) {
+    private Output(T value, Failure failure) {
         this.value = value;
-        this.error = error;
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public Error getError() {
-        return error;
-    }
-
-    public boolean isSuccess() {
-        return error == null;
-    }
-
-    public boolean isError() {
-        return error != null;
+        this.failure = failure;
     }
 
     public static <T> Output<T> success(T value) {
         return new Output<>(value, null);
     }
 
-    public static <T> Output<T> error(Throwable throwable) {
-        return error(throwable.getMessage());
+    public static <T> Output<T> failure(Throwable throwable) {
+        return failure(throwable.getMessage());
     }
 
-    public static <T> Output<T> error(String message) {
-        return error(message, List.of());
+    public static <T> Output<T> failure(String message) {
+        return failure(message, List.of());
     }
 
-    public static <T> Output<T> error(String message, List<String> reasons) {
-        return new Output<>(null, Error.error(message, reasons));
+    public static <T> Output<T> failure(String message, List<String> reasons) {
+        return new Output<>(null, Failure.failure(message, reasons));
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    public Failure getFailure() {
+        return failure;
+    }
+
+    public boolean isSuccess() {
+        return failure == null;
+    }
+
+    public boolean isFailure() {
+        return failure != null;
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class Output<T> {
         if (value != null) {
             result += "value=" + value;
         } else {
-            result += "error=" + error;
+            result += "failure=" + failure;
         }
         return result + '}';
     }

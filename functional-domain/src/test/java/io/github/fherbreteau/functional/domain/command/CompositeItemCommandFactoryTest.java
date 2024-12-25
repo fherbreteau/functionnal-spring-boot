@@ -1,13 +1,49 @@
 package io.github.fherbreteau.functional.domain.command;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.Mockito.mock;
+
+import java.io.InputStream;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
+
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.impl.*;
-import io.github.fherbreteau.functional.domain.command.impl.check.*;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeModeCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeOwnerCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CopyItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DownloadCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ListChildrenCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.MoveItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UploadCommandFactory;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeGroupCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeModeCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeOwnerCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckCopyItemCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateFileCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateFolderCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckDeleteItemCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckDownloadCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckListChildrenCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckMoveItemCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedItemCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUploadCommand;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +52,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.InputStream;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class CompositeItemCommandFactoryTest {

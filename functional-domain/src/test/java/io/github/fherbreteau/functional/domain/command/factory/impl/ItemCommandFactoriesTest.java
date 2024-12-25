@@ -1,19 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
-import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-import io.github.fherbreteau.functional.driven.repository.ContentRepository;
-import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.InputStream;
-
 import static io.github.fherbreteau.functional.domain.entities.Output.success;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
@@ -23,6 +9,28 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
+
+import java.io.InputStream;
+
+import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ItemCommandFactoriesTest {
@@ -63,7 +71,7 @@ class ItemCommandFactoriesTest {
 
         assertThat(output).extracting(Output::getValue, type(File.class))
                 .isNotNull()
-                .extracting(AbstractItem::getPath)
+                .extracting(Item::getPath)
                 .isEqualTo("/folder/file");
     }
 
@@ -244,7 +252,7 @@ class ItemCommandFactoriesTest {
     void testOutputHasRequiredInfoInToString() {
         Output<String> output = success("success");
         assertThat(output).hasToString("Output{value=success}");
-        output = Output.error("error");
-        assertThat(output).hasToString("Output{error=Error{message='error', reasons=[]}}");
+        output = Output.failure("error");
+        assertThat(output).hasToString("Output{failure=Error{message='error', reasons=[]}}");
     }
 }

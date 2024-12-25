@@ -1,21 +1,46 @@
 package io.github.fherbreteau.functional.driving;
 
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.executeOnly;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.full;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.none;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.readExecute;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.readOnly;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.readWrite;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.writeExecute;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.writeOnly;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
+import java.util.stream.Stream;
+
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
-import io.github.fherbreteau.functional.domain.access.factory.impl.*;
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.access.factory.impl.AddAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.AttributionAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.EveryoneAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.ExecuteAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.FullAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.GroupAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.OtherAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.OwnerAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.ReadAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.RemoveAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.RightAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.SetAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.UnsupportedAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.WriteAccessParserFactory;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driving.impl.AccessParserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.stream.Stream;
-
-import static io.github.fherbreteau.functional.domain.entities.AccessRight.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AccessParserServiceTest {
     private AccessParserService accessParserService;
@@ -94,7 +119,7 @@ public class AccessParserServiceTest {
                 Arguments.of("x", file),
                 Arguments.of("+rwx", null),
                 Arguments.of("l", file)
-                );
+        );
     }
 
     @BeforeEach

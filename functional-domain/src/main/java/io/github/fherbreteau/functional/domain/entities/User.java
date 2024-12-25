@@ -1,11 +1,11 @@
 package io.github.fherbreteau.functional.domain.entities;
 
+import static java.util.Objects.isNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import static java.util.Objects.isNull;
 
 public final class User {
 
@@ -21,6 +21,17 @@ public final class User {
         this.userId = builder.userId;
         this.name = builder.name;
         this.groups = builder.groups;
+    }
+
+    public static Builder builder(String name) {
+        return new Builder().withName(name);
+    }
+
+    public static User root() {
+        return User.builder("root")
+                .withUserId(ROOT)
+                .withGroup(Group.root())
+                .build();
     }
 
     public UUID getUserId() {
@@ -66,17 +77,6 @@ public final class User {
     @Override
     public int hashCode() {
         return Objects.hash(userId, name, groups);
-    }
-
-    public static Builder builder(String name) {
-        return new Builder().withName(name);
-    }
-
-    public static User root() {
-        return User.builder("root")
-                .withUserId(ROOT)
-                .withGroup(Group.root())
-                .build();
     }
 
     public static final class Builder {

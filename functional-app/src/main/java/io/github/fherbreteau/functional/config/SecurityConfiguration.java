@@ -1,6 +1,12 @@
 package io.github.fherbreteau.functional.config;
 
-import org.passay.*;
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+import org.passay.EnglishSequenceData;
+import org.passay.IllegalSequenceRule;
+import org.passay.LengthRule;
+import org.passay.PasswordValidator;
+import org.passay.WhitespaceRule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;

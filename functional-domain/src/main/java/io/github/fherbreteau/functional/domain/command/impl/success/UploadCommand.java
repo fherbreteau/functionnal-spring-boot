@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import java.io.InputStream;
+
+import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.io.InputStream;
 
 public class UploadCommand extends AbstractSuccessItemCommand<Item> {
     private final ContentRepository contentRepository;

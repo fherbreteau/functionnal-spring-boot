@@ -16,6 +16,14 @@ public final class Group {
         name = builder.name;
     }
 
+    public static Group root() {
+        return builder("root").withGroupId(ROOT).build();
+    }
+
+    public static Builder builder(String name) {
+        return new Builder().withName(name);
+    }
+
     public UUID getGroupId() {
         return groupId;
     }
@@ -52,14 +60,6 @@ public final class Group {
     @Override
     public int hashCode() {
         return Objects.hash(groupId, name);
-    }
-
-    public static Group root() {
-        return builder("root").withGroupId(ROOT).build();
-    }
-
-    public static Builder builder(String name) {
-        return new Builder().withName(name);
     }
 
     public static final class Builder {

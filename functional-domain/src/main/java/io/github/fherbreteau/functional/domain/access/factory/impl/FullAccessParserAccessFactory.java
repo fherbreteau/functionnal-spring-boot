@@ -1,5 +1,8 @@
 package io.github.fherbreteau.functional.domain.access.factory.impl;
 
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
@@ -7,9 +10,6 @@ import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFac
 import io.github.fherbreteau.functional.domain.access.factory.RecursiveAccessFactory;
 import io.github.fherbreteau.functional.domain.access.impl.FullAccessParser;
 import io.github.fherbreteau.functional.domain.entities.Item;
-
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class FullAccessParserAccessFactory implements AccessParserFactory, RecursiveAccessFactory {
 

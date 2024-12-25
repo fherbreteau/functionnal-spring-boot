@@ -1,6 +1,19 @@
 package io.github.fherbreteau.functional.infra.impl;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.full;
+import static io.github.fherbreteau.functional.domain.entities.AccessRight.none;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,16 +21,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static io.github.fherbreteau.functional.domain.entities.AccessRight.full;
-import static io.github.fherbreteau.functional.domain.entities.AccessRight.none;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -60,11 +63,11 @@ class JdbcItemRepositoryTest {
                 .withContentType("content-type")
                 .build();
         assertThat(itemRepository.create(file))
-                .extracting(AbstractItem::getHandle)
+                .extracting(File::getHandle)
                 .isNotNull();
         assertThat(itemRepository.exists(Folder.getRoot(), "file"))
                 .isTrue();
-        Optional<Item> item =  itemRepository.findByNameAndParentAndUser("file", Folder.getRoot(), User.root());
+        Optional<Item> item = itemRepository.findByNameAndParentAndUser("file", Folder.getRoot(), User.root());
         assertThat(item).isPresent().hasValueSatisfying(val -> assertThat(val)
                 .usingRecursiveComparison()
                 .ignoringFields("created", "lastModified", "lastAccessed", "handle")
@@ -79,7 +82,7 @@ class JdbcItemRepositoryTest {
         assertThat(itemRepository.update(folder)).isNotNull();
         assertThat(itemRepository.exists(Folder.getRoot(), "folder"))
                 .isFalse();
-        Optional<Item> item =  itemRepository.findByNameAndParentAndUser("folder2", Folder.getRoot(), User.root());
+        Optional<Item> item = itemRepository.findByNameAndParentAndUser("folder2", Folder.getRoot(), User.root());
         assertThat(item).isPresent().hasValue(folder);
     }
 

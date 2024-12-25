@@ -25,6 +25,10 @@ public final class UserInput {
         append = builder.append;
     }
 
+    public static Builder builder(String name) {
+        return new Builder(name);
+    }
+
     public UUID getUserId() {
         return userId;
     }
@@ -69,10 +73,6 @@ public final class UserInput {
                 ", force=" + force +
                 ", append=" + append +
                 '}';
-    }
-
-    public static Builder builder(String name) {
-        return new Builder(name);
     }
 
     public static final class Builder {

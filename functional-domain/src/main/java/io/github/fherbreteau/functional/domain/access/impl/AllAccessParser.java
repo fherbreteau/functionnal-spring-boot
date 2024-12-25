@@ -3,8 +3,8 @@ package io.github.fherbreteau.functional.domain.access.impl;
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 public class AllAccessParser implements AccessParser {
 

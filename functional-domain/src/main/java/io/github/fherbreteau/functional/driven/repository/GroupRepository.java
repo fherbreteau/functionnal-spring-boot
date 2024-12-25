@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.driven.repository;
 
-import io.github.fherbreteau.functional.domain.entities.Group;
-
 import java.util.UUID;
+
+import io.github.fherbreteau.functional.domain.entities.Group;
 
 public interface GroupRepository {
 

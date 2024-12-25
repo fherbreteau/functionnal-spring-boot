@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
+import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeGroupCommand;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
-import io.github.fherbreteau.functional.domain.command.impl.check.CheckChangeGroupCommand;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class ChangeGroupCommandFactory implements ItemCommandFactory<Item> {
     @Override

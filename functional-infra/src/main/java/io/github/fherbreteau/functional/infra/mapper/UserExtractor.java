@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.User;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-
 import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
 import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_USER_ID;
 import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_ID;
 import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_NAME;
+
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.User;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 public class UserExtractor {
     public SqlParameterSource map(User user) {

@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.driven.repository;
 
+import java.io.InputStream;
+
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
-
-import java.io.InputStream;
 
 public interface ContentRepository {
 

@@ -1,14 +1,16 @@
 package io.github.fherbreteau.functional.domain.access.factory.impl;
 
+import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ACTION;
+import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ATTRIBUTION;
+import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_RIGHT;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.Test;
-
-import static io.github.fherbreteau.functional.domain.access.AccessParser.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AccessParserFactoriesTest {
 

@@ -1,16 +1,21 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+
+import java.util.function.UnaryOperator;
+
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.function.UnaryOperator;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 
 @ExtendWith(MockitoExtension.class)
 class NavigationPathParserTest {

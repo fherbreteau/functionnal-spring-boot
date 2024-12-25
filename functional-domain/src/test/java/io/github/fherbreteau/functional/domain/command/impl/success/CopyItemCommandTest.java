@@ -1,7 +1,23 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
@@ -13,15 +29,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CopyItemCommandTest {
@@ -106,17 +113,17 @@ public class CopyItemCommandTest {
             // GIVEN
             given(repository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(accessUpdater.createItem(any(File.class))).willAnswer(invocation -> invocation.getArgument(0));
-            given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.error("Fail to " +
+            given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.failure("Fail to " +
                     "create file"));
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
-                    .extracting(Output::isError, BOOLEAN)
+                    .extracting(Output::isFailure, BOOLEAN)
                     .isTrue();
             assertThat(result)
-                    .extracting(Output::getError, type(Error.class))
-                    .extracting(Error::getMessage, STRING)
+                    .extracting(Output::getFailure, type(Failure.class))
+                    .extracting(Failure::getMessage, STRING)
                     .isEqualTo("Fail to create file");
         }
 
@@ -126,16 +133,16 @@ public class CopyItemCommandTest {
             given(repository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(accessUpdater.createItem(any(File.class))).willAnswer(invocation -> invocation.getArgument(0));
             given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.success(invocation.getArgument(0)));
-            given(contentRepository.readContent(any())).willReturn(Output.error("Could not read file"));
+            given(contentRepository.readContent(any())).willReturn(Output.failure("Could not read file"));
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
-                    .extracting(Output::isError, BOOLEAN)
+                    .extracting(Output::isFailure, BOOLEAN)
                     .isTrue();
             assertThat(result)
-                    .extracting(Output::getError, type(Error.class))
-                    .extracting(Error::getMessage, STRING)
+                    .extracting(Output::getFailure, type(Failure.class))
+                    .extracting(Failure::getMessage, STRING)
                     .isEqualTo("Could not read file");
         }
     }
@@ -202,17 +209,17 @@ public class CopyItemCommandTest {
             // GIVEN
             given(repository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(accessUpdater.createItem(any(File.class))).willAnswer(invocation -> invocation.getArgument(0));
-            given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.error("Fail to " +
+            given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.failure("Fail to " +
                     "create file"));
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
-                    .extracting(Output::isError, BOOLEAN)
+                    .extracting(Output::isFailure, BOOLEAN)
                     .isTrue();
             assertThat(result)
-                    .extracting(Output::getError, type(Error.class))
-                    .extracting(Error::getMessage, STRING)
+                    .extracting(Output::getFailure, type(Failure.class))
+                    .extracting(Failure::getMessage, STRING)
                     .isEqualTo("Fail to create file");
         }
 
@@ -222,16 +229,16 @@ public class CopyItemCommandTest {
             given(repository.create(any())).willAnswer(invocation -> invocation.getArgument(0));
             given(accessUpdater.createItem(any(File.class))).willAnswer(invocation -> invocation.getArgument(0));
             given(contentRepository.initContent(any(File.class))).willAnswer(invocation -> Output.success(invocation.getArgument(0)));
-            given(contentRepository.readContent(any())).willReturn(Output.error("Could not read file"));
+            given(contentRepository.readContent(any())).willReturn(Output.failure("Could not read file"));
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
-                    .extracting(Output::isError, BOOLEAN)
+                    .extracting(Output::isFailure, BOOLEAN)
                     .isTrue();
             assertThat(result)
-                    .extracting(Output::getError, type(Error.class))
-                    .extracting(Error::getMessage, STRING)
+                    .extracting(Output::getFailure, type(Failure.class))
+                    .extracting(Failure::getMessage, STRING)
                     .isEqualTo("Could not read file");
         }
     }

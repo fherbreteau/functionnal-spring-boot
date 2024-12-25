@@ -1,16 +1,16 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
+import static java.util.Objects.nonNull;
+
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckDeleteItemCommand;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import static java.util.Objects.nonNull;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class DeleteItemCommandFactory implements ItemCommandFactory<Void> {
     @Override

@@ -1,10 +1,24 @@
 package io.github.fherbreteau.functional.driving;
 
-import io.github.fherbreteau.functional.domain.command.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import io.github.fherbreteau.functional.domain.command.CheckCommand;
+import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedItemCommand;
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.CompositePathParserFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driving.impl.FileServiceImpl;
@@ -14,12 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("rawtypes")
@@ -60,7 +68,7 @@ class FileServiceTest {
     @Test
     void testAccessUnknownPathShouldFail() {
         // GIVEN
-        Path error = Path.error(Error.error(String.format("%s not found in %s for %s", "unknown", Folder.getRoot(), actor)));
+        Path error = Path.error(Failure.failure(String.format("%s not found in %s for %s", "unknown", Folder.getRoot(), actor)));
         PathParser parser = mock(PathParser.class);
         given(parser.resolve(actor)).willReturn(error);
         given(pathFactory.createParser(Path.ROOT, "/unknown")).willReturn(parser);
@@ -89,11 +97,11 @@ class FileServiceTest {
         assertThat(result)
                 .extracting(Output::getValue)
                 .isNotNull();
-        assertThat(result).extracting(Output::isError)
+        assertThat(result).extracting(Output::isFailure)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isFalse();
         assertThat(result)
-                .extracting(Output::getError)
+                .extracting(Output::getFailure)
                 .isNull();
     }
 
@@ -115,17 +123,17 @@ class FileServiceTest {
         assertThat(result)
                 .extracting(Output::getValue)
                 .isNull();
-        assertThat(result).extracting(Output::isError)
+        assertThat(result).extracting(Output::isFailure)
                 .asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
                 .isTrue();
         assertThat(result)
-                .extracting(Output::getError)
+                .extracting(Output::getFailure)
                 .isNotNull()
-                .extracting(Error::getMessage)
+                .extracting(Failure::getMessage)
                 .isNotNull();
         assertThat(result)
-                .extracting(Output::getError)
-                .extracting(Error::getReasons, list(String.class))
+                .extracting(Output::getFailure)
+                .extracting(Failure::getReasons, list(String.class))
                 .isEmpty();
     }
 }

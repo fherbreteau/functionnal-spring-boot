@@ -1,6 +1,11 @@
 package io.github.fherbreteau.functional.config;
 
-import io.github.fherbreteau.functional.domain.path.factory.impl.*;
+import io.github.fherbreteau.functional.domain.path.factory.impl.ComplexSegmentPathParserPathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.EmptySegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.InvalidPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.ParentSegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.SingleSegmentPathParserFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

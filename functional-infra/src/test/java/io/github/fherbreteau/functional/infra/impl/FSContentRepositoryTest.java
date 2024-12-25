@@ -1,14 +1,8 @@
 package io.github.fherbreteau.functional.infra.impl;
 
-import com.google.common.jimfs.Jimfs;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.repository.ContentRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.InitializingBean;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.assertj.core.api.InstanceOfAssertFactories.INPUT_STREAM;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,24 +15,30 @@ import java.nio.file.Path;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.*;
+import com.google.common.jimfs.Jimfs;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.InitializingBean;
 
 @ExtendWith(MockitoExtension.class)
 class FSContentRepositoryTest {
     private static final String ROOT_PATH = "/data";
-
-    private ContentRepository repository;
-
     private final UUID fakeUUID = UUID.randomUUID();
-
     private final FileSystem fs = Jimfs.newFileSystem();
-
     private final File file = File.builder()
             .withName("name")
             .withHandle(fakeUUID)
             .withOwner(User.root())
             .build();
+    private ContentRepository repository;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -112,14 +112,14 @@ class FSContentRepositoryTest {
     void shouldFailCreateAsRootContainerDoesNotExists() throws IOException {
         Files.createFile(fs.getPath(ROOT_PATH, fakeUUID + ".dat"));
         Output<Item> result = repository.initContent(file);
-        assertThat(result).extracting(Output::isError, BOOLEAN)
+        assertThat(result).extracting(Output::isFailure, BOOLEAN)
                 .isTrue();
     }
 
     @Test
     void shouldFailReadAsRootContainerDoesNotExists() {
         Output<InputStream> result = repository.readContent(file);
-        assertThat(result).extracting(Output::isError, BOOLEAN)
+        assertThat(result).extracting(Output::isFailure, BOOLEAN)
                 .isTrue();
     }
 
@@ -127,14 +127,14 @@ class FSContentRepositoryTest {
     void shouldFailWriteAsRootContainerDoesNotExists() {
         InputStream input = new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8));
         Output<Item> result = repository.writeContent(file, input);
-        assertThat(result).extracting(Output::isError, BOOLEAN)
+        assertThat(result).extracting(Output::isFailure, BOOLEAN)
                 .isTrue();
     }
 
     @Test
     void shouldFailDeleteAsRootContainerDoesNotExists() {
         Output<Void> result = repository.deleteContent(file);
-        assertThat(result).extracting(Output::isError, BOOLEAN)
+        assertThat(result).extracting(Output::isFailure, BOOLEAN)
                 .isTrue();
     }
 }

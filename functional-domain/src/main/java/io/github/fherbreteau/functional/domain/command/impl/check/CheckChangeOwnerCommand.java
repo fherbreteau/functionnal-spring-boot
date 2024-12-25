@@ -1,17 +1,17 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.command.impl.success.ChangeOwnerCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.success.ChangeOwnerCommand;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class CheckChangeOwnerCommand extends AbstractCheckItemCommand<Item, ChangeOwnerCommand> {
 

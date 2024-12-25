@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.Path;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.path.PathParser;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
 
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.path.PathParser;
 
 public class NavigationPathParser implements PathParser {
     private final Path parentPath;
@@ -29,6 +29,6 @@ public class NavigationPathParser implements PathParser {
                 .map(Path::getItem)
                 .map(itemFunction)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(Error.error(String.format("%s not found in %s for %s", path, parentPath.getItem(), actor))));
+                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", path, parentPath.getItem(), actor))));
     }
 }

@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import java.util.List;
+
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.List;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public abstract class AbstractCheckItemCommand<T, C extends Command<Output<T>>> implements CheckCommand<T> {
 

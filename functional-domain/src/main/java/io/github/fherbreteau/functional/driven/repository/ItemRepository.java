@@ -1,11 +1,11 @@
 package io.github.fherbreteau.functional.driven.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ItemRepository {
     boolean exists(Folder parent, String name);

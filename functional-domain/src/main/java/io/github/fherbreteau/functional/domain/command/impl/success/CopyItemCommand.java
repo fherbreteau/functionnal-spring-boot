@@ -1,12 +1,17 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
+import java.io.InputStream;
+
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-
-import java.io.InputStream;
 
 public class CopyItemCommand extends AbstractModifyItemCommand<Item> {
     private final ContentRepository contentRepository;
@@ -48,11 +53,11 @@ public class CopyItemCommand extends AbstractModifyItemCommand<Item> {
         if (source instanceof File input) {
             File output = (File) item;
             Output<Item> init = contentRepository.initContent(output);
-            if (init.isError()) {
+            if (init.isFailure()) {
                 return copyError(init);
             }
             Output<InputStream> content = contentRepository.readContent(input);
-            if (content.isError()) {
+            if (content.isFailure()) {
                 return copyError(content);
             }
             return contentRepository.writeContent(output, content.getValue());
@@ -65,11 +70,11 @@ public class CopyItemCommand extends AbstractModifyItemCommand<Item> {
     }
 
     private String getDestinationName() {
-        return  destination.isFile() ? destination.getName() : source.getName();
+        return destination.isFile() ? destination.getName() : source.getName();
     }
 
     private <I, O> Output<O> copyError(Output<I> input) {
-        Error error = input.getError();
-        return Output.error(error.getMessage(), error.getReasons());
+        Failure failure = input.getFailure();
+        return Output.failure(failure.getMessage(), failure.getReasons());
     }
 }

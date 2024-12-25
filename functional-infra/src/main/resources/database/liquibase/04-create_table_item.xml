@@ -1,5 +1,5 @@
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <property name="uuid_type" value="uuid" dbms="postgresql"/>
     <property name="uuid_type" value="uuid" dbms="h2"/>
@@ -8,7 +8,7 @@
 
     <changeSet id="20240518000000-5" author="fherbreteau">
         <createTable tableName="item">
-            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}" >
+            <column name="id" type="${uuid_type}" defaultValueComputed="${uuid_function}">
                 <constraints primaryKey="true" primaryKeyName="file_pk"/>
             </column>
             <column name="type" type="varchar(8)">

@@ -1,6 +1,21 @@
 package io.github.fherbreteau.functional.config;
 
-import io.github.fherbreteau.functional.domain.command.factory.impl.*;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeModeCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ChangeOwnerCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DownloadCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ListChildrenCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UpdateGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UpdateUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UploadCommandFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

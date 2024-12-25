@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 public class BooleanResultExtractor implements ResultSetExtractor<Boolean> {
     @Override

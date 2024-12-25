@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.domain.path.factory.impl;
 
-import io.github.fherbreteau.functional.domain.entities.Path;
-
 import java.util.function.Predicate;
+
+import io.github.fherbreteau.functional.domain.entities.Path;
 
 public class EmptySegmentPathParserFactory extends CurrentSegmentPathParserFactory {
 

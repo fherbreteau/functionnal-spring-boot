@@ -1,8 +1,32 @@
 package io.github.fherbreteau.functional.controller;
 
+import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.driving.UserService;
 import io.github.fherbreteau.functional.model.InputUserDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,17 +42,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.*;
-
-import static org.apache.commons.collections4.CollectionUtils.isEqualCollection;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = FunctionalApplication.class)
 @ActiveProfiles("test")
@@ -81,10 +94,10 @@ class UserControllerTest {
 
         given(userService.processCommand(eq(UserCommandType.USERADD), eq(actor),
                 argThat(argument -> Objects.equals(argument.getName(), "user1")
-                && Objects.equals(argument.getUserId(), userId)
-                && Objects.equals(argument.getGroupId(), groupId)
-                && Objects.equals(argument.getPassword(), "Password")
-                && isEqualCollection(argument.getGroups(), List.of("group1", "group2")))))
+                        && Objects.equals(argument.getUserId(), userId)
+                        && Objects.equals(argument.getGroupId(), groupId)
+                        && Objects.equals(argument.getPassword(), "Password")
+                        && isEqualCollection(argument.getGroups(), List.of("group1", "group2")))))
                 .willReturn(Output.success(User.builder("user1").withUserId(userId).build()));
 
         InputUserDTO dto = InputUserDTO.builder()
@@ -95,8 +108,8 @@ class UserControllerTest {
                 .withGroups(List.of("group1", "group2"))
                 .build();
         mvc.perform(post("/users").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.uid").value(userId.toString()))
@@ -121,8 +134,8 @@ class UserControllerTest {
                 .withGid(groupId)
                 .build();
         mvc.perform(patch("/users/user1").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("user1"))
@@ -140,8 +153,8 @@ class UserControllerTest {
                 .willReturn(Output.success(User.builder("user1").build()));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                .content("Pa$sw0rd")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content("Pa$sw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value("user1"))
@@ -164,7 +177,7 @@ class UserControllerTest {
     @WithMockUser
     @Test
     void shouldReturnAnErrorWhenConnectedUserDoesNotExists() throws Exception {
-        given(userService.findUserByName("user")).willReturn(Output.error("user not found"));
+        given(userService.findUserByName("user")).willReturn(Output.failure("user not found"));
 
         mvc.perform(get("/users").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -174,24 +187,24 @@ class UserControllerTest {
 
         InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
                 .andExpect(jsonPath("$.message").value("user not found"));
 
         mvc.perform(patch("/users/user1").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
                 .andExpect(jsonPath("$.message").value("user not found"));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                .content("Pa$sw0rd")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content("Pa$sw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("UserException"))
@@ -208,7 +221,7 @@ class UserControllerTest {
     @Test
     void shouldReturnAnErrorWhenCommandFails() throws Exception {
         given(userService.processCommand(any(), eq(actor), any()))
-                .willReturn(Output.error("Command Failed"));
+                .willReturn(Output.failure("Command Failed"));
 
         mvc.perform(get("/users").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -218,24 +231,24 @@ class UserControllerTest {
 
         InputUserDTO dto = InputUserDTO.builder().withName("user1").build();
         mvc.perform(post("/users").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
                 .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(patch("/users/user1").with(csrf())
-                .content(mapper.writeValueAsBytes(dto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsBytes(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))
                 .andExpect(jsonPath("$.message").value("Command Failed"));
 
         mvc.perform(put("/users/user1/password").with(csrf())
-                .content("Pa$sw0rd")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content("Pa$sw0rd")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.type").value("CommandException"))

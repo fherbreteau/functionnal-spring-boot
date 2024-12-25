@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.update;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class UserUpdaterTest {
 

@@ -1,17 +1,18 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.command.impl.success.DownloadCommand;
-import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.repository.ContentRepository;
-import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.success.DownloadCommand;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ContentRepository;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class CheckDownloadCommand extends AbstractCheckItemCommand<InputStream, DownloadCommand> {
     private final ContentRepository contentRepository;

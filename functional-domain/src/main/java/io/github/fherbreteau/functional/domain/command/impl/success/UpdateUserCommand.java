@@ -1,18 +1,18 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.repository.GroupRepository;
-import io.github.fherbreteau.functional.driven.PasswordProtector;
-import io.github.fherbreteau.functional.driven.repository.UserRepository;
-import io.github.fherbreteau.functional.driven.rules.UserUpdater;
+import static java.util.Objects.nonNull;
 
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Objects.nonNull;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
+import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 public class UpdateUserCommand extends AbstractModifyUserCommand<User> {
     private final PasswordProtector passwordProtector;

@@ -1,15 +1,42 @@
 package io.github.fherbreteau.functional.domain.command;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
-import io.github.fherbreteau.functional.domain.command.factory.impl.*;
-import io.github.fherbreteau.functional.domain.command.impl.check.*;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.CreateUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.DeleteUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.GetGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.GetUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.ListChildrenCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedItemCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UnsupportedUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UpdateGroupCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UpdateUserCommandFactory;
+import io.github.fherbreteau.functional.domain.command.factory.impl.UploadCommandFactory;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateGroupCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckCreateUserCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckDeleteGroupCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckDeleteUserCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckGetGroupCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckGetUserCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupportedUserCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUpdateGroupCommand;
+import io.github.fherbreteau.functional.domain.command.impl.check.CheckUpdateUserCommand;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
 import io.github.fherbreteau.functional.domain.entities.UserInput;
-import io.github.fherbreteau.functional.driven.*;
+import io.github.fherbreteau.functional.driven.PasswordProtector;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
-import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +46,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 @ExtendWith(MockitoExtension.class)
 class CompositeUserCommandFactoryTest {
