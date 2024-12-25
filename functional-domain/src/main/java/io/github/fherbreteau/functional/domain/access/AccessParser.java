@@ -3,7 +3,7 @@ package io.github.fherbreteau.functional.domain.access;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
-public interface AccessRightParser {
+public interface AccessParser {
 
     String STEP_ATTRIBUTION = "attribution";
     String STEP_ACTION = "action";

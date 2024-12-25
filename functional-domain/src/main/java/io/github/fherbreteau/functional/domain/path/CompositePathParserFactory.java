@@ -1,34 +1,36 @@
 package io.github.fherbreteau.functional.domain.path;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
-import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
-import io.github.fherbreteau.functional.domain.path.factory.RecursiveFactory;
+import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.RecursivePathFactory;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class CompositePathFactory {
+public class CompositePathParserFactory implements CompositePathFactory {
 
     private final ItemRepository repository;
 
     private final AccessChecker accessChecker;
 
-    private final List<PathFactory> pathFactories;
+    private final List<PathParserFactory> pathFactories;
 
-    public CompositePathFactory(ItemRepository repository, AccessChecker accessChecker, List<PathFactory> pathFactories) {
+    public CompositePathParserFactory(ItemRepository repository, AccessChecker accessChecker, List<PathParserFactory> pathFactories) {
         this.repository = repository;
         this.accessChecker = accessChecker;
-        this.pathFactories = pathFactories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();
+        this.pathFactories = pathFactories.stream().sorted(Comparator.comparing(PathParserFactory::order)).toList();
     }
 
     public void configureRecursive() {
-        pathFactories.stream().filter(RecursiveFactory.class::isInstance)
-                .map(RecursiveFactory.class::cast)
+        pathFactories.stream().filter(RecursivePathFactory.class::isInstance)
+                .map(RecursivePathFactory.class::cast)
                 .forEach(f -> f.setCompositePathFactory(this));
     }
 
+    @Override
     public PathParser createParser(Path currentPath, String path) {
         return pathFactories.stream()
                 .filter(f -> f.supports(currentPath, path))

@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.command.impl.check.CheckUnsupport
 import io.github.fherbreteau.functional.domain.entities.Error;
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Path;
-import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.CompositePathParserFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driving.impl.FileServiceImpl;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -28,7 +28,7 @@ class FileServiceTest {
     @Mock
     private CompositeItemCommandFactory commandFactory;
     @Mock
-    private CompositePathFactory pathFactory;
+    private CompositePathParserFactory pathFactory;
     @Mock
     private User actor;
     @Mock

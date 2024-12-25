@@ -5,7 +5,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
-public interface PathFactory {
+public interface PathParserFactory {
 
     boolean supports(Path currentPath, String path);
 

@@ -1,18 +1,18 @@
 package io.github.fherbreteau.functional.domain.access.impl;
 
-import io.github.fherbreteau.functional.domain.access.AccessRightContext;
-import io.github.fherbreteau.functional.domain.access.AccessRightParser;
+import io.github.fherbreteau.functional.domain.access.AccessContext;
+import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 import java.util.function.BinaryOperator;
 
-public class UpdateAccessParser  implements AccessRightParser {
+public class UpdateAccessParser  implements AccessParser {
 
     private final BinaryOperator<AccessRight> accessRightMergeFunction;
-    private final AccessRightContext context;
+    private final AccessContext context;
 
-    public UpdateAccessParser(AccessRightContext context,
+    public UpdateAccessParser(AccessContext context,
                               BinaryOperator<AccessRight> accessRightMergeFunction) {
         this.context = context;
         this.accessRightMergeFunction = accessRightMergeFunction;

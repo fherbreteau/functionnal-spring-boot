@@ -6,7 +6,7 @@ import java.util.function.BinaryOperator;
 
 import static java.util.Optional.ofNullable;
 
-public class AccessRightContext {
+public class AccessContext {
     private BinaryOperator<AccessRight> accessRightMergeFunction;
     private String step;
 

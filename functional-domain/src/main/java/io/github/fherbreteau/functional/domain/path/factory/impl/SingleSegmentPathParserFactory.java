@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.path.factory.impl;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
-import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.impl.SimplePathParser;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
@@ -10,12 +10,12 @@ import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static io.github.fherbreteau.functional.domain.path.factory.impl.ComplexSegmentPathFactory.IS_COMPOSITE_PATH;
-import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathFactory.IS_CURRENT_PATH;
-import static io.github.fherbreteau.functional.domain.path.factory.impl.EmptySegmentPathFactory.IS_EMPTY_PATH;
-import static io.github.fherbreteau.functional.domain.path.factory.impl.ParentSegmentPathFactory.IS_PARENT_PATH;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.ComplexSegmentPathParserPathFactory.IS_COMPOSITE_PATH;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.EmptySegmentPathParserFactory.IS_EMPTY_PATH;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.ParentSegmentPathParserFactory.IS_PARENT_PATH;
 
-public class SingleSegmentPathFactory implements PathFactory {
+public class SingleSegmentPathParserFactory implements PathParserFactory {
 
     private static final List<Predicate<String>> PATH_CHECKS = List.of(IS_CURRENT_PATH, IS_PARENT_PATH, IS_EMPTY_PATH, IS_COMPOSITE_PATH);
 

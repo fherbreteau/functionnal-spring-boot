@@ -2,12 +2,12 @@ package io.github.fherbreteau.functional.domain.path.factory.impl;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
-import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.impl.InvalidPathParser;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
-public class InvalidPathFactory implements PathFactory {
+public class InvalidPathParserFactory implements PathParserFactory {
     @Override
     public boolean supports(Path currentPath, String path) {
         return true;

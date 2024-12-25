@@ -2,7 +2,7 @@ package io.github.fherbreteau.functional.domain.path;
 
 import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.entities.Error;
-import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.factory.impl.*;
 import io.github.fherbreteau.functional.domain.path.impl.InvalidPathParser;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
@@ -29,8 +29,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class CompositePathFactoryTest {
-    private CompositePathFactory compositePathFactory;
+class CompositePathParserFactoryTest {
+    private CompositePathParserFactory compositePathParserFactory;
     @Mock
     private ItemRepository repository;
     @Mock
@@ -93,23 +93,23 @@ class CompositePathFactoryTest {
 
     @BeforeEach
     public void setup() {
-        List<PathFactory> pathFactories = List.of(
-                new ParentSegmentPathFactory(),
-                new CurrentSegmentPathFactory(),
-                new EmptySegmentPathFactory(),
-                new SingleSegmentPathFactory(),
-                new ComplexSegmentPathFactory(),
-                new InvalidPathFactory()
+        List<PathParserFactory> pathFactories = List.of(
+                new ParentSegmentPathParserFactory(),
+                new CurrentSegmentPathParserFactory(),
+                new EmptySegmentPathParserFactory(),
+                new SingleSegmentPathParserFactory(),
+                new ComplexSegmentPathParserPathFactory(),
+                new InvalidPathParserFactory()
         );
-        compositePathFactory = new CompositePathFactory(repository, accessChecker, pathFactories);
-        compositePathFactory.configureRecursive();
+        compositePathParserFactory = new CompositePathParserFactory(repository, accessChecker, pathFactories);
+        compositePathParserFactory.configureRecursive();
     }
 
     @ParameterizedTest
     @MethodSource("validPathArguments")
     void testParserCreatedForValidPathAndRoot(Path currentPath, String path) {
         // WHEN
-        PathParser parser = compositePathFactory.createParser(currentPath, path);
+        PathParser parser = compositePathParserFactory.createParser(currentPath, path);
         // THEN
         assertThat(parser).isNotNull().isNotInstanceOf(InvalidPathParser.class);
     }
@@ -118,7 +118,7 @@ class CompositePathFactoryTest {
     @MethodSource("invalidPathArguments")
     void testParserCreatedForInvalidPathAndRoot(Path currentPath, String path) {
         // WHEN
-        PathParser parser = compositePathFactory.createParser(currentPath, path);
+        PathParser parser = compositePathParserFactory.createParser(currentPath, path);
         // THEN
         assertThat(parser).isNotNull().isInstanceOf(InvalidPathParser.class);
     }
@@ -149,7 +149,7 @@ class CompositePathFactoryTest {
                 .build();
         given(repository.findByNameAndParentAndUser("file", folder, actor)).willReturn(of(file2));
         // WHEN
-        PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./file");
+        PathParser parser = compositePathParserFactory.createParser(Path.ROOT, "/file/../folder/./file");
         // THEN
         assertThat(parser).isNotNull().isNotInstanceOf(InvalidPathParser.class);
 
@@ -187,7 +187,7 @@ class CompositePathFactoryTest {
                 .build();
         given(repository.findByNameAndParentAndUser("folder", folder1, actor)).willReturn(of(folder2));
         // WHEN
-        PathParser parser = compositePathFactory.createParser(Path.ROOT, "/file/../folder/./folder/");
+        PathParser parser = compositePathParserFactory.createParser(Path.ROOT, "/file/../folder/./folder/");
         // THEN
         assertThat(parser).isNotNull().isNotInstanceOf(InvalidPathParser.class);
 
@@ -201,14 +201,14 @@ class CompositePathFactoryTest {
 
     @Test
     void testOrderOfPathFactoriesIsRespected() {
-        List<PathFactory> factories = List.of(
-                new InvalidPathFactory(),
-                new CurrentSegmentPathFactory(),
-                new SingleSegmentPathFactory()
+        List<PathParserFactory> factories = List.of(
+                new InvalidPathParserFactory(),
+                new CurrentSegmentPathParserFactory(),
+                new SingleSegmentPathParserFactory()
         );
-        List<PathFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(PathFactory::order)).toList();
-        assertThat(sortedFactories).last(type(PathFactory.class))
-                .isInstanceOf(InvalidPathFactory.class);
+        List<PathParserFactory> sortedFactories = factories.stream().sorted(Comparator.comparing(PathParserFactory::order)).toList();
+        assertThat(sortedFactories).last(type(PathParserFactory.class))
+                .isInstanceOf(InvalidPathParserFactory.class);
 
     }
 }

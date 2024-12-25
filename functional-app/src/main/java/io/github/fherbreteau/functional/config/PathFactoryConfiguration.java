@@ -8,32 +8,32 @@ import org.springframework.context.annotation.Configuration;
 public class PathFactoryConfiguration {
 
     @Bean
-    public ComplexSegmentPathFactory complexSegmentPathFactory() {
-        return new ComplexSegmentPathFactory();
+    public ComplexSegmentPathParserPathFactory complexSegmentPathFactory() {
+        return new ComplexSegmentPathParserPathFactory();
     }
 
     @Bean
-    public CurrentSegmentPathFactory currentSegmentPathFactory() {
-        return new CurrentSegmentPathFactory();
+    public CurrentSegmentPathParserFactory currentSegmentPathFactory() {
+        return new CurrentSegmentPathParserFactory();
     }
 
     @Bean
-    public EmptySegmentPathFactory emptySegmentPathFactory() {
-        return new EmptySegmentPathFactory();
+    public EmptySegmentPathParserFactory emptySegmentPathFactory() {
+        return new EmptySegmentPathParserFactory();
     }
 
     @Bean
-    public InvalidPathFactory invalidPathFactory() {
-        return new InvalidPathFactory();
+    public InvalidPathParserFactory invalidPathFactory() {
+        return new InvalidPathParserFactory();
     }
 
     @Bean
-    public ParentSegmentPathFactory parentSegmentPathFactory() {
-        return new ParentSegmentPathFactory();
+    public ParentSegmentPathParserFactory parentSegmentPathFactory() {
+        return new ParentSegmentPathParserFactory();
     }
 
     @Bean
-    public SingleSegmentPathFactory singleSegmentPathFactory() {
-        return new SingleSegmentPathFactory();
+    public SingleSegmentPathParserFactory singleSegmentPathFactory() {
+        return new SingleSegmentPathParserFactory();
     }
 }
