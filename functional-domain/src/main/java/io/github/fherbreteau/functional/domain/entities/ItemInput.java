@@ -114,7 +114,7 @@ public final class ItemInput {
         private AccessRight otherAccess;
         private InputStream inputStream;
         private String contentType;
-        public Item destination;
+        private Item destination;
 
         private Builder(Item item) {
             this.item = item;

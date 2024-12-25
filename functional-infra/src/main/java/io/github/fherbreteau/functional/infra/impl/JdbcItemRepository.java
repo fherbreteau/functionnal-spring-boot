@@ -41,6 +41,17 @@ public class JdbcItemRepository implements ItemRepository {
     }
 
     @Override
+    public boolean exists(Item item) {
+        UUID handle = getItemHandle(item);
+        if (Objects.nonNull(handle)) {
+            String query = "SELECT 1 FROM ITEM WHERE ID = :id";
+            SqlParameterSource params = new MapSqlParameterSource(COL_ID, handle);
+            return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
+        }
+        return exists(item.getParent(), item.getName());
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <I extends Item> I create(I item) {
         String query = "INSERT INTO ITEM(NAME, TYPE, OWNER, \"GROUP\", CREATED_AT, MODIFIED_AT, ACCESSED_AT, " +

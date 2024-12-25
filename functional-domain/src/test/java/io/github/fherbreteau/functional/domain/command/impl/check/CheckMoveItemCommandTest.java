@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class CheckMoveItemCommandTest {
+class CheckMoveItemCommandTest {
     private CheckMoveItemCommand command;
     @Mock
     private ItemRepository repository;

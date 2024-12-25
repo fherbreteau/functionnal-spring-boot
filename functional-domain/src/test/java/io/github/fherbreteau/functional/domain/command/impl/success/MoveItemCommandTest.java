@@ -47,11 +47,13 @@ public class MoveItemCommandTest {
                     .withName("source")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             destination = File.builder()
                     .withName("destination")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             actor = User.builder("actor").build();
             command = new MoveItemCommand(repository, accessUpdater, source, destination);
@@ -61,13 +63,14 @@ public class MoveItemCommandTest {
         void shouldRenameSourceToDestination() {
             // GIVEN
             given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
+            given(repository.exists(Folder.getRoot())).willReturn(true);
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
                     .extracting(Output::isSuccess, BOOLEAN)
                     .isTrue();
-            verify(repository).create(fileCaptor.capture());
+            verify(repository).update(fileCaptor.capture());
             assertThat(fileCaptor.getValue())
                     .extracting(Item::getName)
                     .isEqualTo("destination");
@@ -79,7 +82,7 @@ public class MoveItemCommandTest {
                     .isEqualTo(actor);
             assertThat(fileCaptor.getValue())
                     .extracting(Item::getGroup)
-                    .isEqualTo(actor.getGroup());
+                    .isEqualTo(Group.root());
         }
     }
 
@@ -93,11 +96,13 @@ public class MoveItemCommandTest {
                     .withName("source")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             destination = Folder.builder()
                     .withName("destination")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             actor = User.builder("actor").build();
             command = new MoveItemCommand(repository, accessUpdater, source, destination);
@@ -107,13 +112,14 @@ public class MoveItemCommandTest {
         void shouldChangeParentOfSourceFile() {
             // GIVEN
             given(repository.update(any())).willAnswer(invocation -> invocation.getArgument(0));
+            given(repository.exists(destination)).willReturn(true);
             // WHEN
             Output<Item> result = command.execute(actor);
             //THEN
             assertThat(result).isNotNull()
                     .extracting(Output::isSuccess, BOOLEAN)
                     .isTrue();
-            verify(repository).create(fileCaptor.capture());
+            verify(repository).update(fileCaptor.capture());
             assertThat(fileCaptor.getValue())
                     .extracting(Item::getParent)
                     .isEqualTo(destination);
@@ -125,7 +131,7 @@ public class MoveItemCommandTest {
                     .isEqualTo(actor);
             assertThat(fileCaptor.getValue())
                     .extracting(Item::getGroup)
-                    .isEqualTo(actor.getGroup());
+                    .isEqualTo(destination.getGroup());
         }
     }
 
@@ -139,11 +145,13 @@ public class MoveItemCommandTest {
                     .withName("source")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             destination = Folder.builder()
                     .withName("destination")
                     .withOwner(User.root())
                     .withGroup(Group.root())
+                    .withParent(Folder.getRoot())
                     .build();
             actor = User.builder("actor").build();
             command = new MoveItemCommand(repository, accessUpdater, source, destination);
@@ -159,10 +167,10 @@ public class MoveItemCommandTest {
             assertThat(result).isNotNull()
                     .extracting(Output::isSuccess, BOOLEAN)
                     .isTrue();
-            verify(repository).create(folderCaptor.capture());
+            verify(repository).update(folderCaptor.capture());
             assertThat(folderCaptor.getValue())
                     .extracting(Item::getParent)
-                    .isEqualTo(destination);
+                    .isEqualTo(source.getParent());
             assertThat(folderCaptor.getValue())
                     .extracting(Item::getName)
                     .isEqualTo("source");
@@ -171,7 +179,7 @@ public class MoveItemCommandTest {
                     .isEqualTo(actor);
             assertThat(folderCaptor.getValue())
                     .extracting(Item::getGroup)
-                    .isEqualTo(actor.getGroup());
+                    .isEqualTo(Group.root());
         }
     }
 }

@@ -45,7 +45,8 @@ public class CopyItemCommand extends AbstractModifyItemCommand<Item> {
                     .build();
         }
         Item item = accessUpdater.createItem(repository.create(newItem));
-        if (item instanceof File output && source instanceof File input) {
+        if (source instanceof File input) {
+            File output = (File) item;
             Output<Item> init = contentRepository.initContent(output);
             if (init.isError()) {
                 return copyError(init);

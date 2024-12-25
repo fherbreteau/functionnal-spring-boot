@@ -7,6 +7,8 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
+import java.time.LocalDateTime;
+
 public class MoveItemCommand extends AbstractModifyItemCommand<Item> {
     private final Item source;
     private final Item destination;
@@ -20,8 +22,31 @@ public class MoveItemCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        Item newItem = null;
-        return Output.success(accessUpdater.createItem(repository.create(newItem)));
+        Item newItem;
+        if (source.isFolder()) {
+            newItem = source.copyBuilder()
+                    .withName(getDestinationName())
+                    .withParent(destination.getParent())
+                    .withLastModified(LocalDateTime.now())
+                    .withOwner(actor)
+                    .build();
+        } else {
+            Folder parent = getDestinationFolder();
+            if (!repository.exists(parent)) {
+                parent = accessUpdater.createItem(repository.create(parent.copyBuilder()
+                        .withLastModified(LocalDateTime.now())
+                        .withLastAccessed(LocalDateTime.now())
+                        .withOwner(actor)
+                        .build()));
+            }
+            newItem = source.copyBuilder()
+                    .withName(getDestinationName())
+                    .withParent(parent)
+                    .withLastModified(LocalDateTime.now())
+                    .withOwner(actor)
+                    .build();
+        }
+        return Output.success(repository.update(newItem));
     }
 
     private Folder getDestinationFolder() {

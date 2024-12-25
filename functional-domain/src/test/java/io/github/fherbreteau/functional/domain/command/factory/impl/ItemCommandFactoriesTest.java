@@ -219,7 +219,7 @@ class ItemCommandFactoriesTest {
         given(accessUpdater.createItem(any())).willAnswer(invocation -> invocation.getArgument(0));
 
         Command<Command<Output<Item>>> checker = factory.createCommand(repository, contentRepository, accessChecker,
-                accessUpdater, ItemCommandType.COPY, itemInput);
+                accessUpdater, ItemCommandType.MOVE, itemInput);
         Command<Output<Item>> executor = checker.execute(actor);
         Output<Item> output = executor.execute(actor);
 
