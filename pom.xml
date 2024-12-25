@@ -207,6 +207,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*Application.class</exclude>
+                        <exclude>**/*Configuration.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -42,6 +42,8 @@ class FSContentRepositoryTest {
 
     @BeforeEach
     public void setup() throws Exception {
+        Path basePath = fs.getPath(ROOT_PATH);
+        Files.createDirectory(basePath);
         repository = new FSContentRepository(ROOT_PATH, fs);
         ((InitializingBean) repository).afterPropertiesSet();
     }
@@ -136,5 +138,15 @@ class FSContentRepositoryTest {
         Output<Void> result = repository.deleteContent(file);
         assertThat(result).extracting(Output::isFailure, BOOLEAN)
                 .isTrue();
+    }
+
+    @Test
+    void shouldNotCreateExistingRootDir() throws Exception {
+        Path basePath = fs.getPath(ROOT_PATH);
+        Files.delete(basePath);
+        ((InitializingBean) repository).afterPropertiesSet();
+        basePath = fs.getPath(ROOT_PATH);
+        assertThat(basePath)
+                .exists();
     }
 }
