@@ -9,7 +9,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathFactory.IS_CURRENT_PATH;
+import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
 
 public class NavigationPathParser implements PathParser {
     private final Path parentPath;

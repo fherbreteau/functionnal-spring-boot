@@ -4,7 +4,7 @@ import io.github.fherbreteau.functional.domain.entities.Path;
 
 import java.util.function.Predicate;
 
-public class EmptySegmentPathFactory extends CurrentSegmentPathFactory {
+public class EmptySegmentPathParserFactory extends CurrentSegmentPathParserFactory {
 
     public static final Predicate<String> IS_EMPTY_PATH = String::isEmpty;
 

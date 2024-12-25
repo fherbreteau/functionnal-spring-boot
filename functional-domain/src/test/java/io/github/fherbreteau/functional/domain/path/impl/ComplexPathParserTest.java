@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
 import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
+import io.github.fherbreteau.functional.domain.path.CompositePathParserFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 class ComplexPathParserTest {
 
     @Mock
-    private CompositePathFactory compositePathFactory;
+    private CompositePathParserFactory compositePathParserFactory;
 
     @Mock
     private User actor;
@@ -35,16 +35,16 @@ class ComplexPathParserTest {
         // GIVEN
         Path path = Path.ROOT;
         String segment = "file/folder";
-        PathParser parser = new ComplexPathParser(compositePathFactory, path, segment);
-        given(compositePathFactory.createParser(path, "file")).willReturn(new InvalidPathParser(path, "file"));
-        given(compositePathFactory.createParser(any(), eq("folder")))
+        PathParser parser = new ComplexPathParser(compositePathParserFactory, path, segment);
+        given(compositePathParserFactory.createParser(path, "file")).willReturn(new InvalidPathParser(path, "file"));
+        given(compositePathParserFactory.createParser(any(), eq("folder")))
                 .willAnswer(invocation -> new InvalidPathParser(invocation.getArgument(0), "folder"));
         // WHEN
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isTrue();
-        verify(compositePathFactory).createParser(path, "file");
-        verify(compositePathFactory).createParser(pathCaptor.capture(), eq("folder"));
+        verify(compositePathParserFactory).createParser(path, "file");
+        verify(compositePathParserFactory).createParser(pathCaptor.capture(), eq("folder"));
         assertThat(pathCaptor.getValue()).isNotNull()
                 .extracting(Path::isError, BOOLEAN).isTrue();
     }
@@ -54,9 +54,9 @@ class ComplexPathParserTest {
         // GIVEN
         Path path = Path.ROOT;
         String segment = "file/folder";
-        PathParser parser = new ComplexPathParser(compositePathFactory, path, segment);
+        PathParser parser = new ComplexPathParser(compositePathParserFactory, path, segment);
         PathParser elementParser = mock(PathParser.class);
-        given(compositePathFactory.createParser(path, "file")).willReturn(elementParser);
+        given(compositePathParserFactory.createParser(path, "file")).willReturn(elementParser);
         Path partial = Path.success(File.builder()
                 .withName("file")
                 .withOwner(User.root())
@@ -64,14 +64,14 @@ class ComplexPathParserTest {
                 .withParent(Folder.getRoot())
                 .build());
         given(elementParser.resolve(actor)).willReturn(partial);
-        given(compositePathFactory.createParser(partial, "folder"))
+        given(compositePathParserFactory.createParser(partial, "folder"))
                 .willReturn(new InvalidPathParser(partial, "folder"));
         // WHEN
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isNotNull().extracting(Path::isError, BOOLEAN).isTrue();
-        verify(compositePathFactory).createParser(path, "file");
-        verify(compositePathFactory).createParser(partial, "folder");
+        verify(compositePathParserFactory).createParser(path, "file");
+        verify(compositePathParserFactory).createParser(partial, "folder");
     }
 
     @Test
@@ -79,10 +79,10 @@ class ComplexPathParserTest {
         // GIVEN
         Path path = Path.ROOT;
         String segment = "folder/file";
-        PathParser parser = new ComplexPathParser(compositePathFactory, path, segment);
+        PathParser parser = new ComplexPathParser(compositePathParserFactory, path, segment);
 
         PathParser elementParser = mock(PathParser.class);
-        given(compositePathFactory.createParser(path, "folder")).willReturn(elementParser);
+        given(compositePathParserFactory.createParser(path, "folder")).willReturn(elementParser);
         Path partial = Path.success(Folder.builder()
                 .withName("folder")
                 .withOwner(User.root())
@@ -92,7 +92,7 @@ class ComplexPathParserTest {
         given(elementParser.resolve(actor)).willReturn(partial);
 
         PathParser restParser = mock(PathParser.class);
-        given(compositePathFactory.createParser(partial, "file")).willReturn(restParser);
+        given(compositePathParserFactory.createParser(partial, "file")).willReturn(restParser);
         Path result = Path.success(Folder.builder()
                 .withName("file")
                 .withOwner(User.root())
@@ -104,8 +104,8 @@ class ComplexPathParserTest {
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isEqualTo(result);
-        verify(compositePathFactory).createParser(path, "folder");
-        verify(compositePathFactory).createParser(partial, "file");
+        verify(compositePathParserFactory).createParser(path, "folder");
+        verify(compositePathParserFactory).createParser(partial, "file");
     }
 
     @Test
@@ -113,10 +113,10 @@ class ComplexPathParserTest {
         // GIVEN
         Path path = Path.ROOT;
         String segment = "folder/";
-        PathParser parser = new ComplexPathParser(compositePathFactory, path, segment);
+        PathParser parser = new ComplexPathParser(compositePathParserFactory, path, segment);
 
         PathParser elementParser = mock(PathParser.class);
-        given(compositePathFactory.createParser(path, "folder")).willReturn(elementParser);
+        given(compositePathParserFactory.createParser(path, "folder")).willReturn(elementParser);
         Path partial = Path.success(Folder.builder()
                 .withName("folder")
                 .withOwner(User.root())
@@ -126,13 +126,13 @@ class ComplexPathParserTest {
         given(elementParser.resolve(actor)).willReturn(partial);
 
         PathParser restParser = mock(PathParser.class);
-        given(compositePathFactory.createParser(partial, "")).willReturn(restParser);
+        given(compositePathParserFactory.createParser(partial, "")).willReturn(restParser);
         given(restParser.resolve(actor)).willReturn(partial);
         // WHEN
         Path resolved = parser.resolve(actor);
         // THEN
         assertThat(resolved).isEqualTo(partial);
-        verify(compositePathFactory).createParser(path, "folder");
-        verify(compositePathFactory).createParser(partial, "");
+        verify(compositePathParserFactory).createParser(path, "folder");
+        verify(compositePathParserFactory).createParser(partial, "");
     }
 }

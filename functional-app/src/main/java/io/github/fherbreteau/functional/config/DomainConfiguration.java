@@ -6,8 +6,8 @@ import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFacto
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
-import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
-import io.github.fherbreteau.functional.domain.path.factory.PathFactory;
+import io.github.fherbreteau.functional.domain.path.CompositePathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.user.UserManager;
 import io.github.fherbreteau.functional.driven.*;
 import io.github.fherbreteau.functional.driven.repository.*;
@@ -31,8 +31,8 @@ public class DomainConfiguration {
 
     @Bean
     public FileService fileService(CompositeItemCommandFactory compositeItemCommandFactory,
-                                   CompositePathFactory compositePathFactory) {
-        return new FileServiceImpl(compositeItemCommandFactory, compositePathFactory);
+                                   CompositePathParserFactory compositePathParserFactory) {
+        return new FileServiceImpl(compositeItemCommandFactory, compositePathParserFactory);
     }
 
     @Bean
@@ -61,9 +61,9 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public CompositePathFactory compositePathFactory(ItemRepository itemRepository, AccessChecker accessChecker,
-                                                     List<PathFactory> pathFactories) {
-        CompositePathFactory factory = new CompositePathFactory(itemRepository, accessChecker, pathFactories);
+    public CompositePathParserFactory compositePathFactory(ItemRepository itemRepository, AccessChecker accessChecker,
+                                                           List<PathParserFactory> pathFactories) {
+        CompositePathParserFactory factory = new CompositePathParserFactory(itemRepository, accessChecker, pathFactories);
         factory.configureRecursive();
         return factory;
     }

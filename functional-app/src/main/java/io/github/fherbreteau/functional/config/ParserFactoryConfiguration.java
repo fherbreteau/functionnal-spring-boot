@@ -13,8 +13,8 @@ public class ParserFactoryConfiguration {
     }
 
     @Bean
-    public AttributionAccessParserFactory attributionAccessParserFactory() {
-        return new AttributionAccessParserFactory();
+    public AttributionAccessParserAccessFactory attributionAccessParserFactory() {
+        return new AttributionAccessParserAccessFactory();
     }
 
     @Bean
@@ -33,8 +33,8 @@ public class ParserFactoryConfiguration {
     }
 
     @Bean
-    public FullAccessParserFactory fullAccessParserFactory() {
-        return new FullAccessParserFactory();
+    public FullAccessParserAccessFactory fullAccessParserFactory() {
+        return new FullAccessParserAccessFactory();
     }
 
     @Bean
@@ -63,8 +63,8 @@ public class ParserFactoryConfiguration {
     }
 
     @Bean
-    public RightAccessParserFactory rightAccessParserFactory() {
-        return new RightAccessParserFactory();
+    public RightAccessParserAccessFactory rightAccessParserFactory() {
+        return new RightAccessParserAccessFactory();
     }
 
     @Bean

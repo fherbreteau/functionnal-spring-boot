@@ -101,17 +101,17 @@ public class AccessParserServiceTest {
     public void setup() {
         List<AccessParserFactory> accessRightParserFactories = List.of(
                 new AddAccessParserFactory(),
-                new AttributionAccessParserFactory(),
+                new AttributionAccessParserAccessFactory(),
                 new EveryoneAccessParserFactory(),
                 new UnsupportedAccessParserFactory(),
                 new ExecuteAccessParserFactory(),
-                new FullAccessParserFactory(),
+                new FullAccessParserAccessFactory(),
                 new GroupAccessParserFactory(),
                 new OtherAccessParserFactory(),
                 new OwnerAccessParserFactory(),
                 new ReadAccessParserFactory(),
                 new RemoveAccessParserFactory(),
-                new RightAccessParserFactory(),
+                new RightAccessParserAccessFactory(),
                 new SetAccessParserFactory(),
                 new WriteAccessParserFactory()
         );

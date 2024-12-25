@@ -10,7 +10,6 @@ import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -34,10 +33,6 @@ class CheckGetGroupCommandTest {
     private UserUpdater userUpdater;
     @Mock
     private User actor;
-
-    @BeforeEach
-    public void setup() {
-    }
 
     @Test
     void shouldGenerateGetGroupCommandWhenCheckingSucceedForAUserId() {

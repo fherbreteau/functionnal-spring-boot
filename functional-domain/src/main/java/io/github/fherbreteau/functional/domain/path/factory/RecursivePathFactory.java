@@ -1,8 +1,6 @@
 package io.github.fherbreteau.functional.domain.path.factory;
 
-import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
-
-public interface RecursiveFactory {
+public interface RecursivePathFactory {
 
     void setCompositePathFactory(CompositePathFactory compositePathFactory);
 }

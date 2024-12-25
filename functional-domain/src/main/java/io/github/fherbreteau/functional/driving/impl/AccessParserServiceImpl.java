@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.driving.impl;
 
-import io.github.fherbreteau.functional.domain.access.AccessRightContext;
-import io.github.fherbreteau.functional.domain.access.AccessRightParser;
+import io.github.fherbreteau.functional.domain.access.AccessContext;
+import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.access.CompositeAccessParserFactory;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -19,7 +19,7 @@ public class AccessParserServiceImpl implements AccessParserService {
     }
 
     public ItemInput parseAccessRights(String rights, Item item) {
-        AccessRightParser parser = accessParserFactory.createParser(new AccessRightContext(), rights, item);
+        AccessParser parser = accessParserFactory.createParser(new AccessContext(), rights, item);
         ItemInput.Builder builder = ItemInput.builder(item);
         if (Objects.isNull(parser.resolve(builder, AccessRight.none()))) {
             throw new IllegalStateException("Access right is not valid");

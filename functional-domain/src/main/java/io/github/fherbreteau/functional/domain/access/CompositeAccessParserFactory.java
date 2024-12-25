@@ -1,13 +1,14 @@
 package io.github.fherbreteau.functional.domain.access;
 
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFactory;
 import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.access.factory.RecursiveFactory;
+import io.github.fherbreteau.functional.domain.access.factory.RecursiveAccessFactory;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class CompositeAccessParserFactory {
+public class CompositeAccessParserFactory implements CompositeAccessFactory {
 
     private final List<AccessParserFactory> accessRightParserFactories;
 
@@ -18,12 +19,13 @@ public class CompositeAccessParserFactory {
     }
 
     public void configureRecursive() {
-        accessRightParserFactories.stream().filter(RecursiveFactory.class::isInstance)
-                .map(RecursiveFactory.class::cast)
-                .forEach(f -> f.setCompositeAccessParserFactory(this));
+        accessRightParserFactories.stream().filter(RecursiveAccessFactory.class::isInstance)
+                .map(RecursiveAccessFactory.class::cast)
+                .forEach(f -> f.setCompositeFactory(this));
     }
 
-    public AccessRightParser createParser(AccessRightContext context, String rights, Item item) {
+    @Override
+    public AccessParser createParser(AccessContext context, String rights, Item item) {
         return accessRightParserFactories.stream()
                 .filter(f -> f.supports(context, rights, item))
                 .map(f -> f.createAccessRightParser(context, rights, item))

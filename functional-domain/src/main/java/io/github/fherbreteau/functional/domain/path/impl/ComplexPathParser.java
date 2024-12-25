@@ -2,8 +2,8 @@ package io.github.fherbreteau.functional.domain.path.impl;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.path.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.PathParser;
+import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
 
 public class ComplexPathParser implements PathParser {
 
