@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.driven.repository;
 
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
-
-import java.util.UUID;
 
 public interface UserRepository {
 

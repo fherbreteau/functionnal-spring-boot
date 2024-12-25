@@ -1,5 +1,17 @@
 package io.github.fherbreteau.functional.infra.impl;
 
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
@@ -8,13 +20,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.*;
-
-import static java.nio.file.StandardOpenOption.*;
 
 @Service
 public class FSContentRepository implements ContentRepository, InitializingBean {
@@ -39,7 +44,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
             Files.createFile(itemPath);
             return Output.success(item);
         } catch (IOException e) {
-            return Output.error(e);
+            return Output.failure(e);
         }
     }
 
@@ -49,7 +54,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
         try {
             return Output.success(Files.newInputStream(itemPath, READ));
         } catch (IOException e) {
-            return Output.error(e);
+            return Output.failure(e);
         }
     }
 
@@ -60,7 +65,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
             content.transferTo(oStream);
             return Output.success(item);
         } catch (IOException e) {
-            return Output.error(e);
+            return Output.failure(e);
         }
     }
 
@@ -71,7 +76,7 @@ public class FSContentRepository implements ContentRepository, InitializingBean 
             Files.delete(itemPath);
             return Output.success(null);
         } catch (IOException e) {
-            return Output.error(e);
+            return Output.failure(e);
         }
     }
 

@@ -1,8 +1,8 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class PathTest {
 
@@ -24,14 +24,14 @@ class PathTest {
         assertThat(path).extracting(Path::getAsFile).isEqualTo(file);
         assertThat(Path.success(file)).isEqualTo(path);
 
-        Error error = Error.error("error");
-        path = Path.error(error);
-        assertThat(Path.error(error)).isEqualTo(path);
-        assertThat(path.getError()).isEqualTo(error).hasSameHashCodeAs(error);
+        Failure failure = Failure.failure("error");
+        path = Path.error(failure);
+        assertThat(Path.error(failure)).isEqualTo(path);
+        assertThat(path.getError()).isEqualTo(failure).hasSameHashCodeAs(failure);
 
-        assertThat(Path.error(Error.error("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
+        assertThat(Path.error(Failure.failure("err"))).isNotEqualTo(path).doesNotHaveSameHashCodeAs(path);
         assertThat(path.getError()).isNotEqualTo(new Object());
-        assertThat(Error.error("error")).isEqualTo(error);
+        assertThat(Failure.failure("error")).isEqualTo(failure);
     }
 
     @Test
@@ -55,17 +55,17 @@ class PathTest {
                 .isEqualTo(Path.ROOT)
                 .extracting(Path::getParent)
                 .extracting(Path::getError)
-                .extracting(Error::getMessage)
+                .extracting(Failure::getMessage)
                 .isEqualTo("Root path has no parent");
 
-        path = Path.error(Error.error("error"));
+        path = Path.error(Failure.failure("error"));
         assertThat(path.getParent())
                 .isEqualTo(path)
                 .hasSameHashCodeAs(path)
                 .isNotEqualTo(Path.ROOT)
                 .doesNotHaveSameHashCodeAs(Path.ROOT);
 
-        assertThat((Object) path).isNotEqualTo(file);
+        assertThat((Object) path).isNotEqualTo(new Object());
     }
 
     @Test
@@ -76,7 +76,7 @@ class PathTest {
                 .withGroup(Group.root())
                 .build());
         assertThat(path).hasToString("Path{item=' root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'}");
-        path = Path.error(Error.error("error"));
+        path = Path.error(Failure.failure("error"));
         assertThat(path).hasToString("Path{error=Error{message='error', reasons=[]}}");
     }
 

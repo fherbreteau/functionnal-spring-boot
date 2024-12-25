@@ -1,13 +1,14 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.Group;
-import org.springframework.jdbc.core.RowMapper;
+import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_ID;
+import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_NAME;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.*;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import org.springframework.jdbc.core.RowMapper;
 
 public class GroupMapper implements RowMapper<Group> {
     @Override

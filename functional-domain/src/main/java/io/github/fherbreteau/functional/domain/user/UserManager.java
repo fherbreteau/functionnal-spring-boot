@@ -1,12 +1,12 @@
 package io.github.fherbreteau.functional.domain.user;
 
+import static java.lang.String.format;
+
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
-
-import static java.lang.String.format;
 
 public class UserManager {
 
@@ -22,7 +22,7 @@ public class UserManager {
         if (userRepository.exists(name)) {
             return Output.success(userRepository.findByName(name));
         } else {
-            return Output.error(format("%s not found", name));
+            return Output.failure(format("%s not found", name));
         }
     }
 
@@ -30,7 +30,7 @@ public class UserManager {
         if (groupRepository.exists(name)) {
             return Output.success(groupRepository.findByName(name));
         } else {
-            return Output.error(format("%s not found", name));
+            return Output.failure(format("%s not found", name));
         }
     }
 

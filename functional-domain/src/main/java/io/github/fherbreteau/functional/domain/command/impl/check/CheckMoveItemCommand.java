@@ -1,7 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import io.github.fherbreteau.functional.domain.command.impl.success.MoveItemCommand;
-import io.github.fherbreteau.functional.domain.entities.*;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;

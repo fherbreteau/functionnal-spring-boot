@@ -1,13 +1,13 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import java.time.LocalDateTime;
+
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-
-import java.time.LocalDateTime;
 
 public class MoveItemCommand extends AbstractModifyItemCommand<Item> {
     private final Item source;
@@ -54,6 +54,6 @@ public class MoveItemCommand extends AbstractModifyItemCommand<Item> {
     }
 
     private String getDestinationName() {
-        return  destination.isFile() ? destination.getName() : source.getName();
+        return destination.isFile() ? destination.getName() : source.getName();
     }
 }

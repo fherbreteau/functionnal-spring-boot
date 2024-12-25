@@ -1,12 +1,16 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.BOOLEAN;
+import static org.assertj.core.api.Assertions.LOCAL_DATE_TIME;
+import static org.assertj.core.api.Assertions.STRING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.Test;
 
 class ItemsTest {
 
@@ -21,6 +25,7 @@ class ItemsTest {
         assertThat(file).extracting(Item::isFile, BOOLEAN).isTrue();
         assertThat(file).extracting(Item::isFolder, BOOLEAN).isFalse();
         assertThat(file).extracting(File::getContentType, STRING).isEqualTo("contentType");
+        assertThat(file).extracting(Item::getType).isEqualTo(File.TYPE);
         assertThat(file.copyBuilder().build())
                 .isEqualTo(file)
                 .hasSameHashCodeAs(file);
@@ -36,6 +41,7 @@ class ItemsTest {
                 .build();
         assertThat(folder).extracting(Item::isFile, BOOLEAN).isFalse();
         assertThat(folder).extracting(Item::isFolder, BOOLEAN).isTrue();
+        assertThat(folder).extracting(Item::getType).isEqualTo(Folder.TYPE);
         assertThat(folder.copyBuilder().build())
                 .isEqualTo(folder)
                 .hasSameHashCodeAs(folder);
@@ -46,7 +52,7 @@ class ItemsTest {
         assertThat((Object) folder).isNotEqualTo(new Object());
 
         assertThat(File.builder().withHandle(UUID.randomUUID()).withName("").withOwner(User.root()).build())
-                .extracting(AbstractItem::getHandle)
+                .extracting(File::getHandle)
                 .isNotNull();
     }
 
@@ -66,14 +72,14 @@ class ItemsTest {
                 .withOwner(User.root())
                 .withGroup(Group.root())
                 .build();
-        assertThat(file).extracting(AbstractItem::getPath, STRING).isEqualTo("/folder/file");
+        assertThat(file).extracting(Item::getPath, STRING).isEqualTo("/folder/file");
         folder = Folder.builder()
                 .withHandle(UUID.randomUUID())
                 .withOwner(User.root())
                 .withGroup(Group.root())
                 .withName("folder")
                 .build();
-        assertThat(folder).extracting(AbstractItem::getPath, STRING).isEqualTo("folder");
+        assertThat(folder).extracting(Item::getPath, STRING).isEqualTo("folder");
     }
 
     @Test

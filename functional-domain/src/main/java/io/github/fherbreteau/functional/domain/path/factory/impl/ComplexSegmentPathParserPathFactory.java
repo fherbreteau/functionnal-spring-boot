@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.path.factory.impl;
 
+import java.util.function.Predicate;
+
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.factory.RecursivePathFactory;
 import io.github.fherbreteau.functional.domain.path.impl.ComplexPathParser;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.function.Predicate;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class ComplexSegmentPathParserPathFactory implements PathParserFactory, RecursivePathFactory {
 

@@ -1,6 +1,8 @@
 package io.github.fherbreteau.functional.domain.entities;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 
 public interface Item {
@@ -32,6 +34,10 @@ public interface Item {
     boolean isFile();
 
     String getPath();
+
+    UUID getHandle();
+
+    String getType();
 
     <I extends Item, B extends AbstractBuilder<I, B>> AbstractBuilder<I, B> copyBuilder();
 }

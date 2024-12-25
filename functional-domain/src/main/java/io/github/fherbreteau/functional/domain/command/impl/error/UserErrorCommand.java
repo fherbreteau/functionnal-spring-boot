@@ -1,9 +1,12 @@
 package io.github.fherbreteau.functional.domain.command.impl.error;
 
-import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.entities.*;
-
 import java.util.List;
+
+import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.UserCommandType;
+import io.github.fherbreteau.functional.domain.entities.UserInput;
 
 public class UserErrorCommand<T> implements Command<Output<T>> {
 
@@ -23,6 +26,6 @@ public class UserErrorCommand<T> implements Command<Output<T>> {
 
     @Override
     public Output<T> execute(User actor) {
-        return Output.error(String.format("%s with arguments %s failed for %s", type, userInput, actor), reasons);
+        return Output.failure(String.format("%s with arguments %s failed for %s", type, userInput, actor), reasons);
     }
 }

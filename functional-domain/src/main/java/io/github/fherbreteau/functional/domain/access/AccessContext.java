@@ -1,10 +1,10 @@
 package io.github.fherbreteau.functional.domain.access;
 
-import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import static java.util.Optional.ofNullable;
 
 import java.util.function.BinaryOperator;
 
-import static java.util.Optional.ofNullable;
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
 
 public class AccessContext {
     private BinaryOperator<AccessRight> accessRightMergeFunction;

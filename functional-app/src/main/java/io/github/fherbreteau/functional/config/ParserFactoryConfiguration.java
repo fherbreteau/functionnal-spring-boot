@@ -1,6 +1,19 @@
 package io.github.fherbreteau.functional.config;
 
-import io.github.fherbreteau.functional.domain.access.factory.impl.*;
+import io.github.fherbreteau.functional.domain.access.factory.impl.AddAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.AttributionAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.EveryoneAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.ExecuteAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.FullAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.GroupAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.OtherAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.OwnerAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.ReadAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.RemoveAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.RightAccessParserAccessFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.SetAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.UnsupportedAccessParserFactory;
+import io.github.fherbreteau.functional.domain.access.factory.impl.WriteAccessParserFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

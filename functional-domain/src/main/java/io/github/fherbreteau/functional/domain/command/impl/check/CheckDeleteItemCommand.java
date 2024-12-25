@@ -1,18 +1,18 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.DeleteItemCommand;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, DeleteItemCommand> {
     private final ContentRepository contentRepository;

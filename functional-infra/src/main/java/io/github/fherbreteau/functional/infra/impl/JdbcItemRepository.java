@@ -1,6 +1,22 @@
 package io.github.fherbreteau.functional.infra.impl;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_ID;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_NAME;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_OWNER_ID;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.COL_PARENT_ID;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.PARAM_FORCE;
+import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.PARAM_GROUP_IDS;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
+import io.github.fherbreteau.functional.domain.entities.AbstractItem;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.infra.AccessRightFinder;
 import io.github.fherbreteau.functional.infra.mapper.BooleanResultExtractor;
@@ -12,10 +28,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
-import java.util.*;
-
-import static io.github.fherbreteau.functional.infra.mapper.ItemSQLConstant.*;
 
 @Repository
 public class JdbcItemRepository implements ItemRepository {

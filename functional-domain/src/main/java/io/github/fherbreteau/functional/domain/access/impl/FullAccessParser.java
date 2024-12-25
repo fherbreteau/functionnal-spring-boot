@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.domain.access.impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFactory;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 public class FullAccessParser implements AccessParser {
 

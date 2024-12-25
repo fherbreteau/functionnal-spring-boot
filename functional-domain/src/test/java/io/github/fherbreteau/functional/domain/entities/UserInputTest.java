@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+
+import org.junit.jupiter.api.Test;
 
 class UserInputTest {
 
@@ -18,9 +18,9 @@ class UserInputTest {
 
     @Test
     void outputItemFromThrowableShouldUseThrowableMessage() {
-        assertThat(Output.error(new Exception("message")))
-                .extracting(Output::getError)
-                .extracting(Error::getMessage)
+        assertThat(Output.failure(new Exception("message")))
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
                 .isEqualTo("message");
     }
 }

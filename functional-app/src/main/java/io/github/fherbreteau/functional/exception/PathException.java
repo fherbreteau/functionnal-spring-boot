@@ -1,9 +1,14 @@
 package io.github.fherbreteau.functional.exception;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import java.io.Serial;
+
+import io.github.fherbreteau.functional.domain.entities.Failure;
 
 public class PathException extends RuntimeException {
-    public PathException(Error error) {
-        super(error.getMessage());
+    @Serial
+    private static final long serialVersionUID = -3549560013977446562L;
+
+    public PathException(Failure failure) {
+        super(failure.getMessage());
     }
 }

@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import io.github.fherbreteau.functional.domain.entities.Error;
+import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
@@ -17,6 +17,6 @@ public class InvalidPathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        return currentPath.isError() ? currentPath : Path.error(Error.error(String.format("%s not found in %s for %s", segment, currentPath.getItem(), actor)));
+        return currentPath.isError() ? currentPath : Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, currentPath.getItem(), actor)));
     }
 }

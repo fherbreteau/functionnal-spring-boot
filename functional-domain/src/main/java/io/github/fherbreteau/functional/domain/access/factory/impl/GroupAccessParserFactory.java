@@ -1,15 +1,15 @@
 package io.github.fherbreteau.functional.domain.access.factory.impl;
 
+import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ATTRIBUTION;
+
+import java.util.Objects;
+
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
 import io.github.fherbreteau.functional.domain.access.impl.GenericAttributionAccessParser;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
-
-import java.util.Objects;
-
-import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ATTRIBUTION;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 public class GroupAccessParserFactory implements AccessParserFactory {
     @Override

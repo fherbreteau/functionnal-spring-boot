@@ -16,6 +16,38 @@ public final class AccessRight {
         this.execute = execute;
     }
 
+    public static AccessRight readOnly() {
+        return none().addRead();
+    }
+
+    public static AccessRight readWrite() {
+        return readOnly().addWrite();
+    }
+
+    public static AccessRight readExecute() {
+        return readOnly().addExecute();
+    }
+
+    public static AccessRight writeOnly() {
+        return none().addWrite();
+    }
+
+    public static AccessRight writeExecute() {
+        return writeOnly().addExecute();
+    }
+
+    public static AccessRight executeOnly() {
+        return none().addExecute();
+    }
+
+    public static AccessRight full() {
+        return readWrite().addExecute();
+    }
+
+    public static AccessRight none() {
+        return new AccessRight(false, false, false);
+    }
+
     public boolean isRead() {
         return read;
     }
@@ -50,38 +82,6 @@ public final class AccessRight {
 
     public AccessRight removeExecute() {
         return new AccessRight(read, write, false);
-    }
-
-    public static AccessRight readOnly() {
-        return none().addRead();
-    }
-
-    public static AccessRight readWrite() {
-        return readOnly().addWrite();
-    }
-
-    public static AccessRight readExecute() {
-        return readOnly().addExecute();
-    }
-
-    public static AccessRight writeOnly() {
-        return none().addWrite();
-    }
-
-    public static AccessRight writeExecute() {
-        return writeOnly().addExecute();
-    }
-
-    public static AccessRight executeOnly() {
-        return none().addExecute();
-    }
-
-    public static AccessRight full() {
-        return readWrite().addExecute();
-    }
-
-    public static AccessRight none() {
-        return new AccessRight(false, false, false);
     }
 
     public AccessRight add(AccessRight accessRight) {

@@ -1,5 +1,9 @@
 package io.github.fherbreteau.functional.mapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -11,10 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class EntityMapperTest {
 

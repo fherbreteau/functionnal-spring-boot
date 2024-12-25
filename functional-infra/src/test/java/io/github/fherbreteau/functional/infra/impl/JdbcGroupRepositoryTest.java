@@ -1,5 +1,9 @@
 package io.github.fherbreteau.functional.infra.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import org.junit.jupiter.api.Test;
@@ -8,10 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @ActiveProfiles("test")

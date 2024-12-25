@@ -1,14 +1,18 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.command.Command;
-import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.fherbreteau.functional.domain.command.Command;
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public abstract class AbstractCheckCreateItemCommand<T, C extends Command<Output<T>>> extends AbstractCheckItemCommand<T, C> {
     protected final String name;

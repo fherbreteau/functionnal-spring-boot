@@ -1,12 +1,33 @@
 package io.github.fherbreteau.functional.domain.path;
 
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.domain.entities.Error;
+import static java.util.Optional.of;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
+
+import io.github.fherbreteau.functional.domain.entities.Failure;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
-import io.github.fherbreteau.functional.domain.path.factory.impl.*;
+import io.github.fherbreteau.functional.domain.path.factory.impl.ComplexSegmentPathParserPathFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.EmptySegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.InvalidPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.ParentSegmentPathParserFactory;
+import io.github.fherbreteau.functional.domain.path.factory.impl.SingleSegmentPathParserFactory;
 import io.github.fherbreteau.functional.domain.path.impl.InvalidPathParser;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,18 +36,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static java.util.Optional.of;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class CompositePathParserFactoryTest {
@@ -80,7 +89,7 @@ class CompositePathParserFactoryTest {
                 .withOwner(User.root())
                 .withGroup(Group.root())
                 .build());
-        Path error = Path.error(Error.error("error"));
+        Path error = Path.error(Failure.failure("error"));
         return Stream.of(
                 // Go up
                 Arguments.of(Path.ROOT, ".."),

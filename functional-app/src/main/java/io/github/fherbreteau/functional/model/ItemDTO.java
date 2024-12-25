@@ -1,9 +1,9 @@
 package io.github.fherbreteau.functional.model;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import java.time.LocalDateTime;
 
 @JsonDeserialize(builder = ItemDTO.Builder.class)
 public final class ItemDTO {
@@ -29,7 +29,7 @@ public final class ItemDTO {
         contentType = builder.contentType;
     }
 
-    public static Builder buidler() {
+    public static Builder builder() {
         return new Builder();
     }
 

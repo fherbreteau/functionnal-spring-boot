@@ -1,5 +1,14 @@
 package io.github.fherbreteau.functional.infra.impl;
 
+import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
+import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_ID;
+import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_NAME;
+import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_PASSWORD;
+import static java.util.Optional.ofNullable;
+
+import java.util.Objects;
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
@@ -11,13 +20,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
-import java.util.Objects;
-import java.util.UUID;
-
-import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.*;
-import static java.util.Optional.ofNullable;
 
 @Repository
 public class JdbcUserRepository implements UserRepository {

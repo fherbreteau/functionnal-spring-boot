@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.domain.path;
 
+import java.util.Comparator;
+import java.util.List;
+
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
 import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.factory.RecursivePathFactory;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.Comparator;
-import java.util.List;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class CompositePathParserFactory implements CompositePathFactory {
 

@@ -1,16 +1,16 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static java.util.Objects.isNull;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.isNull;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TestCommandTest {
 

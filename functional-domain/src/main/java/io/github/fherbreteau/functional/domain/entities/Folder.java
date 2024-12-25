@@ -1,54 +1,19 @@
 package io.github.fherbreteau.functional.domain.entities;
 
-import java.util.UUID;
+import io.github.fherbreteau.functional.domain.entities.FolderItem.Builder;
 
-public final class Folder extends AbstractItem<Folder, Folder.Builder> {
+public interface Folder extends Item {
 
-    private static final UUID ROOT_HANDLE = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    String TYPE = "Folder";
 
-    private static final Folder ROOT = builder()
-            .withHandle(ROOT_HANDLE)
-            .withName("")
-            .withOwner(User.root())
-            .withGroup(Group.root())
-            .withOtherAccess(AccessRight.full())
-            .build();
-
-    private Folder(Builder builder) {
-        super(builder);
-    }
-
-    public static Folder getRoot() {
-        return ROOT;
-    }
-
-    public static Builder builder() {
+    static Builder builder() {
         return new Builder();
     }
 
-    @Override
-    public boolean isFolder() {
-        return true;
-    }
-
-    @Override
-    public boolean isFile() {
-        return false;
+    static Folder getRoot() {
+        return FolderItem.ROOT;
     }
 
     @SuppressWarnings("unchecked")
-    public Builder copyBuilder() {
-        return copy(builder());
-    }
-
-    public static final class Builder extends AbstractBuilder<Folder, Builder> {
-
-        private Builder() { }
-
-        @Override
-        public Folder build() {
-            validate();
-            return new Folder(this);
-        }
-    }
+    Builder copyBuilder();
 }

@@ -1,6 +1,17 @@
 package io.github.fherbreteau.functional.service;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
+
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.Output;
+import io.github.fherbreteau.functional.domain.entities.Path;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.driving.UserService;
@@ -15,11 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FileSystemService {
@@ -38,8 +44,8 @@ public class FileSystemService {
 
     public List<ItemDTO> listItems(String path, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -48,16 +54,16 @@ public class FileSystemService {
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
         Output<List<Item>> itemsOutput = fileService.processCommand(ItemCommandType.LIST, actor, itemInput);
-        if (itemsOutput.isError()) {
-            throw new CommandException(itemsOutput.getError());
+        if (itemsOutput.isFailure()) {
+            throw new CommandException(itemsOutput.getFailure());
         }
         return entityMapper.mapToItemList(itemsOutput.getValue());
     }
 
     public ItemDTO createFile(String path, String name, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -66,8 +72,8 @@ public class FileSystemService {
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
         Output<Item> itemOutput = fileService.processCommand(ItemCommandType.TOUCH, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
         return entityMapper.mapToItem(itemOutput.getValue());
 
@@ -75,8 +81,8 @@ public class FileSystemService {
 
     public ItemDTO createFolder(String path, String name, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -85,16 +91,16 @@ public class FileSystemService {
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withName(name).build();
         Output<Item> itemOutput = fileService.processCommand(ItemCommandType.MKDIR, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
         return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeOwner(String path, String name, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -102,22 +108,22 @@ public class FileSystemService {
             throw new PathException(itemPath.getError());
         }
         userOutput = userService.findUserByName(name);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User owner = userOutput.getValue();
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withUser(owner).build();
         Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHOWN, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
         return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeGroup(String path, String name, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -125,22 +131,22 @@ public class FileSystemService {
             throw new PathException(itemPath.getError());
         }
         Output<Group> groupOutput = userService.findGroupByName(name);
-        if (groupOutput.isError()) {
-            throw new GroupException(groupOutput.getError());
+        if (groupOutput.isFailure()) {
+            throw new GroupException(groupOutput.getFailure());
         }
         Group group = groupOutput.getValue();
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).withGroup(group).build();
         Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHGRP, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
         return entityMapper.mapToItem(itemOutput.getValue());
     }
 
     public ItemDTO changeMode(String path, String right, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -149,8 +155,8 @@ public class FileSystemService {
         }
         ItemInput itemInput = accessParserService.parseAccessRights(right, itemPath.getItem());
         Output<Item> itemOutput = fileService.processCommand(ItemCommandType.CHMOD, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
         return entityMapper.mapToItem(itemOutput.getValue());
     }
@@ -158,8 +164,8 @@ public class FileSystemService {
     public ItemDTO upload(String path, MultipartFile file, String username) {
         try (InputStream content = file.getInputStream()) {
             Output<User> userOutput = userService.findUserByName(username);
-            if (userOutput.isError()) {
-                throw new UserException(userOutput.getError());
+            if (userOutput.isFailure()) {
+                throw new UserException(userOutput.getFailure());
             }
             User actor = userOutput.getValue();
             Path itemPath = fileService.getPath(path, actor);
@@ -174,8 +180,8 @@ public class FileSystemService {
                     .withContentType(contentType)
                     .build();
             Output<Item> itemOutput = fileService.processCommand(ItemCommandType.UPLOAD, actor, itemInput);
-            if (itemOutput.isError()) {
-                throw new CommandException(itemOutput.getError());
+            if (itemOutput.isFailure()) {
+                throw new CommandException(itemOutput.getFailure());
             }
             return entityMapper.mapToItem(itemOutput.getValue());
         } catch (IOException e) {
@@ -185,8 +191,8 @@ public class FileSystemService {
 
     public ResponseEntity<InputStreamResource> download(String path, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -197,16 +203,16 @@ public class FileSystemService {
                 .withContentType(itemPath.getContentType())
                 .build();
         Output<InputStream> streamOutput = fileService.processCommand(ItemCommandType.DOWNLOAD, actor, itemInput);
-        if (streamOutput.isError()) {
-            throw new CommandException(streamOutput.getError());
+        if (streamOutput.isFailure()) {
+            throw new CommandException(streamOutput.getFailure());
         }
         return entityMapper.mapStream(streamOutput.getValue(), itemInput.getContentType());
     }
 
     public void delete(String path, String username) {
         Output<User> userOutput = userService.findUserByName(username);
-        if (userOutput.isError()) {
-            throw new UserException(userOutput.getError());
+        if (userOutput.isFailure()) {
+            throw new UserException(userOutput.getFailure());
         }
         User actor = userOutput.getValue();
         Path itemPath = fileService.getPath(path, actor);
@@ -215,8 +221,8 @@ public class FileSystemService {
         }
         ItemInput itemInput = ItemInput.builder(itemPath.getItem()).build();
         Output<Void> itemOutput = fileService.processCommand(ItemCommandType.DELETE, actor, itemInput);
-        if (itemOutput.isError()) {
-            throw new CommandException(itemOutput.getError());
+        if (itemOutput.isFailure()) {
+            throw new CommandException(itemOutput.getFailure());
         }
     }
 }

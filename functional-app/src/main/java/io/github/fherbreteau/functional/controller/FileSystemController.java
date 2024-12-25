@@ -1,14 +1,20 @@
 package io.github.fherbreteau.functional.controller;
 
+import java.security.Principal;
+import java.util.List;
+
 import io.github.fherbreteau.functional.model.ItemDTO;
 import io.github.fherbreteau.functional.service.FileSystemService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -75,7 +81,7 @@ public class FileSystemController {
 
     @DeleteMapping
     public ResponseEntity<Void> delete(@RequestParam("path") String path,
-                                          Principal user) {
+                                       Principal user) {
         fileSystemService.delete(path, user.getName());
         return ResponseEntity.noContent().build();
     }

@@ -1,5 +1,11 @@
 package io.github.fherbreteau.functional.domain.access.factory.impl;
 
+import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ATTRIBUTION;
+
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.access.factory.AccessParserFactory;
@@ -7,12 +13,6 @@ import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFac
 import io.github.fherbreteau.functional.domain.access.factory.RecursiveAccessFactory;
 import io.github.fherbreteau.functional.domain.access.impl.RecursiveAccessParser;
 import io.github.fherbreteau.functional.domain.entities.Item;
-
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-
-import static io.github.fherbreteau.functional.domain.access.AccessParser.STEP_ATTRIBUTION;
 
 public class AttributionAccessParserAccessFactory implements AccessParserFactory, RecursiveAccessFactory {
 

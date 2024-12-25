@@ -1,5 +1,11 @@
 package io.github.fherbreteau.functional.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+
 import io.github.fherbreteau.functional.driving.AccessParserService;
 import io.github.fherbreteau.functional.driving.FileService;
 import io.github.fherbreteau.functional.driving.UserService;
@@ -11,12 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class FileSystemServiceTest {

@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.driving;
 
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
 
 public interface AccessParserService {
 

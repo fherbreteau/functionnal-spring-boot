@@ -1,5 +1,14 @@
 package io.github.fherbreteau.functional.infra.impl;
 
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.COL_ATTRIBUTION;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.COL_ITEM_ID;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.TYPE_EXECUTE;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.TYPE_READ;
+import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.TYPE_WRITE;
+
+import java.util.List;
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.infra.AccessRightFinder;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
@@ -7,11 +16,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.UUID;
-
-import static io.github.fherbreteau.functional.infra.mapper.ItemAccessSQLConstants.*;
 
 @Repository
 public class JdbcAccessRightFinder implements AccessRightFinder {

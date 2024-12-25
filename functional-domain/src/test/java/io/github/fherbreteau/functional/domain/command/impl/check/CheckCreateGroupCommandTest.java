@@ -1,5 +1,10 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
+import java.util.UUID;
+
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.UserErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateGroupCommand;
@@ -7,19 +12,14 @@ import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
-import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class CheckCreateGroupCommandTest {

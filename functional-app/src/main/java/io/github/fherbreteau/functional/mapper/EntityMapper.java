@@ -1,6 +1,17 @@
 package io.github.fherbreteau.functional.mapper;
 
-import io.github.fherbreteau.functional.domain.entities.*;
+import static java.util.Optional.ofNullable;
+
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
+import io.github.fherbreteau.functional.domain.entities.AccessRight;
+import io.github.fherbreteau.functional.domain.entities.File;
+import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.model.GroupDTO;
 import io.github.fherbreteau.functional.model.ItemDTO;
 import io.github.fherbreteau.functional.model.UserDTO;
@@ -8,13 +19,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 public class EntityMapper {
@@ -49,7 +53,7 @@ public class EntityMapper {
         if (value instanceof Item item) {
             String access = formatAccess(item.isFolder(), item.getOwnerAccess(), item.getGroupAccess(),
                     item.getOtherAccess());
-            ItemDTO.Builder builder = ItemDTO.buidler()
+            ItemDTO.Builder builder = ItemDTO.builder()
                     .withName(item.getName())
                     .withOwner(item.getOwner().getName())
                     .withGroup(item.getGroup().getName())

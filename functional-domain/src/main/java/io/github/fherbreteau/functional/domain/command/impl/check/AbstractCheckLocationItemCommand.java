@@ -1,15 +1,19 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
-import io.github.fherbreteau.functional.domain.command.impl.success.AbstractModifyItemCommand;
-import io.github.fherbreteau.functional.domain.entities.*;
-import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
+import io.github.fherbreteau.functional.domain.command.impl.success.AbstractModifyItemCommand;
+import io.github.fherbreteau.functional.domain.entities.Folder;
+import io.github.fherbreteau.functional.domain.entities.Item;
+import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
+import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.driven.repository.ItemRepository;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public abstract class AbstractCheckLocationItemCommand<C extends AbstractModifyItemCommand<Item>> extends AbstractCheckItemCommand<Item, C> {
     protected final AccessUpdater accessUpdater;
@@ -52,7 +56,7 @@ public abstract class AbstractCheckLocationItemCommand<C extends AbstractModifyI
     }
 
     private String getDestinationName() {
-        return  destination.isFile() ? destination.getName() : source.getName();
+        return destination.isFile() ? destination.getName() : source.getName();
     }
 
     @Override

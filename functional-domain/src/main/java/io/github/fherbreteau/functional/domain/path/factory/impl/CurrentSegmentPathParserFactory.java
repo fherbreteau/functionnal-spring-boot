@@ -1,14 +1,14 @@
 package io.github.fherbreteau.functional.domain.path.factory.impl;
 
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.impl.NavigationPathParser;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
-
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class CurrentSegmentPathParserFactory implements PathParserFactory {
 
