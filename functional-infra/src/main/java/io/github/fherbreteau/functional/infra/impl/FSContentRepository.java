@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -17,23 +16,14 @@ import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service
 public class FSContentRepository implements ContentRepository, InitializingBean {
 
     private static final String FILE_FORMAT = "%s.dat";
 
     private final Path rootPath;
 
-    @Autowired
-    public FSContentRepository(@Value("${content.repository.path}") String rootPath) {
-        this(rootPath, FileSystems.getDefault());
-    }
-
-    FSContentRepository(String rootPath, FileSystem fs) {
+    public FSContentRepository(String rootPath, FileSystem fs) {
         this.rootPath = fs.getPath(rootPath);
     }
 
