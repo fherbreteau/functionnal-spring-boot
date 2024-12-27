@@ -12,11 +12,11 @@ public interface AccessUpdater {
 
     <I extends Item> I updateGroup(I item, Group oldGroup);
 
-    <I extends Item> I updateOwnerAccess(I item, AccessRight oldOwner);
+    <I extends Item> I updateOwnerAccess(I item, AccessRight oldOwnerAccess);
 
-    <I extends Item> I updateGroupAccess(I item, AccessRight oldGroup);
+    <I extends Item> I updateGroupAccess(I item, AccessRight oldGroupAccess);
 
-    <I extends Item> I updateOtherAccess(I item, AccessRight oldOther);
+    <I extends Item> I updateOtherAccess(I item, AccessRight oldOtherAccess);
 
     <I extends Item> void deleteItem(I item);
 }

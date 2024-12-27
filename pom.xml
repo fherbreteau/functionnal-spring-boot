@@ -38,11 +38,13 @@
         <!-- Password validity Checker -->
         <passay.version>1.6.6</passay.version>
 
-        <java-diff-utils.version>4.15</java-diff-utils.version>
+        <!-- AuthZed dependencies -->
+        <authzed.version>v1.1.0</authzed.version>
+        <grpc-spring-boot.version>3.1.0.RELEASE</grpc-spring-boot.version>
 
         <!-- Tests dependencies -->
         <jimfs.version>1.3.0</jimfs.version>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <spring-boot-testcontainers.version>3.1.10</spring-boot-testcontainers.version>
 
         <!-- Tools dependencies -->
         <enforcer.version>3.5.0</enforcer.version>
@@ -76,11 +78,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- Testcontainers Dependencies -->
             <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>testcontainers-spring-boot-bom</artifactId>
+                <version>${spring-boot-testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -108,11 +111,6 @@
                 <artifactId>passay</artifactId>
                 <version>${passay.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.java-diff-utils</groupId>
-                <artifactId>java-diff-utils</artifactId>
-                <version>${java-diff-utils.version}</version>
-            </dependency>
 
             <!-- Liquibase -->
             <dependency>
@@ -120,12 +118,26 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+
             <!-- Databases drivers -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
+
+            <!-- SpiceDB Dependencies -->
+            <dependency>
+                <groupId>com.authzed.api</groupId>
+                <artifactId>authzed</artifactId>
+                <version>${authzed.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.devh</groupId>
+                <artifactId>grpc-client-spring-boot-starter</artifactId>
+                <version>${grpc-spring-boot.version}</version>
+            </dependency>
+
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>com.google.jimfs</groupId>

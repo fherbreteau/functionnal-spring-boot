@@ -1,42 +1,152 @@
 package io.github.fherbreteau.functional.check;
 
+import static com.authzed.api.v1.CheckPermissionResponse.Permissionship.PERMISSIONSHIP_HAS_PERMISSION;
+import static io.github.fherbreteau.functional.Entities.ITEM;
+import static io.github.fherbreteau.functional.Entities.USER;
+import static io.github.fherbreteau.functional.check.Permissions.*;
+
+import com.authzed.api.v1.*;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AccessCheckerImpl implements AccessChecker {
 
-    private static final String NOT_IMPLEMENTED = "Not Implemented Yet";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessCheckerImpl.class);
+
+    private final PermissionsServiceGrpc.PermissionsServiceBlockingStub permissionsService;
+
+    public AccessCheckerImpl(PermissionsServiceGrpc.PermissionsServiceBlockingStub permissionsService) {
+        this.permissionsService = permissionsService;
+    }
 
     @Override
     public <T extends Item> boolean canRead(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(READ)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking read permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 
     @Override
     public <T extends Item> boolean canWrite(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(WRITE)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking write permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 
     @Override
     public <T extends Item> boolean canExecute(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(EXECUTE)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking execute permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 
     @Override
     public <T extends Item> boolean canChangeMode(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(CHANGE_MODE)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking change mode permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 
     @Override
     public <T extends Item> boolean canChangeOwner(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(CHANGE_OWNER)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking change owner permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 
     @Override
     public <T extends Item> boolean canChangeGroup(T item, User actor) {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        CheckPermissionRequest request = CheckPermissionRequest.newBuilder()
+                .setPermission(CHANGE_GROUP)
+                .setResource(ObjectReference.newBuilder()
+                        .setObjectId(item.getHandle().toString())
+                        .setObjectType(ITEM))
+                .setSubject(SubjectReference.newBuilder()
+                        .setObject(ObjectReference.newBuilder()
+                                .setObjectId(actor.getUserId().toString())
+                                .setObjectType(USER)))
+                .build();
+        try {
+            CheckPermissionResponse response = permissionsService.checkPermission(request);
+            return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
+        } catch (Exception e) {
+            LOGGER.error("Error while checking change group permission on {} by {} ", item, actor, e);
+            return false;
+        }
     }
 }
