@@ -70,7 +70,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(USER_NAME, "new_user");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -113,7 +113,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(USER_NAME, "new_user");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -156,7 +156,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(USER_NAME, "new_user");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -199,7 +199,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(GROUP_NAME, "new_group");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -242,7 +242,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(GROUP_NAME, "new_group");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -285,7 +285,7 @@ class UserCheckerTest {
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(GROUP_NAME, "new_group");
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)

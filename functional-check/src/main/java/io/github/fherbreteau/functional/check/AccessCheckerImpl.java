@@ -6,21 +6,20 @@ import static io.github.fherbreteau.functional.Entities.USER;
 import static io.github.fherbreteau.functional.check.Permissions.*;
 
 import com.authzed.api.v1.*;
+import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-@Service
 public class AccessCheckerImpl implements AccessChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessCheckerImpl.class);
 
-    private final PermissionsServiceGrpc.PermissionsServiceBlockingStub permissionsService;
+    private final PermissionsServiceBlockingStub permissionsService;
 
-    public AccessCheckerImpl(PermissionsServiceGrpc.PermissionsServiceBlockingStub permissionsService) {
+    public AccessCheckerImpl(PermissionsServiceBlockingStub permissionsService) {
         this.permissionsService = permissionsService;
     }
 
