@@ -16,6 +16,8 @@ import java.util.UUID;
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
 import com.authzed.api.v1.RelationshipUpdate;
 import com.authzed.api.v1.WriteRelationshipsRequest;
+import com.authzed.api.v1.WriteRelationshipsResponse;
+import com.authzed.api.v1.ZedToken;
 import io.github.fherbreteau.functional.Utils;
 import io.github.fherbreteau.functional.domain.entities.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +76,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenCreatingItem() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         // Act
         Item result = accessUpdater.createItem(item);
         // Assert
@@ -88,6 +95,7 @@ class AccessUpdaterTest {
                         tuple(OPERATION_CREATE, USER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_CREATE, USER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_CREATE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()));
+
     }
 
     @Test
@@ -104,6 +112,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenUpdatingOwner() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         UUID oldUserId = UUID.randomUUID();
         User oldOwner = User.builder("oldUser").withUserId(oldUserId).build();
         // Act
@@ -140,6 +153,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenUpdatingGroup() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         UUID oldGroupId = UUID.randomUUID();
         Group oldGroup = Group.builder("oldGroup").withGroupId(oldGroupId).build();
         // Act
@@ -172,6 +190,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenUpdatingOwnerAccess() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         AccessRight oldAccess = AccessRight.none();
         // Act
         Item result = accessUpdater.updateOwnerAccess(item, oldAccess);
@@ -203,6 +226,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenUpdatingGroupAccess() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         AccessRight oldAccess = AccessRight.full();
         // Act
         Item result = accessUpdater.updateGroupAccess(item, oldAccess);
@@ -233,6 +261,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenUpdatingOtherAccess() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         AccessRight oldAccess = AccessRight.full();
         // Act
         Item result = accessUpdater.updateOtherAccess(item, oldAccess);
@@ -264,6 +297,11 @@ class AccessUpdaterTest {
     @Test
     void shouldPublishToSpiceDbWhenDeletingItem() {
         // Arrange
+        when(permissionsService.writeRelationships(any()))
+                .thenReturn(WriteRelationshipsResponse.newBuilder()
+                        .setWrittenAt(ZedToken.newBuilder()
+                                .setToken("token"))
+                        .build());
         // Act
         accessUpdater.deleteItem(item);
         // Assert
