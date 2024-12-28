@@ -12,7 +12,7 @@
     <artifactId>functional-app</artifactId>
 
     <properties>
-        <sonar.coverage.exclusions>**/*Application.java,**/*Configuration.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/*Application.java,**/*Configuration.java,**/*Properties.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
