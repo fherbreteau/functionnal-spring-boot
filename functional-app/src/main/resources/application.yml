@@ -12,10 +12,13 @@ spring:
     username: functional_user
     password: Functi0nalS3cret
 
+server.port: 8081
+
+content.repository.path: /tmp
+
 grpc.client:
   spicedb:
     address: static://localhost:50051
     negotiation-type: PLAINTEXT
     enable-keep-alive: true
-
-spicedb.token:
+    token: supersecretpassword

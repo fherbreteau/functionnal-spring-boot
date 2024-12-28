@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Failure;
@@ -66,6 +67,8 @@ class FileSystemControllerTest {
     private AccessParserService accessParserService;
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private PermissionsServiceBlockingStub permissionsService;
 
     private MockMvc mvc;
 

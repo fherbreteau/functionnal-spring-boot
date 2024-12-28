@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional;
 
-import com.authzed.api.v1.LookupResourcesRequest;
 import com.authzed.api.v1.LookupSubjectsRequest;
 import com.authzed.api.v1.RelationshipUpdate;
 
