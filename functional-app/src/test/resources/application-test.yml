@@ -12,3 +12,8 @@ spring.datasource:
 spring.liquibase.change-log: classpath:/database/master.xml
 
 content.repository.path: /tmp
+
+grpc.client:
+  spicedb:
+    address: static://${embedded.spicedb.host}:${embedded.spicedb.port}
+    token: ${embedded.spicedb.token}

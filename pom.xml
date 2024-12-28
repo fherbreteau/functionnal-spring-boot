@@ -38,11 +38,21 @@
         <!-- Password validity Checker -->
         <passay.version>1.6.6</passay.version>
 
-        <java-diff-utils.version>4.15</java-diff-utils.version>
+        <!-- AuthZed dependencies -->
+        <authzed.version>v1.1.0</authzed.version>
+        <grpc-spring-boot.version>3.1.0.RELEASE</grpc-spring-boot.version>
 
         <!-- Tests dependencies -->
         <jimfs.version>1.3.0</jimfs.version>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <spring-boot-testcontainers.version>3.1.10</spring-boot-testcontainers.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
+
+        <!-- CVE overridden dependencies -->
+        <logback.version>1.5.13</logback.version>
+        <grpc.version>1.68.1</grpc.version>
+
+        <!-- Other dependencies -->
+        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
 
         <!-- Tools dependencies -->
         <enforcer.version>3.5.0</enforcer.version>
@@ -76,11 +86,20 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Spring Cloud dependencies -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Testcontainers Dependencies -->
             <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>testcontainers-spring-boot-bom</artifactId>
+                <version>${spring-boot-testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -109,9 +128,9 @@
                 <version>${passay.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.github.java-diff-utils</groupId>
-                <artifactId>java-diff-utils</artifactId>
-                <version>${java-diff-utils.version}</version>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>8.0.2.Final</version>
             </dependency>
 
             <!-- Liquibase -->
@@ -120,12 +139,37 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+
             <!-- Databases drivers -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
+
+            <!-- SpiceDB Dependencies -->
+            <dependency>
+                <groupId>com.authzed.api</groupId>
+                <artifactId>authzed</artifactId>
+                <version>${authzed.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-inprocess</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.devh</groupId>
+                <artifactId>grpc-client-spring-boot-starter</artifactId>
+                <version>${grpc-spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>com.google.jimfs</groupId>
@@ -197,6 +241,11 @@
                                             <value>MISSEDCOUNT</value>
                                             <maximum>0</maximum>
                                         </limit>
+                                        <limit>
+                                            <counter>METHOD</counter>
+                                            <value>MISSEDCOUNT</value>
+                                            <maximum>0</maximum>
+                                        </limit>
                                     </limits>
                                 </rule>
                             </rules>
@@ -208,6 +257,7 @@
                     <excludes>
                         <exclude>**/*Application.class</exclude>
                         <exclude>**/*Configuration.class</exclude>
+                        <exclude>**/*Properties.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

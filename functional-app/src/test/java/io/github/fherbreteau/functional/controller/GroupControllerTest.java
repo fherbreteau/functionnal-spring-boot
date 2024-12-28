@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Objects;
 import java.util.UUID;
 
+import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -53,6 +54,8 @@ class GroupControllerTest {
     private ObjectMapper mapper;
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private PermissionsServiceBlockingStub permissionsService;
 
     private MockMvc mvc;
 
