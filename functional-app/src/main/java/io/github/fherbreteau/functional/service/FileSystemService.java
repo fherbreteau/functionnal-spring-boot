@@ -206,7 +206,7 @@ public class FileSystemService {
         if (streamOutput.isFailure()) {
             throw new CommandException(streamOutput.getFailure());
         }
-        return entityMapper.mapStream(streamOutput.getValue(), itemInput.getContentType());
+        return entityMapper.mapStream(streamOutput.getValue(), itemPath.getContentType());
     }
 
     public void delete(String path, String username) {
