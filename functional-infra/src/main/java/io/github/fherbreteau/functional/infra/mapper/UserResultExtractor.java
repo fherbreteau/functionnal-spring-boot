@@ -32,7 +32,7 @@ public class UserResultExtractor implements ResultSetExtractor<User> {
                     .map(n -> buildGroup(n, id))
                     .ifPresent(groups::add);
         } while (rs.next());
-        return groups.isEmpty() ? null : groups;
+        return groups;
     }
 
     private static Group buildGroup(String name, UUID id) {

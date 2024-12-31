@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.infra.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 import java.util.List;
@@ -60,6 +61,14 @@ class JdbcUserRepositoryTest {
                 .extracting(User::getGroups, list(Group.class))
                 .singleElement()
                 .isEqualTo(Group.builder("root").withGroupId(ROOT_ID).build());
+    }
+
+    @Test
+    void shouldNotExtractUserWithNoGroup() {
+        UUID userId = UUID.fromString("1115a887-fec2-44fe-9f4d-73d8d6fec46b");
+        assertThatThrownBy(() -> userRepository.findById(userId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("groups must contain at least one group");
     }
 
     @Test

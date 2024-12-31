@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
-public class FunctionUserDetailsServiceTest {
+class FunctionUserDetailsServiceTest {
 
     @Mock
     private UserService userService;

@@ -89,10 +89,10 @@ public final class Group {
                 groupId = UUID.randomUUID();
             }
             if (Objects.isNull(name)) {
-                throw new NullPointerException("name is required");
+                throw new IllegalArgumentException("name is required");
             }
             if (name.isEmpty()) {
-                throw new IllegalStateException("name must not be empty");
+                throw new IllegalArgumentException("name must not be empty");
             }
             return new Group(this);
         }

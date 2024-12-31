@@ -136,20 +136,20 @@ class ItemsTest {
     void shouldCheckItemValidity() {
         ThrowingCallable itemBuilder = () -> File.builder().build();
         assertThatCode(itemBuilder)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name is required");
         itemBuilder = () -> File.builder().withName("").build();
         assertThatCode(itemBuilder)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("owner is required");
 
         itemBuilder = () -> Folder.builder().build();
         assertThatCode(itemBuilder)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name is required");
         itemBuilder = () -> Folder.builder().withName("").build();
         assertThatCode(itemBuilder)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("owner is required");
     }
 }
