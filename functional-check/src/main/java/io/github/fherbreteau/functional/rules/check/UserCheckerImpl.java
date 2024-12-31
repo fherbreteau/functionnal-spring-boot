@@ -1,9 +1,8 @@
-package io.github.fherbreteau.functional.check;
+package io.github.fherbreteau.functional.rules.check;
 
 import static com.authzed.api.v1.CheckPermissionResponse.Permissionship.PERMISSIONSHIP_HAS_PERMISSION;
-import static io.github.fherbreteau.functional.Entities.*;
-import static io.github.fherbreteau.functional.check.Permissions.*;
-import static io.github.fherbreteau.functional.check.Permissions.DELETE_GROUP;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.check.Permissions.*;
 
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canCreateUser(String name, User actor) {
-        CheckPermissionRequest request = createRequest(CREATE_USER, actor.getUserId());
+        CheckPermissionRequest request = createRequest(CREATE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
@@ -38,7 +37,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canUpdateUser(String name, User actor) {
-        CheckPermissionRequest request = createRequest(UPDATE_USER, actor.getUserId());
+        CheckPermissionRequest request = createRequest(UPDATE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
@@ -50,7 +49,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canDeleteUser(String name, User actor) {
-        CheckPermissionRequest request = createRequest(DELETE_USER, actor.getUserId());
+        CheckPermissionRequest request = createRequest(DELETE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
@@ -62,7 +61,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canCreateGroup(String name, User actor) {
-        CheckPermissionRequest request = createRequest(CREATE_GROUP, actor.getUserId());
+        CheckPermissionRequest request = createRequest(CREATE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
@@ -74,7 +73,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canUpdateGroup(String name, User actor) {
-        CheckPermissionRequest request = createRequest(UPDATE_GROUP, actor.getUserId());
+        CheckPermissionRequest request = createRequest(UPDATE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;
@@ -86,7 +85,7 @@ public class UserCheckerImpl implements UserChecker {
 
     @Override
     public boolean canDeleteGroup(String name, User actor) {
-        CheckPermissionRequest request = createRequest(DELETE_GROUP, actor.getUserId());
+        CheckPermissionRequest request = createRequest(DELETE, actor.getUserId());
         try {
             CheckPermissionResponse response = permissionsService.checkPermission(request);
             return response.getPermissionship() == PERMISSIONSHIP_HAS_PERMISSION;

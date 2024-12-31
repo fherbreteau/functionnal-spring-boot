@@ -1,8 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.impl.error;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
@@ -12,7 +13,7 @@ import io.github.fherbreteau.functional.domain.entities.User;
 
 public class ItemErrorCommand<T> implements Command<Output<T>> {
 
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final ItemCommandType type;
     private final ItemInput itemInput;
@@ -30,7 +31,7 @@ public class ItemErrorCommand<T> implements Command<Output<T>> {
 
     @Override
     public Output<T> execute(User actor) {
-        logger.log(DEBUG, "Command {0} with arguments {1} failed for {2}", type, itemInput, actor);
+        debug(logger,  "Command {0} with arguments {1} failed for {2}", type, itemInput, actor);
         return Output.failure(String.format("%s with arguments %s failed for %s", type, itemInput, actor), reasons);
     }
 }

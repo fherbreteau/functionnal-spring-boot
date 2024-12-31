@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static io.github.fherbreteau.functional.domain.Logging.debug;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, Chan
 
     @Override
     protected ChangeGroupCommand createSuccess() {
-
+        debug(logger,  "Creating execute command");
         return new ChangeGroupCommand(repository, accessUpdater, item, newGroup);
     }
 

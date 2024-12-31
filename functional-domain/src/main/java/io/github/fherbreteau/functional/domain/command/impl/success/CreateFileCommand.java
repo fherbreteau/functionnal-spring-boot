@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.File;
@@ -28,7 +28,7 @@ public class CreateFileCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        logger.log(DEBUG, "Creating file with name {0} in {1}", name, parent);
+        debug(logger,  "Creating file with name {0} in {1}", name, parent);
         File newFile = File.builder()
                 .withName(name)
                 .withParent(parent)

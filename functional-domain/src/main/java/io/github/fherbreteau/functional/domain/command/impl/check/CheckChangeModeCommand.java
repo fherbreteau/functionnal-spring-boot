@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class CheckChangeModeCommand extends AbstractCheckItemCommand<Item, Chang
 
     @Override
     protected ChangeModeCommand createSuccess() {
-        logger.log(DEBUG, "Creating execute command");
+        debug(logger,  "Creating execute command");
         return new ChangeModeCommand(repository, accessUpdater, item, ownerAccess, groupAccess, otherAccess);
     }
 

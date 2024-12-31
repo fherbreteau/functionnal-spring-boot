@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class CheckCreateGroupCommand extends AbstractCheckUserCommand<Group, Cre
 
     @Override
     protected CreateGroupCommand createSuccess() {
-        logger.log(DEBUG, "Creating execute command");
+        debug(logger,  "Creating execute command");
         return new CreateGroupCommand(userRepository, groupRepository, userUpdater, name, groupId);
     }
 

@@ -1,6 +1,8 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
+
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -8,7 +10,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
 
 public class ComplexPathParser implements PathParser {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final CompositePathFactory pathFactory;
     private final Path parentPath;
@@ -27,7 +29,7 @@ public class ComplexPathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        logger.log(DEBUG, "Resolving path {0} and {1} in parent {2}", segment, rest, segment);
+        debug(logger, "Resolving path {0} and {1} in parent {2}", segment, rest, segment);
         PathParser parser = pathFactory.createParser(parentPath, segment);
         Path currentPath = parser.resolve(actor);
         parser = pathFactory.createParser(currentPath, rest);

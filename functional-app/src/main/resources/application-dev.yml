@@ -1,0 +1,5 @@
+logging.level:
+  web: info
+  sql: info
+  org.springframework.security: info
+  io.github.fherbreteau.functional: debug

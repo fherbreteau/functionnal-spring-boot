@@ -1,8 +1,9 @@
 package io.github.fherbreteau.functional.driving.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.access.AccessContext;
 import io.github.fherbreteau.functional.domain.access.AccessParser;
@@ -13,7 +14,7 @@ import io.github.fherbreteau.functional.domain.entities.ItemInput;
 import io.github.fherbreteau.functional.driving.AccessParserService;
 
 public class AccessParserServiceImpl implements AccessParserService {
-    private final System.Logger logger = System.getLogger("AccessParserService");
+    private final Logger logger = Logger.getLogger(AccessParserService.class.getSimpleName());
 
     private final CompositeAccessParserFactory accessParserFactory;
 
@@ -23,7 +24,7 @@ public class AccessParserServiceImpl implements AccessParserService {
 
     @Override
     public ItemInput parseAccessRights(String rights, Item item) {
-        logger.log(DEBUG, "Parsing Access rights {0} for item {1}", rights, item);
+        debug(logger,  "Parsing Access rights {0} for item {1}", rights, item);
         AccessParser parser = accessParserFactory.createParser(new AccessContext(), rights, item);
         ItemInput.Builder builder = ItemInput.builder(item);
         if (Objects.isNull(parser.resolve(builder, AccessRight.none()))) {

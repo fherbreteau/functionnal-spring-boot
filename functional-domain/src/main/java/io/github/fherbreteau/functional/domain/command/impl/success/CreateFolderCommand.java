@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Folder;
@@ -23,7 +23,7 @@ public class CreateFolderCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        logger.log(DEBUG, "Creating folder with name {0} in {1}", name, parent);
+        debug(logger,  "Creating folder with name {0} in {1}", name, parent);
         Folder newFolder = Folder.builder()
                 .withName(name)
                 .withParent(parent)

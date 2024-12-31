@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -22,7 +22,7 @@ public class ChangeGroupCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        logger.log(DEBUG, "Building new item with group {0}", newGroup);
+        debug(logger,  "Building new item with group {0}", newGroup);
         Item newItem = item.copyBuilder().withGroup(newGroup).build();
         return Output.success(repository.update(accessUpdater.updateGroup(newItem, item.getGroup())));
     }

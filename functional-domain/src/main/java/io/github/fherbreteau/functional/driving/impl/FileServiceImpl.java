@@ -1,6 +1,8 @@
 package io.github.fherbreteau.functional.driving.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
+
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFactory;
@@ -14,7 +16,7 @@ import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driving.FileService;
 
 public class FileServiceImpl implements FileService {
-    private final System.Logger logger = System.getLogger("FileService");
+    private final Logger logger = Logger.getLogger(FileService.class.getSimpleName());
 
     private final CompositeItemCommandFactory commandFactory;
     private final CompositePathParserFactory pathFactory;
@@ -25,14 +27,14 @@ public class FileServiceImpl implements FileService {
     }
 
     public Path getPath(String path, User currentUser) {
-        logger.log(DEBUG, "Getting path {0} for {1}", path, currentUser);
+        debug(logger,  "Getting path {0} for {1}", path, currentUser);
         PathParser parser = pathFactory.createParser(Path.ROOT, path);
         return parser.resolve(currentUser);
     }
 
     @SuppressWarnings("unchecked")
     public <T> Output<T> processCommand(ItemCommandType type, User currentUser, ItemInput input) {
-        logger.log(DEBUG, "Processing command {0} for {1} on {2}", type, currentUser, input);
+        debug(logger,  "Processing command {0} for {1} on {2}", type, currentUser, input);
         CheckCommand<T> command = commandFactory.createCommand(type, input);
         return command.execute(currentUser).execute(currentUser);
     }

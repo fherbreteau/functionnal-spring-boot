@@ -1,10 +1,10 @@
-package io.github.fherbreteau.functional.update;
+package io.github.fherbreteau.functional.rules.update;
 
-import static io.github.fherbreteau.functional.Entities.*;
-import static io.github.fherbreteau.functional.check.Permissions.READ;
-import static io.github.fherbreteau.functional.check.Permissions.WRITE;
-import static io.github.fherbreteau.functional.check.Permissions.EXECUTE;
-import static io.github.fherbreteau.functional.update.Relations.ANYONE_ID;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.check.Permissions.READ;
+import static io.github.fherbreteau.functional.rules.check.Permissions.WRITE;
+import static io.github.fherbreteau.functional.rules.check.Permissions.EXECUTE;
+import static io.github.fherbreteau.functional.rules.update.Relations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ public class AccessUpdaterImpl implements AccessUpdater {
         UUID ownerId = item.getOwner().getUserId();
         UUID groupId = item.getGroup().getGroupId();
         List<RelationshipUpdate> updates = new ArrayList<>();
-        createAccess(USER, itemHandle, item.getOwnerAccess(), ownerId, updates);
+        createAccess(OWNER, itemHandle, item.getOwnerAccess(), ownerId, updates);
         createAccess(GROUP, itemHandle, item.getGroupAccess(), groupId, updates);
-        createAccess(ANYONE, itemHandle, item.getOtherAccess(), null, updates);
+        createAccess(OTHER, itemHandle, item.getOtherAccess(), null, updates);
         String token = publishRelations(updates);
         LOGGER.info("Item {} created at {}", item, token);
         return item;
@@ -51,8 +51,8 @@ public class AccessUpdaterImpl implements AccessUpdater {
         UUID oldOwnerId = oldOwner.getUserId();
         UUID ownerId = item.getOwner().getUserId();
         List<RelationshipUpdate> updates = new ArrayList<>();
-        deleteAccess(USER, itemHandle, item.getOwnerAccess(), oldOwnerId, updates);
-        createAccess(USER, itemHandle, item.getOwnerAccess(), ownerId, updates);
+        deleteAccess(OWNER, itemHandle, item.getOwnerAccess(), oldOwnerId, updates);
+        createAccess(OWNER, itemHandle, item.getOwnerAccess(), ownerId, updates);
         String token = publishRelations(updates);
         LOGGER.info("Item {} owner updated at {}", item, token);
         return item;
@@ -76,7 +76,7 @@ public class AccessUpdaterImpl implements AccessUpdater {
         UUID itemHandle = item.getHandle();
         UUID ownerId = item.getOwner().getUserId();
         List<RelationshipUpdate> updates = new ArrayList<>();
-        updateAccess(USER, itemHandle, oldOwnerAccess, item.getOwnerAccess(), ownerId, updates);
+        updateAccess(OWNER, itemHandle, oldOwnerAccess, item.getOwnerAccess(), ownerId, updates);
         String token = publishRelations(updates);
         LOGGER.info("Item {} access owner updated at {}", item, token);
         return item;
@@ -97,7 +97,7 @@ public class AccessUpdaterImpl implements AccessUpdater {
     public <I extends Item> I updateOtherAccess(I item, AccessRight oldOtherAccess) {
         UUID itemHandle = item.getHandle();
         List<RelationshipUpdate> updates = new ArrayList<>();
-        updateAccess(ANYONE, itemHandle, oldOtherAccess, item.getOtherAccess(), null, updates);
+        updateAccess(OTHER, itemHandle, oldOtherAccess, item.getOtherAccess(), null, updates);
         String token = publishRelations(updates);
         LOGGER.info("Item {} access other updated at {}", item, token);
         return item;
@@ -109,62 +109,65 @@ public class AccessUpdaterImpl implements AccessUpdater {
         UUID ownerId = item.getOwner().getUserId();
         UUID groupId = item.getGroup().getGroupId();
         List<RelationshipUpdate> updates = new ArrayList<>();
-        deleteAccess(USER, itemHandle, item.getOwnerAccess(), ownerId, updates);
+        deleteAccess(OWNER, itemHandle, item.getOwnerAccess(), ownerId, updates);
         deleteAccess(GROUP, itemHandle, item.getGroupAccess(), groupId, updates);
-        deleteAccess(ANYONE, itemHandle, item.getOtherAccess(), null, updates);
+        deleteAccess(OTHER, itemHandle, item.getOtherAccess(), null, updates);
         String token = publishRelations(updates);
         LOGGER.info("Item {} deleted at {}", item, token);
     }
 
-    private void createAccess(String type, UUID itemId, AccessRight accessRight, UUID subject, List<RelationshipUpdate> updates) {
-        String subjectId = Objects.isNull(subject) ? ANYONE_ID : subject.toString();
+    private void createAccess(String relationType, UUID itemId, AccessRight accessRight, UUID subject, List<RelationshipUpdate> updates) {
+        String subjectType = Objects.equals(relationType, GROUP) ? GROUP : USER;
+        String subjectId = Objects.isNull(subject) ? OTHER_ID : subject.toString();
         if (accessRight.isRead()) {
-            updates.add(createRelation(getRelationName(type, READ), type, subjectId, itemId.toString()));
+            createRelation(getRelationName(relationType, READ), subjectType, subjectId, itemId.toString(), updates);
         }
         if (accessRight.isWrite()) {
-            updates.add(createRelation(getRelationName(type, WRITE), type, subjectId, itemId.toString()));
+            createRelation(getRelationName(relationType, WRITE), subjectType, subjectId, itemId.toString(), updates);
         }
         if (accessRight.isExecute()) {
-            updates.add(createRelation(getRelationName(type, EXECUTE), type, subjectId, itemId.toString()));
+            createRelation(getRelationName(relationType, EXECUTE), subjectType, subjectId, itemId.toString(), updates);
         }
     }
 
-    private void updateAccess(String type, UUID itemId, AccessRight oldAccessRight, AccessRight newAccessRight, UUID subject, List<RelationshipUpdate> updates) {
-        String subjectId = Objects.isNull(subject) ? ANYONE_ID : subject.toString();
-        updateRelation(getRelationName(type, READ), type, subjectId, itemId.toString(), oldAccessRight.isRead(), newAccessRight.isRead(), updates);
-        updateRelation(getRelationName(type, WRITE), type, subjectId, itemId.toString(), oldAccessRight.isWrite(), newAccessRight.isWrite(), updates);
-        updateRelation(getRelationName(type, EXECUTE), type, subjectId, itemId.toString(), oldAccessRight.isExecute(), newAccessRight.isExecute(), updates);
+    private void updateAccess(String relationType, UUID itemId, AccessRight oldAccessRight, AccessRight newAccessRight, UUID subject, List<RelationshipUpdate> updates) {
+        String subjectType = Objects.equals(relationType, GROUP) ? GROUP : USER;
+        String subjectId = Objects.isNull(subject) ? OTHER_ID : subject.toString();
+        updateRelation(getRelationName(relationType, READ), subjectType, subjectId, itemId.toString(), oldAccessRight.isRead(), newAccessRight.isRead(), updates);
+        updateRelation(getRelationName(relationType, WRITE), subjectType, subjectId, itemId.toString(), oldAccessRight.isWrite(), newAccessRight.isWrite(), updates);
+        updateRelation(getRelationName(relationType, EXECUTE), subjectType, subjectId, itemId.toString(), oldAccessRight.isExecute(), newAccessRight.isExecute(), updates);
     }
 
-    private void deleteAccess(String type, UUID itemId, AccessRight accessRight, UUID subject, List<RelationshipUpdate> updates) {
-        String subjectId = Objects.isNull(subject) ? ANYONE : subject.toString();
+    private void deleteAccess(String relationType, UUID itemId, AccessRight accessRight, UUID subject, List<RelationshipUpdate> updates) {
+        String subjectType = Objects.equals(relationType, GROUP) ? GROUP : USER;
+        String subjectId = Objects.isNull(subject) ? OTHER_ID : subject.toString();
         if (accessRight.isRead()) {
-            updates.add(deleteRelation(getRelationName(type, READ), type, subjectId, itemId.toString()));
+            deleteRelation(getRelationName(relationType, READ), subjectType, subjectId, itemId.toString(), updates);
         }
         if (accessRight.isWrite()) {
-            updates.add(deleteRelation(getRelationName(type, WRITE), type, subjectId, itemId.toString()));
+            deleteRelation(getRelationName(relationType, WRITE), subjectType, subjectId, itemId.toString(), updates);
         }
         if (accessRight.isExecute()) {
-            updates.add(deleteRelation(getRelationName(type, EXECUTE), type, subjectId, itemId.toString()));
+            deleteRelation(getRelationName(relationType, EXECUTE), subjectType, subjectId, itemId.toString(), updates);
         }
     }
 
-    private String getRelationName(String type, String operation) {
-        return String.format("%s_%s", type, operation);
+    private String getRelationName(String relationType, String operation) {
+        return String.format("%s_%s", relationType, operation);
     }
 
-    private void updateRelation(String relation, String type, String subjectId, String itemId, boolean oldValue, boolean newValue, List<RelationshipUpdate> updates) {
+    private void updateRelation(String relation, String subjectType, String subjectId, String itemId, boolean oldValue, boolean newValue, List<RelationshipUpdate> updates) {
         if (oldValue != newValue) {
             if (oldValue) {
-                updates.add(deleteRelation(relation, type, subjectId, itemId));
+                deleteRelation(relation, subjectType, subjectId, itemId, updates);
             } else {
-                updates.add(createRelation(relation, type, subjectId, itemId));
+                createRelation(relation, subjectType, subjectId, itemId, updates);
             }
         }
     }
 
-    private RelationshipUpdate createRelation(String relation, String subjectType, String subjectId, String resourceId) {
-        return RelationshipUpdate.newBuilder()
+    private void createRelation(String relation, String subjectType, String subjectId, String resourceId, List<RelationshipUpdate> updates) {
+        RelationshipUpdate update = RelationshipUpdate.newBuilder()
                 .setOperation(RelationshipUpdate.Operation.OPERATION_CREATE)
                 .setRelationship(Relationship.newBuilder()
                         .setRelation(relation)
@@ -176,10 +179,11 @@ public class AccessUpdaterImpl implements AccessUpdater {
                                         .setObjectType(subjectType)
                                         .setObjectId(subjectId))))
                 .build();
+        updates.add(update);
     }
 
-    private RelationshipUpdate deleteRelation(String relation, String subjectType, String subjectId, String resourceId) {
-        return RelationshipUpdate.newBuilder()
+    private void deleteRelation(String relation, String subjectType, String subjectId, String resourceId, List<RelationshipUpdate> updates) {
+        RelationshipUpdate update = RelationshipUpdate.newBuilder()
                 .setOperation(RelationshipUpdate.Operation.OPERATION_DELETE)
                 .setRelationship(Relationship.newBuilder()
                         .setRelation(relation)
@@ -191,6 +195,7 @@ public class AccessUpdaterImpl implements AccessUpdater {
                                         .setObjectType(subjectType)
                                         .setObjectId(subjectId))))
                 .build();
+        updates.add(update);
     }
 
     private String publishRelations(List<RelationshipUpdate> relations) {

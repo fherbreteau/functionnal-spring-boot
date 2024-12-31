@@ -1,10 +1,10 @@
-package io.github.fherbreteau.functional.update;
+package io.github.fherbreteau.functional.rules.update;
 
 import static com.authzed.api.v1.LookupPermissionship.LOOKUP_PERMISSIONSHIP_HAS_PERMISSION;
 import static com.authzed.api.v1.RelationshipUpdate.Operation.OPERATION_CREATE;
 import static com.authzed.api.v1.RelationshipUpdate.Operation.OPERATION_DELETE;
-import static io.github.fherbreteau.functional.Entities.*;
-import static io.github.fherbreteau.functional.update.Relations.*;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.update.Relations.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.InstanceOfAssertFactories.list;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import com.authzed.api.v1.*;
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
-import io.github.fherbreteau.functional.Utils;
+import io.github.fherbreteau.functional.rules.Utils;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +113,7 @@ class UserUpdaterTest {
                 .hasSize(2)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_CREATE, SUPER_USER, USER, rootId.toString(), USER, rootId.toString()),
+                        tuple(OPERATION_CREATE, ADMIN, USER, rootId.toString(), USER, rootId.toString()),
                         tuple(OPERATION_CREATE, MEMBER, USER, rootId.toString(), GROUP, rootId.toString()));
     }
 
@@ -232,7 +232,7 @@ class UserUpdaterTest {
                 .hasSize(2)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_DELETE, SUPER_USER, USER, rootId.toString(), USER, rootId.toString()),
+                        tuple(OPERATION_DELETE, ADMIN, USER, rootId.toString(), USER, rootId.toString()),
                         tuple(OPERATION_DELETE, MEMBER, USER, rootId.toString(), GROUP, rootId.toString()));
     }
 

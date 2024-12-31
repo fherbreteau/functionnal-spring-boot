@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class CheckUnsupportedUserCommand extends AbstractCheckUserCommand<Void, 
 
     @Override
     protected UserErrorCommand<Void> createSuccess() {
-        logger.log(DEBUG, "Creating error command");
+        debug(logger,  "Creating error command");
         return new UserErrorCommand<>(userCommandType, userInput);
     }
 }

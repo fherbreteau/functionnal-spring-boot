@@ -1,9 +1,10 @@
 package io.github.fherbreteau.functional.domain.user;
 
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.lang.String.format;
-import static java.lang.System.Logger.Level.DEBUG;
 
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
@@ -12,7 +13,7 @@ import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
 
 public class UserManager {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -23,7 +24,7 @@ public class UserManager {
     }
 
     public Output<User> findUserByName(String name) {
-        logger.log(DEBUG, "Finding user with name {1}", name);
+        debug(logger, "Finding user with name {1}", name);
         if (userRepository.exists(name)) {
             return Output.success(userRepository.findByName(name));
         } else {
@@ -32,7 +33,7 @@ public class UserManager {
     }
 
     public Output<Group> findGroupByName(String name) {
-        logger.log(DEBUG, "Finding group with name {1}", name);
+        debug(logger, "Finding group with name {1}", name);
         if (groupRepository.exists(name)) {
             return Output.success(groupRepository.findByName(name));
         } else {
@@ -41,9 +42,9 @@ public class UserManager {
     }
 
     public Output<String> getPassword(User user) {
-        logger.log(DEBUG, "Getting password for {1}", user);
+        debug(logger, "Getting password for {1}", user);
         if (userRepository.exists(user.getUserId())) {
-            String password =  userRepository.getPassword(user);
+            String password = userRepository.getPassword(user);
             if (Objects.nonNull(password) && !password.isEmpty()) {
                 return Output.success(password);
             }

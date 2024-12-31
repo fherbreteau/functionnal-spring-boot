@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -19,7 +19,7 @@ public class DeleteUserCommand extends AbstractModifyUserCommand<Void> {
 
     @Override
     public Output<Void> execute(User actor) {
-        logger.log(DEBUG, "Deleting user with name {0}", name);
+        debug(logger,  "Deleting user with name {0}", name);
         User user = userRepository.findByName(name);
         userUpdater.deleteUser(user);
         userRepository.delete(user);

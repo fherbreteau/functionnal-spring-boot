@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Output;
@@ -22,7 +22,7 @@ public class ChangeOwnerCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        logger.log(DEBUG, "Building new item with new owner {0}", newOwner);
+        debug(logger,  "Building new item with new owner {0}", newOwner);
         Item newItem = item.copyBuilder().withOwner(newOwner).build();
         return Output.success(repository.update(accessUpdater.updateOwner(newItem, item.getOwner())));
     }
