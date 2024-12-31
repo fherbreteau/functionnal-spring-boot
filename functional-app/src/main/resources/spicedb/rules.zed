@@ -1,0 +1,38 @@
+// Group entity
+definition group {
+	relation member: user
+	permission access = member
+}
+
+// Item entity
+definition item {
+	// rwx for owner
+	relation owner_read: user
+	relation owner_write: user
+	relation owner_execute: user
+
+	// rwx for group
+	relation group_read: group
+	relation group_write: group
+	relation group_execute: group
+
+	// rwx for anyone
+	relation other_read: user:*
+	relation other_write: user:*
+	relation other_execute: user:*
+	permission read = owner_read + group_read->access + other_read + owner_read->super_admin
+	permission write = owner_write + group_write->access + other_write + owner_write->super_admin
+	permission execute = owner_execute + group_execute->access + other_execute + owner_execute->super_admin
+	permission change_mode = owner_write + owner_write->super_admin
+	permission change_user = owner_write->super_admin
+	permission change_group = owner_write->super_admin
+}
+
+// User entity
+definition user {
+	relation admin: user
+	permission super_admin = admin
+	permission create = admin
+	permission update = admin
+	permission delete = admin
+}

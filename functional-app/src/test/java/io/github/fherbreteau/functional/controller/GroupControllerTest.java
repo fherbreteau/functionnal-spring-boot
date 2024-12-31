@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
+import com.authzed.api.v1.SchemaServiceGrpc.SchemaServiceBlockingStub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -56,6 +57,8 @@ class GroupControllerTest {
     private UserService userService;
     @MockitoBean
     private PermissionsServiceBlockingStub permissionsService;
+    @MockitoBean
+    private SchemaServiceBlockingStub schemaService;
 
     private MockMvc mvc;
 
