@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import io.github.fherbreteau.functional.domain.command.impl.success.CreateFileCommand;
 import io.github.fherbreteau.functional.domain.entities.Folder;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -27,6 +29,7 @@ public class CheckCreateFileCommand extends AbstractCheckCreateItemCommand<Item,
 
     @Override
     protected CreateFileCommand createSuccess() {
+        logger.log(DEBUG, "Creating execute command");
         return new CreateFileCommand(repository, contentRepository, accessUpdater, name, parent);
     }
 

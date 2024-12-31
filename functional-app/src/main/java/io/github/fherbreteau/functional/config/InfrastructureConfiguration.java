@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.infra.config;
+package io.github.fherbreteau.functional.config;
 
 import java.nio.file.FileSystems;
 

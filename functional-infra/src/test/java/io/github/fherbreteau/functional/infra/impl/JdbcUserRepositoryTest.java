@@ -18,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = JdbcUserRepository.class)
+@ContextConfiguration(classes = { JdbcUserRepository.class, JdbcUserGroupRepository.class })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcUserRepositoryTest {
 
@@ -121,8 +121,8 @@ class JdbcUserRepositoryTest {
     void shouldValidateUserPassword() {
         UUID userId = UUID.fromString("bc321002-b703-424b-9c3f-d47bf15be632");
         User user = User.builder("User").withUserId(userId).build();
-        assertThat(userRepository.checkPassword(user, "password")).isTrue();
-        assertThat(userRepository.checkPassword(user, "")).isFalse();
+        assertThat(userRepository.getPassword(user))
+                .isEqualTo("password");
     }
 
     @Test
@@ -130,7 +130,8 @@ class JdbcUserRepositoryTest {
         UUID userId = UUID.fromString("22bdb905-73d4-479e-99fc-62d46ad27d67");
         User user = User.builder("Test").withUserId(userId).build();
         assertThat(userRepository.updatePassword(user, "password")).isEqualTo(user);
-        assertThat(userRepository.checkPassword(user, "password")).isTrue();
+        assertThat(userRepository.getPassword(user))
+                .isEqualTo("password");
     }
 
     @Test

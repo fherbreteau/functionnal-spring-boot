@@ -1,8 +1,11 @@
 package io.github.fherbreteau.functional.domain.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
 import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.BDDMockito.given;
+
+import java.util.UUID;
 
 import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Group;
@@ -106,38 +109,66 @@ class UserManagerTest {
     }
 
     @Test
-    void shouldSuccessWhenUserExistsAndCheckSucceed() {
+    void shouldSuccessWhenUserPasswordIsFound() {
         // GIVEN
-        given(userRepository.exists("user")).willReturn(true);
-        User user = User.builder("user").build();
-        given(userRepository.findByName("user")).willReturn(user);
-        given(userRepository.checkPassword(user, "password")).willReturn(true);
+        UUID userId = UUID.randomUUID();
+        User user = User.builder("user").withUserId(userId).build();
+        given(userRepository.exists(userId)).willReturn(true);
+        given(userRepository.getPassword(user)).willReturn("password");
         // WHEN
-        boolean result = userManager.checkPassword("user", "password");
+        Output<String> result = userManager.getPassword(user);
         // THEN
-        assertThat(result).isTrue();
+        assertThat(result).extracting(Output::isSuccess, BOOLEAN).isTrue();
+        assertThat(result).extracting(Output::getValue).isEqualTo("password");
     }
 
     @Test
-    void shouldFailWhenUserExistsAndCheckFails() {
+    void shouldFailGettingPasswordWhenUserNotFound() {
         // GIVEN
-        given(userRepository.exists("user")).willReturn(true);
-        User user = User.builder("user").build();
-        given(userRepository.findByName("user")).willReturn(user);
-        given(userRepository.checkPassword(user, "password")).willReturn(false);
+        UUID userId = UUID.randomUUID();
+        User user = User.builder("user").withUserId(userId).build();
+        given(userRepository.exists(userId)).willReturn(false);
         // WHEN
-        boolean result = userManager.checkPassword("user", "password");
+        Output<String> result = userManager.getPassword(user);
         // THEN
-        assertThat(result).isFalse();
+        assertThat(result).extracting(Output::isFailure, BOOLEAN).isTrue();
+        assertThat(result)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
+                .isEqualTo("User user not found");
     }
 
     @Test
-    void shouldFailWhenUserNotFound() {
+    void shouldFailGettingPasswordWhenPasswordEmpty() {
         // GIVEN
-        given(userRepository.exists("user")).willReturn(false);
+        UUID userId = UUID.randomUUID();
+        User user = User.builder("user").withUserId(userId).build();
+        given(userRepository.exists(userId)).willReturn(true);
+        given(userRepository.getPassword(user)).willReturn("");
         // WHEN
-        boolean result = userManager.checkPassword("user", "password");
+        Output<String> result = userManager.getPassword(user);
         // THEN
-        assertThat(result).isFalse();
+        assertThat(result).extracting(Output::isFailure, BOOLEAN).isTrue();
+        assertThat(result)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
+                .isEqualTo("Password for user user not found");
+    }
+
+    @Test
+    void shouldFailGettingPasswordWhenPasswordIsNull() {
+        // GIVEN
+        UUID userId = UUID.randomUUID();
+        User user = User.builder("user").withUserId(userId).build();
+        given(userRepository.exists(userId)).willReturn(true);
+        given(userRepository.getPassword(user)).willReturn(null);
+        // WHEN
+        Output<String> result = userManager.getPassword(user);
+        // THEN
+        assertThat(result).extracting(Output::isFailure, BOOLEAN).isTrue();
+        assertThat(result)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getMessage)
+                .isEqualTo("Password for user user not found");
     }
 }

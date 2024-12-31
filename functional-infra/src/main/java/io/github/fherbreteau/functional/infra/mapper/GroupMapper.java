@@ -1,7 +1,7 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_ID;
-import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_NAME;
+import static io.github.fherbreteau.functional.infra.utils.GroupSQLConstants.COL_ID;
+import static io.github.fherbreteau.functional.infra.utils.GroupSQLConstants.COL_NAME;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

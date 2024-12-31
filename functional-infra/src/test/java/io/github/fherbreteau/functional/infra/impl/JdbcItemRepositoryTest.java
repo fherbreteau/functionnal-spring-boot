@@ -24,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = {JdbcItemRepository.class, JdbcAccessRightFinder.class})
+@ContextConfiguration(classes = {JdbcItemRepository.class, JdbcAccessRightRepository.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcItemRepositoryTest {
 

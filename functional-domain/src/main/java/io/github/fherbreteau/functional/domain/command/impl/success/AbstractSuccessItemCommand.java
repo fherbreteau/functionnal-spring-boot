@@ -5,6 +5,7 @@ import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 
 public abstract class AbstractSuccessItemCommand<T> implements Command<Output<T>> {
+    protected final System.Logger logger = System.getLogger(getClass().getSimpleName());
 
     protected final ItemRepository repository;
 

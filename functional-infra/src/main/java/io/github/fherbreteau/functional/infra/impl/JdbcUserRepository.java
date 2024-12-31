@@ -1,21 +1,21 @@
 package io.github.fherbreteau.functional.infra.impl;
 
-import static io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant.COL_GROUP_ID;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_ID;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_NAME;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_PASSWORD;
+import static io.github.fherbreteau.functional.infra.utils.ExtractorUtils.getGroupIds;
+import static io.github.fherbreteau.functional.infra.utils.UserSQLConstants.*;
 import static java.util.Optional.ofNullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
-import io.github.fherbreteau.functional.infra.mapper.BooleanResultExtractor;
+import io.github.fherbreteau.functional.infra.UserGroupRepository;
+import io.github.fherbreteau.functional.infra.mapper.ExistsExtractor;
 import io.github.fherbreteau.functional.infra.mapper.UserExtractor;
-import io.github.fherbreteau.functional.infra.mapper.UserGroupSQLConstant;
 import io.github.fherbreteau.functional.infra.mapper.UserResultExtractor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -25,17 +25,32 @@ import org.springframework.stereotype.Repository;
 public class JdbcUserRepository implements UserRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final String groupTable;
+    private final String userGroupTable;
+    private final String userTable;
+    private final UserGroupRepository userGroupRepository;
     private final UserResultExtractor userResultExtractor = new UserResultExtractor();
     private final UserExtractor userExtractor = new UserExtractor();
-    private final BooleanResultExtractor existsExtractor = new BooleanResultExtractor();
+    private final ExistsExtractor existsExtractor = new ExistsExtractor();
 
-    public JdbcUserRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcUserRepository(NamedParameterJdbcTemplate jdbcTemplate,
+                              @Value("${database.table.group:group}") String groupTable,
+                              @Value("${database.table.user-group:user-group}") String userGroupTable,
+                              @Value("${database.table.user:user}") String userTable,
+                              UserGroupRepository userGroupRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.groupTable = groupTable;
+        this.userGroupTable = userGroupTable;
+        this.userTable = userTable;
+        this.userGroupRepository = userGroupRepository;
     }
 
     @Override
     public boolean exists(String name) {
-        String query = "SELECT 1 FROM \"USER\" WHERE NAME = :name";
+        String query = """
+                SELECT 1 FROM %s
+                WHERE NAME = :name
+                """.formatted(userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name);
         return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
@@ -43,11 +58,13 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User findByName(String name) {
-        String query = "SELECT u.ID AS uid, u.NAME AS uname, g.ID AS gid, g.NAME AS gname " +
-                "FROM \"USER\" u " +
-                "LEFT JOIN USER_GROUP ON u.ID = USER_ID " +
-                "LEFT JOIN \"GROUP\" g ON g.ID = GROUP_ID " +
-                "WHERE u.NAME = :name";
+        String query = """
+                SELECT u.ID AS uid, u.NAME AS uname, g.ID AS gid, g.NAME AS gname
+                FROM %s u
+                LEFT JOIN %s ON u.ID = USER_ID
+                LEFT JOIN %s g ON g.ID = GROUP_ID
+                WHERE u.NAME = :name
+                """.formatted(userTable, userGroupTable, groupTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name);
         return jdbcTemplate.query(query, params, userResultExtractor);
@@ -55,7 +72,10 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public boolean exists(UUID userId) {
-        String query = "SELECT 1 FROM \"USER\" WHERE ID = :id";
+        String query = """
+                SELECT 1 FROM %s
+                WHERE ID = :id
+                """.formatted(userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, userId);
         return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
@@ -63,11 +83,13 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User findById(UUID userId) {
-        String query = "SELECT u.ID AS uid, u.NAME AS uname, g.ID AS gid, g.NAME AS gname " +
-                "FROM \"USER\" u " +
-                "LEFT JOIN user_group ON u.ID = USER_ID " +
-                "LEFT JOIN \"GROUP\" g ON g.ID = GROUP_ID " +
-                "WHERE u.ID = :id";
+        String query = """
+                SELECT u.ID AS uid, u.NAME AS uname, g.ID AS gid, g.NAME AS gname
+                FROM %s u
+                LEFT JOIN %s ON u.ID = USER_ID
+                LEFT JOIN %s g ON g.ID = GROUP_ID
+                WHERE u.ID = :id
+                """.formatted(userTable, userGroupTable, groupTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, userId);
         return jdbcTemplate.query(query, params, userResultExtractor);
@@ -75,35 +97,43 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User create(User user) {
-        String query = "INSERT INTO \"USER\"(ID, NAME) VALUES (:id, :name)";
+        String query = """
+                INSERT INTO %s (ID, NAME)
+                VALUES (:id, :name)
+                """.formatted(userTable);
         jdbcTemplate.update(query, userExtractor.map(user));
-        query = "INSERT INTO user_group(USER_ID, GROUP_ID) VALUES (:user_id, :group_id)";
-        jdbcTemplate.batchUpdate(query, userExtractor.mapGroups(user));
+        userGroupRepository.create(user, getGroupIds(user));
         return user;
     }
 
     @Override
     public User update(User user) {
         User oldUser = ofNullable(findById(user.getUserId())).orElseGet(() -> findByName(user.getName()));
-        String query = "DELETE FROM user_group WHERE USER_ID = :user_id";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(UserGroupSQLConstant.COL_USER_ID, oldUser.getUserId());
-        jdbcTemplate.update(query, params);
         if (!Objects.equals(user.getName(), oldUser.getName())) {
-            query = "UPDATE \"USER\" SET NAME = :name WHERE ID = :id";
+            String query = """
+                    UPDATE %s SET NAME = :name
+                    WHERE ID = :id
+                    """.formatted(userTable);
             jdbcTemplate.update(query, userExtractor.map(user));
         } else if (!Objects.equals(user.getUserId(), oldUser.getUserId())) {
-            query = "UPDATE \"USER\" SET ID = :id WHERE NAME = :name";
+            List<UUID> groupIds = userGroupRepository.deleteByUser(oldUser);
+            String query = """
+                    UPDATE %s SET ID = :id
+                    WHERE NAME = :name
+                    """.formatted(userTable);
             jdbcTemplate.update(query, userExtractor.map(user));
+            userGroupRepository.create(user, groupIds);
         }
-        query = "INSERT INTO user_group(USER_ID, GROUP_ID) VALUES (:user_id, :group_id)";
-        jdbcTemplate.batchUpdate(query, userExtractor.mapGroups(user));
         return user;
     }
 
     @Override
     public void delete(User user) {
-        String query = "DELETE FROM \"USER\" WHERE ID = :id AND NAME = :name";
+        userGroupRepository.deleteByUser(user);
+        String query = """
+                DELETE FROM %s
+                WHERE ID = :id AND NAME = :name
+                """.formatted(userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, user.getUserId())
                 .addValue(COL_NAME, user.getName());
@@ -112,7 +142,10 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User updatePassword(User user, String password) {
-        String query = "UPDATE \"USER\" SET password_hash = :password_hash WHERE ID = :id AND NAME = :name";
+        String query = """
+                UPDATE %s SET password_hash = :password_hash
+                WHERE ID = :id AND NAME = :name
+                """.formatted(userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_ID, user.getUserId())
                 .addValue(COL_NAME, user.getName())
@@ -122,18 +155,24 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean checkPassword(User user, String password) {
-        String query = "SELECT 1 FROM \"USER\" WHERE NAME = :name AND ID = :id AND password_hash = :password_hash";
+    public String getPassword(User user) {
+        String query = """
+                SELECT password_hash FROM %s
+                WHERE NAME = :name AND ID = :id
+                """.formatted(userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, user.getName())
-                .addValue(COL_ID, user.getUserId())
-                .addValue(COL_PASSWORD, password);
-        return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
+                .addValue(COL_ID, user.getUserId());
+        return jdbcTemplate.queryForObject(query, params, String.class);
     }
 
     @Override
     public boolean hasUserWithGroup(String name) {
-        String query = "SELECT 1 FROM user_group JOIN \"GROUP\" g ON g.ID = GROUP_ID WHERE g.NAME = :name ";
+        String query = """
+                SELECT 1 FROM %s
+                JOIN %s g ON g.ID = GROUP_ID
+                WHERE g.NAME = :name
+                """.formatted(userGroupTable, userTable);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue(COL_NAME, name);
         return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
@@ -141,9 +180,6 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public void removeGroupFromUser(Group group) {
-        String query = "DELETE FROM user_group WHERE GROUP_ID = :group_id";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(COL_GROUP_ID, group.getGroupId());
-        jdbcTemplate.update(query, params);
+        userGroupRepository.deleteByGroup(group);
     }
 }

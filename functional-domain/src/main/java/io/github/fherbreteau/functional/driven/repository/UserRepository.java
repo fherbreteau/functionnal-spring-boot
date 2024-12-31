@@ -23,7 +23,7 @@ public interface UserRepository {
 
     User updatePassword(User user, String password);
 
-    boolean checkPassword(User user, String password);
+    String getPassword(User user);
 
     boolean hasUserWithGroup(String name);
 

@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = JdbcGroupRepository.class)
+@ContextConfiguration(classes = { JdbcGroupRepository.class, JdbcUserGroupRepository.class })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcGroupRepositoryTest {
 

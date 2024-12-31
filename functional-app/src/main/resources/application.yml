@@ -1,10 +1,14 @@
 spring:
-  servlet:
-    multipart:
-      enabled: true
-      location: ${java.io.tmpdir}
-      max-file-size: 128KB
-      max-request-size: 128KB
+  application.name: Functional Simulated File System
+  main:
+    banner-mode: off
+    log-startup-info: false
+    lazy-initialization: true
+  servlet.multipart:
+    enabled: true
+    location: ${java.io.tmpdir}
+    max-file-size: 128KB
+    max-request-size: 128KB
   liquibase:
     change-log: classpath:/database/master.xml
   datasource:
@@ -12,7 +16,20 @@ spring:
     username: functional_user
     password: Functi0nalS3cret
 
-server.port: 8081
+server:
+  compression:
+    enabled: true
+  error.whitelabel.enabled: false
+  port: 8081
+  tomcat:
+    mbeanregistry:
+      enabled: true
+    remoteip:
+      remote-ip-header: "x-forwarded-for"
+      protocol-header: "x-forwarded-proto"
+
+management:
+  server.port: 8082
 
 content.repository.path: /tmp
 
@@ -22,3 +39,7 @@ grpc.client:
     negotiation-type: PLAINTEXT
     enable-keep-alive: true
     token: supersecretpassword
+
+logging.level:
+  root: error
+  io.github.fherbreteau.functional: debug

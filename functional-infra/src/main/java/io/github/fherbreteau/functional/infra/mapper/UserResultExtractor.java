@@ -1,15 +1,10 @@
 package io.github.fherbreteau.functional.infra.mapper;
 
-import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_GROUP_ID;
-import static io.github.fherbreteau.functional.infra.mapper.GroupSQLConstant.COL_GROUP_NAME;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_USER_ID;
-import static io.github.fherbreteau.functional.infra.mapper.UserSQLConstant.COL_USER_NAME;
+import static io.github.fherbreteau.functional.infra.utils.UserSQLConstants.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -17,29 +12,33 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 public class UserResultExtractor implements ResultSetExtractor<User> {
+
     @Override
     public User extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (!rs.next()) {
             return null;
         }
-        User.Builder builder = User.builder(rs.getString(COL_USER_NAME))
-                .withUserId(rs.getObject(COL_USER_ID, UUID.class));
-        builder.withGroup(processGroup(rs));
-        return builder.addGroups(processRemainingGroup(rs))
+        return User.builder(rs.getString(COL_UNAME))
+                .withUserId(rs.getObject(COL_UID, UUID.class))
+                .withGroups(processGroups(rs))
                 .build();
     }
 
-    private List<Group> processRemainingGroup(ResultSet rs) throws SQLException {
+    private List<Group> processGroups(ResultSet rs) throws SQLException {
         List<Group> groups = new ArrayList<>();
-        while (rs.next()) {
-            groups.add(processGroup(rs));
-        }
-        return groups;
+        do {
+            UUID id = rs.getObject(COL_GID, UUID.class);
+            Optional.ofNullable(rs.getString(COL_GNAME))
+                    .map(n -> buildGroup(n, id))
+                    .ifPresent(groups::add);
+        } while (rs.next());
+        return groups.isEmpty() ? null : groups;
     }
 
-    private Group processGroup(ResultSet rs) throws SQLException {
-        return Group.builder(rs.getString(COL_GROUP_NAME))
-                .withGroupId(rs.getObject(COL_GROUP_ID, UUID.class))
+    private static Group buildGroup(String name, UUID id) {
+        return Group.builder(name)
+                .withGroupId(id)
                 .build();
     }
+
 }

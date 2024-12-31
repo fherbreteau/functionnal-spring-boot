@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class CheckDownloadCommand extends AbstractCheckItemCommand<InputStream, 
 
     @Override
     protected DownloadCommand createSuccess() {
+        logger.log(DEBUG, "Creating execute command");
         return new DownloadCommand(repository, contentRepository, item);
     }
 

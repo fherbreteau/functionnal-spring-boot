@@ -8,11 +8,7 @@ import static org.mockito.BDDMockito.given;
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.UserCommandType;
-import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.user.UserManager;
 import io.github.fherbreteau.functional.driving.impl.UserServiceImpl;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -59,6 +55,18 @@ class UserServiceTest {
         given(userManager.findGroupByName("name")).willReturn(Output.success(Group.builder("name").build()));
         // WHEN
         Output<Group> result = userService.findGroupByName("name");
+        // THEN
+        assertThat(result).extracting(Output::isSuccess, BOOLEAN)
+                .isTrue();
+    }
+
+    @Test
+    void testUserPasswordExtraction() {
+        // GIVEN
+        User user = User.builder("user").build();
+        given(userManager.getPassword(user)).willReturn(Output.success("password"));
+        // WHEN
+        Output<String> result = userService.getUserPassword(user);
         // THEN
         assertThat(result).extracting(Output::isSuccess, BOOLEAN)
                 .isTrue();

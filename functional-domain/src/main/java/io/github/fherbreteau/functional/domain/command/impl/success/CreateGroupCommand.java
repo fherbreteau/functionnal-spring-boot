@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.util.Objects.nonNull;
 
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class CreateGroupCommand extends AbstractModifyUserCommand<Group> {
 
     @Override
     public Output<Group> execute(User actor) {
+        logger.log(DEBUG, "Creating group with name {0} and id {1}", name, groupId);
         Group.Builder builder = Group.builder(name);
         if (nonNull(groupId)) {
             builder.withGroupId(groupId);
