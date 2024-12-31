@@ -49,7 +49,7 @@
 
         <!-- CVE overridden dependencies -->
         <logback.version>1.5.13</logback.version>
-        <grpc.version>1.68.1</grpc.version>
+        <grpc.version>1.69.0</grpc.version>
 
         <!-- Other dependencies -->
         <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
@@ -149,25 +149,21 @@
 
             <!-- SpiceDB Dependencies -->
             <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>${grpc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.authzed.api</groupId>
                 <artifactId>authzed</artifactId>
                 <version>${authzed.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-inprocess</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>net.devh</groupId>
                 <artifactId>grpc-client-spring-boot-starter</artifactId>
                 <version>${grpc-spring-boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>ch.qos.logback</groupId>
-                        <artifactId>logback-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- Test Dependencies -->
