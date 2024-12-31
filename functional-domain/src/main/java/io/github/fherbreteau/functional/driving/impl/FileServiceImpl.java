@@ -27,14 +27,14 @@ public class FileServiceImpl implements FileService {
     }
 
     public Path getPath(String path, User currentUser) {
-        debug(logger,  "Getting path {0} for {1}", path, currentUser);
+        debug(logger,  "Getting path for {0}", currentUser);
         PathParser parser = pathFactory.createParser(Path.ROOT, path);
         return parser.resolve(currentUser);
     }
 
     @SuppressWarnings("unchecked")
     public <T> Output<T> processCommand(ItemCommandType type, User currentUser, ItemInput input) {
-        debug(logger,  "Processing command {0} for {1} on {2}", type, currentUser, input);
+        debug(logger,  "Processing command {0} for {1}", type, currentUser);
         CheckCommand<T> command = commandFactory.createCommand(type, input);
         return command.execute(currentUser).execute(currentUser);
     }

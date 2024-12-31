@@ -26,12 +26,12 @@ public class UserServiceImpl implements UserService {
     }
 
     public Output<User> findUserByName(String name) {
-        debug(logger,  "Finding user with name {0}", name);
+        debug(logger,  "Finding user with name");
         return userManager.findUserByName(name);
     }
 
     public Output<Group> findGroupByName(String name) {
-        debug(logger,  "Finding group with name {0}", name);
+        debug(logger,  "Finding group with name");
         return userManager.findGroupByName(name);
     }
 
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @SuppressWarnings("unchecked")
     public <T> Output<T> processCommand(UserCommandType type, User currentUser, UserInput input) {
-        debug(logger,  "Processing command {0} for {1} on {2}", type, currentUser, input);
+        debug(logger,  "Processing command {0} for {1}", type, currentUser);
         CheckCommand<T> command = userCommandFactory.createCommand(type, input);
         return command.execute(currentUser).execute(currentUser);
     }

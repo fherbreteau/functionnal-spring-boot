@@ -24,7 +24,7 @@ public class UserManager {
     }
 
     public Output<User> findUserByName(String name) {
-        debug(logger, "Finding user with name {1}", name);
+        debug(logger, "Finding user with name");
         if (userRepository.exists(name)) {
             return Output.success(userRepository.findByName(name));
         } else {
@@ -33,7 +33,7 @@ public class UserManager {
     }
 
     public Output<Group> findGroupByName(String name) {
-        debug(logger, "Finding group with name {1}", name);
+        debug(logger, "Finding group with name");
         if (groupRepository.exists(name)) {
             return Output.success(groupRepository.findByName(name));
         } else {
@@ -42,7 +42,7 @@ public class UserManager {
     }
 
     public Output<String> getPassword(User user) {
-        debug(logger, "Getting password for {1}", user);
+        debug(logger, "Getting password for {0}", user);
         if (userRepository.exists(user.getUserId())) {
             String password = userRepository.getPassword(user);
             if (Objects.nonNull(password) && !password.isEmpty()) {

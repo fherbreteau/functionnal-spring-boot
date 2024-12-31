@@ -34,7 +34,7 @@ public class CompositePathParserFactory implements CompositePathFactory {
 
     @Override
     public PathParser createParser(Path currentPath, String path) {
-        debug(logger, "Creating parser with {0} on {1}", path, currentPath);
+        debug(logger, "Creating parser");
         return pathFactories.stream()
                 .filter(f -> f.supports(currentPath, path))
                 .map(f -> f.createParser(repository, accessChecker, currentPath, path))

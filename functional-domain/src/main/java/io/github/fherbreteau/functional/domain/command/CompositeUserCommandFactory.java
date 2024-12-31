@@ -16,7 +16,7 @@ import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 public class CompositeUserCommandFactory {
-    private final Logger logger = Logger.getLogger("CompositeUserCommandFactory");
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -38,7 +38,7 @@ public class CompositeUserCommandFactory {
 
     @SuppressWarnings("rawtypes")
     public CheckCommand createCommand(UserCommandType type, UserInput input) {
-        debug(logger,  "Looking up for a command of type {0} on {1}", type, input);
+        debug(logger,  "Looking up for a command of type {0}", type);
         return factories.stream()
                 .filter(f -> f.supports(type, input))
                 .map(f -> f.createCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,

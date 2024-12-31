@@ -24,7 +24,7 @@ public class AccessParserServiceImpl implements AccessParserService {
 
     @Override
     public ItemInput parseAccessRights(String rights, Item item) {
-        debug(logger,  "Parsing Access rights {0} for item {1}", rights, item);
+        debug(logger,  "Parsing Access rights for item {0}", item);
         AccessParser parser = accessParserFactory.createParser(new AccessContext(), rights, item);
         ItemInput.Builder builder = ItemInput.builder(item);
         if (Objects.isNull(parser.resolve(builder, AccessRight.none()))) {
