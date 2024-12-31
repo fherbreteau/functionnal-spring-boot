@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional.infra.mapper;
+package io.github.fherbreteau.functional.infra.utils;
 
 public final class ItemAccessSQLConstants {
 

@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
@@ -15,6 +17,8 @@ import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class ListChildrenCommandFactory implements ItemCommandFactory<List<Item>> {
+    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+
     @Override
     public boolean supports(ItemCommandType type, ItemInput itemInput) {
         return type == ItemCommandType.LIST && itemInput.getItem() instanceof Folder;
@@ -24,6 +28,7 @@ public class ListChildrenCommandFactory implements ItemCommandFactory<List<Item>
     public CheckCommand<List<Item>> createCommand(ItemRepository repository, ContentRepository contentRepository,
                                                   AccessChecker accessChecker, AccessUpdater accessUpdater,
                                                   ItemCommandType type, ItemInput itemInput) {
+        logger.log(DEBUG, "Creating check command");
         return new CheckListChildrenCommand(repository, accessChecker, (Folder) itemInput.getItem());
     }
 }

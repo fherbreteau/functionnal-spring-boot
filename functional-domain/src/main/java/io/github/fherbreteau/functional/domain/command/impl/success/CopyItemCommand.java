@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.io.InputStream;
 
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
@@ -28,6 +30,7 @@ public class CopyItemCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
+        logger.log(DEBUG, "Copying {0} to {1}", source, destination);
         Item newItem;
         if (source instanceof File file) {
             newItem = File.builder()

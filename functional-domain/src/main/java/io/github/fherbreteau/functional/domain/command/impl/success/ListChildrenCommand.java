@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.entities.Folder;
@@ -19,6 +21,7 @@ public class ListChildrenCommand extends AbstractSuccessItemCommand<List<Item>> 
 
     @Override
     public Output<List<Item>> execute(User actor) {
+        logger.log(DEBUG, "Listing content of folder {0}", folder);
         return Output.success(repository.findByParentAndUser(folder, actor));
     }
 

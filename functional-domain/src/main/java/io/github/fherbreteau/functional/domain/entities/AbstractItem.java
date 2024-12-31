@@ -247,10 +247,10 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
 
         protected void validate() {
             if (isNull(name)) {
-                throw new NullPointerException("name is required");
+                throw new IllegalArgumentException("name is required");
             }
             if (isNull(owner)) {
-                throw new NullPointerException("owner is required");
+                throw new IllegalArgumentException("owner is required");
             }
         }
 

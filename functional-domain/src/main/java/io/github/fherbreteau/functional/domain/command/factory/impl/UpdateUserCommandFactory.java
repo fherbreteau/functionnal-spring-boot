@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.util.Objects.nonNull;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
@@ -15,6 +16,8 @@ import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 public class UpdateUserCommandFactory implements UserCommandFactory<User> {
+    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+
     @Override
     public boolean supports(UserCommandType type, UserInput userInput) {
         return type == UserCommandType.USERMOD && isValidModify(userInput) ||
@@ -36,6 +39,7 @@ public class UpdateUserCommandFactory implements UserCommandFactory<User> {
                                             UserChecker userChecker, UserUpdater userUpdater,
                                             PasswordProtector passwordProtector, UserCommandType type,
                                             UserInput userInput) {
+        logger.log(DEBUG, "Creating check command");
         return new CheckUpdateUserCommand(repository, groupRepository, userChecker, userUpdater, passwordProtector,
                 type, userInput);
     }

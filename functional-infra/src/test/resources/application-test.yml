@@ -1,8 +1,18 @@
 spring:
   main.banner-mode: "off"
   liquibase.change-log: classpath:/database/master-test.xml
+  datasource:
+    url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;
+    username: sa
+    password:
 
 logging.level:
   root: off
 
+database.table:
+  group: '"GROUP"'
+  item: ITEM
+  item-access: ITEM_ACCESS
+  user-group: USER_GROUP
+  user: '"USER"'
 content.repository.path: /tmp

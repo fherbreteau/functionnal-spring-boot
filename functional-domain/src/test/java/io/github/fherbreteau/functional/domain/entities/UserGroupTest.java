@@ -97,24 +97,24 @@ class UserGroupTest {
     void shouldCheckRequiredParameters() {
         User.Builder userBuilder = User.builder(null).withUserId(UUID.randomUUID());
         assertThatThrownBy(userBuilder::build)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name is required");
         userBuilder = User.builder("");
         assertThatThrownBy(userBuilder::build)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name must not be empty");
         userBuilder = User.builder("name").withUserId(UUID.randomUUID()).withGroups(List.of());
         assertThatThrownBy(userBuilder::build)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("groups must contain at least one group");
 
         Group.Builder groupBuilder = Group.builder(null);
         assertThatThrownBy(groupBuilder::build)
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name is required");
         groupBuilder = Group.builder("");
         assertThatThrownBy(groupBuilder::build)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("name must not be empty");
     }
 

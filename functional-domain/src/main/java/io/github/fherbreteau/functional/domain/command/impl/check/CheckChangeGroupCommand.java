@@ -39,6 +39,7 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, Chan
 
     @Override
     protected ChangeGroupCommand createSuccess() {
+
         return new ChangeGroupCommand(repository, accessUpdater, item, newGroup);
     }
 

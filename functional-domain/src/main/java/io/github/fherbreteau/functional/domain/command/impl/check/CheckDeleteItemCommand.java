@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, Delet
 
     @Override
     protected DeleteItemCommand createSuccess() {
+        logger.log(DEBUG, "Creating execute command");
         return new DeleteItemCommand(repository, contentRepository, accessUpdater, item);
     }
 

@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
 import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
+import static java.lang.System.Logger.Level.DEBUG;
 
 import java.util.Optional;
 import java.util.function.UnaryOperator;
@@ -12,6 +13,8 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 
 public class NavigationPathParser implements PathParser {
+    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+
     private final Path parentPath;
     private final UnaryOperator<Item> itemFunction;
     private final String path;
@@ -24,6 +27,7 @@ public class NavigationPathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
+        logger.log(DEBUG, "Navigating path {0} in parent {1}", parentPath, path);
         return Optional.of(parentPath)
                 .filter(p -> !parentPath.isItemFile() || !IS_CURRENT_PATH.test(path))
                 .map(Path::getItem)

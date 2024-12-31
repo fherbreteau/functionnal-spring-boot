@@ -1,5 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.util.Objects.nonNull;
 
 import java.util.List;
@@ -24,11 +25,14 @@ public class GetGroupCommand extends AbstractSuccessUserCommand<List<Group>> {
     @Override
     public Output<List<Group>> execute(User actor) {
         if (nonNull(name)) {
+            logger.log(DEBUG, "Get group of user with name {0}", name);
             return Output.success(userRepository.findByName(name).getGroups());
         }
         if (nonNull(userId)) {
+            logger.log(DEBUG, "Get group of user with id {0}", userId);
             return Output.success(userRepository.findById(userId).getGroups());
         }
+        logger.log(DEBUG, "Get group of user {0}", actor);
         return Output.success(actor.getGroups());
     }
 }

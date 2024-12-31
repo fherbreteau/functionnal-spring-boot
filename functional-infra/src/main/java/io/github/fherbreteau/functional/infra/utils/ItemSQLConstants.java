@@ -1,6 +1,6 @@
-package io.github.fherbreteau.functional.infra.mapper;
+package io.github.fherbreteau.functional.infra.utils;
 
-public final class ItemSQLConstant {
+public final class ItemSQLConstants {
 
     public static final String COL_ID = "id";
     public static final String COL_NAME = "name";
@@ -12,9 +12,10 @@ public final class ItemSQLConstant {
     public static final String COL_ACCESSED_AT = "accessed_at";
     public static final String COL_PARENT_ID = "parent_id";
     public static final String COL_CONTENT_TYPE = "content_type";
+
     public static final String PARAM_GROUP_IDS = "group_ids";
     public static final String PARAM_FORCE = "force";
 
-    private ItemSQLConstant() {
+    private ItemSQLConstants() {
     }
 }

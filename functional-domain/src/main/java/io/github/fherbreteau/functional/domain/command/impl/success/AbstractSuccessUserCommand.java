@@ -6,6 +6,7 @@ import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
 
 public abstract class AbstractSuccessUserCommand<T> implements Command<Output<T>> {
+    protected final System.Logger logger = System.getLogger(getClass().getSimpleName());
 
     protected final UserRepository userRepository;
     protected final GroupRepository groupRepository;

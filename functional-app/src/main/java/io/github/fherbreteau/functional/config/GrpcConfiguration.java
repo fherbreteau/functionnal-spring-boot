@@ -2,16 +2,15 @@ package io.github.fherbreteau.functional.config;
 
 import com.authzed.grpcutil.BearerToken;
 import io.grpc.CallCredentials;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(SpiceDbProperties.class)
 public class GrpcConfiguration {
 
     @Bean
-    public CallCredentials bearerToken(SpiceDbProperties properties) {
-        return new BearerToken(properties.getToken());
+    public CallCredentials bearerToken(@Value("${grpc.client.spicedb.token}") String token) {
+        return new BearerToken(token);
     }
 }

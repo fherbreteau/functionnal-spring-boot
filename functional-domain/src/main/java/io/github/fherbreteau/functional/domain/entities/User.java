@@ -135,16 +135,16 @@ public final class User {
                 userId = UUID.randomUUID();
             }
             if (isNull(name)) {
-                throw new NullPointerException("name is required");
+                throw new IllegalArgumentException("name is required");
             }
             if (name.isEmpty()) {
-                throw new IllegalStateException("name must not be empty");
+                throw new IllegalArgumentException("name must not be empty");
             }
             if (isNull(groups)) {
                 groups = List.of(Group.builder(name).withGroupId(userId).build());
             }
             if (groups.isEmpty()) {
-                throw new IllegalStateException("groups must contain at least one group");
+                throw new IllegalArgumentException("groups must contain at least one group");
             }
             return new User(this);
         }

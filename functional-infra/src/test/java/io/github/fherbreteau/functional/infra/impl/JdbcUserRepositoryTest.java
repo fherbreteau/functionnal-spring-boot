@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.infra.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = JdbcUserRepository.class)
+@ContextConfiguration(classes = { JdbcUserRepository.class, JdbcUserGroupRepository.class })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcUserRepositoryTest {
 
@@ -60,6 +61,14 @@ class JdbcUserRepositoryTest {
                 .extracting(User::getGroups, list(Group.class))
                 .singleElement()
                 .isEqualTo(Group.builder("root").withGroupId(ROOT_ID).build());
+    }
+
+    @Test
+    void shouldNotExtractUserWithNoGroup() {
+        UUID userId = UUID.fromString("1115a887-fec2-44fe-9f4d-73d8d6fec46b");
+        assertThatThrownBy(() -> userRepository.findById(userId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("groups must contain at least one group");
     }
 
     @Test
@@ -121,8 +130,8 @@ class JdbcUserRepositoryTest {
     void shouldValidateUserPassword() {
         UUID userId = UUID.fromString("bc321002-b703-424b-9c3f-d47bf15be632");
         User user = User.builder("User").withUserId(userId).build();
-        assertThat(userRepository.checkPassword(user, "password")).isTrue();
-        assertThat(userRepository.checkPassword(user, "")).isFalse();
+        assertThat(userRepository.getPassword(user))
+                .isEqualTo("password");
     }
 
     @Test
@@ -130,7 +139,8 @@ class JdbcUserRepositoryTest {
         UUID userId = UUID.fromString("22bdb905-73d4-479e-99fc-62d46ad27d67");
         User user = User.builder("Test").withUserId(userId).build();
         assertThat(userRepository.updatePassword(user, "password")).isEqualTo(user);
-        assertThat(userRepository.checkPassword(user, "password")).isTrue();
+        assertThat(userRepository.getPassword(user))
+                .isEqualTo("password");
     }
 
     @Test

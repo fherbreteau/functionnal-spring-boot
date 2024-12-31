@@ -13,4 +13,6 @@ public interface UserService {
     Output<Group> findGroupByName(String name);
 
     <T> Output<T> processCommand(UserCommandType type, User currentUser, UserInput userInput);
+
+    Output<String> getUserPassword(User user);
 }

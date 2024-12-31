@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.time.LocalDateTime;
 
 import io.github.fherbreteau.functional.domain.entities.Folder;
@@ -22,6 +24,7 @@ public class MoveItemCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
+        logger.log(DEBUG, "Moving item {0} to {1}", source, destination);
         Item newItem;
         if (source.isFolder()) {
             newItem = source.copyBuilder()

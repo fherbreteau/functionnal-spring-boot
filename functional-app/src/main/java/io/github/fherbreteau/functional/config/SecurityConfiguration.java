@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.config;
 
+import io.github.fherbreteau.functional.driving.UserService;
+import io.github.fherbreteau.functional.service.FunctionalUserDetailsService;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
 import org.passay.EnglishSequenceData;
@@ -7,22 +9,31 @@ import org.passay.IllegalSequenceRule;
 import org.passay.LengthRule;
 import org.passay.PasswordValidator;
 import org.passay.WhitespaceRule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(request -> request.anyRequest().authenticated())
+        return http.authorizeHttpRequests(request -> request
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().fullyAuthenticated())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login"))
                 .build();
     }
 
@@ -52,5 +63,15 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(UserService userService) {
+        return new FunctionalUserDetailsService(userService);
+    }
+
+    @Autowired
+    public void configure(AuthenticationManagerBuilder builder) {
+        builder.eraseCredentials(false);
     }
 }

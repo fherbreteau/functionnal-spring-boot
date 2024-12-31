@@ -1,5 +1,7 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class CheckListChildrenCommand extends AbstractCheckItemCommand<List<Item
 
     @Override
     protected ListChildrenCommand createSuccess() {
+        logger.log(DEBUG, "Creating execute command");
         return new ListChildrenCommand(repository, item);
     }
 
