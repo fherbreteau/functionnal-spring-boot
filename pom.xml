@@ -40,6 +40,7 @@
 
         <!-- AuthZed dependencies -->
         <authzed.version>1.1.1</authzed.version>
+        <grpc.version>1.69.0</grpc.version>
         <grpc-spring-boot.version>3.1.0.RELEASE</grpc-spring-boot.version>
 
         <!-- Tests dependencies -->
@@ -49,7 +50,6 @@
 
         <!-- CVE overridden dependencies -->
         <logback.version>1.5.13</logback.version>
-        <grpc.version>1.69.0</grpc.version>
 
         <!-- Other dependencies -->
         <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
@@ -86,6 +86,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- Spring Cloud dependencies -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -100,6 +101,15 @@
                 <groupId>com.playtika.testcontainers</groupId>
                 <artifactId>testcontainers-spring-boot-bom</artifactId>
                 <version>${spring-boot-testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- GRPC dependencies -->
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>${grpc.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -130,7 +140,7 @@
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>8.0.2.Final</version>
+                <version>${hibernate-validator.version}</version>
             </dependency>
 
             <!-- Liquibase -->
@@ -148,13 +158,6 @@
             </dependency>
 
             <!-- SpiceDB Dependencies -->
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-bom</artifactId>
-                <version>${grpc.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>com.authzed.api</groupId>
                 <artifactId>authzed</artifactId>
