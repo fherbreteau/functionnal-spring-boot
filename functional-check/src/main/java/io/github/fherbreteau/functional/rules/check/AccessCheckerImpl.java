@@ -1,9 +1,8 @@
-package io.github.fherbreteau.functional.check;
+package io.github.fherbreteau.functional.rules.check;
 
 import static com.authzed.api.v1.CheckPermissionResponse.Permissionship.PERMISSIONSHIP_HAS_PERMISSION;
-import static io.github.fherbreteau.functional.Entities.ITEM;
-import static io.github.fherbreteau.functional.Entities.USER;
-import static io.github.fherbreteau.functional.check.Permissions.*;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.check.Permissions.*;
 
 import com.authzed.api.v1.*;
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;

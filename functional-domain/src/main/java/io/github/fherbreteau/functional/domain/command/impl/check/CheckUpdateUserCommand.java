@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class CheckUpdateUserCommand extends AbstractCheckUserCommand<User, Updat
 
     @Override
     protected UpdateUserCommand createSuccess() {
-        logger.log(DEBUG, "Creating execute command");
+        debug(logger,  "Creating execute command");
         return new UpdateUserCommand(userRepository, groupRepository, userUpdater, passwordProtector, input);
     }
 

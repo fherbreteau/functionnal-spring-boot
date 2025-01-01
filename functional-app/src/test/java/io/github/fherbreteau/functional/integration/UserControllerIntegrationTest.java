@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
+import com.authzed.api.v1.SchemaServiceGrpc.SchemaServiceBlockingStub;
 import io.github.fherbreteau.functional.FunctionalApplication;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,8 @@ class UserControllerIntegrationTest {
     private UserRepository userRepository;
     @MockitoBean
     private PermissionsServiceBlockingStub permissionsService;
+    @MockitoBean
+    private SchemaServiceBlockingStub schemaService;
 
     private MockMvc mvc;
 

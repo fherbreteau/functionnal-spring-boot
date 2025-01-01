@@ -1,9 +1,10 @@
 package io.github.fherbreteau.functional.domain.command;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.UserCommandType;
@@ -15,7 +16,7 @@ import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 public class CompositeUserCommandFactory {
-    private final System.Logger logger = System.getLogger("CompositeUserCommandFactory");
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -37,7 +38,7 @@ public class CompositeUserCommandFactory {
 
     @SuppressWarnings("rawtypes")
     public CheckCommand createCommand(UserCommandType type, UserInput input) {
-        logger.log(DEBUG, "Looking up for a command of type {0} on {1}", type, input);
+        debug(logger,  "Looking up for a command of type {0}", type);
         return factories.stream()
                 .filter(f -> f.supports(type, input))
                 .map(f -> f.createCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,

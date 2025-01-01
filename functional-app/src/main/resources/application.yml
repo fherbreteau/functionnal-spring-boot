@@ -33,6 +33,8 @@ management:
 
 content.repository.path: /tmp
 
+spicedb.rules: classpath:spicedb/rules.zed
+
 grpc.client:
   spicedb:
     address: static://localhost:50051
@@ -42,4 +44,4 @@ grpc.client:
 
 logging.level:
   root: error
-  io.github.fherbreteau.functional: debug
+  io.github.fherbreteau.functional: info

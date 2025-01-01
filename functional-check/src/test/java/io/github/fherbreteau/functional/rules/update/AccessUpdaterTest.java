@@ -1,9 +1,9 @@
-package io.github.fherbreteau.functional.update;
+package io.github.fherbreteau.functional.rules.update;
 
 import static com.authzed.api.v1.RelationshipUpdate.Operation.OPERATION_CREATE;
 import static com.authzed.api.v1.RelationshipUpdate.Operation.OPERATION_DELETE;
-import static io.github.fherbreteau.functional.Entities.*;
-import static io.github.fherbreteau.functional.update.Relations.*;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.update.Relations.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.InstanceOfAssertFactories.list;
@@ -18,7 +18,7 @@ import com.authzed.api.v1.RelationshipUpdate;
 import com.authzed.api.v1.WriteRelationshipsRequest;
 import com.authzed.api.v1.WriteRelationshipsResponse;
 import com.authzed.api.v1.ZedToken;
-import io.github.fherbreteau.functional.Utils;
+import io.github.fherbreteau.functional.rules.Utils;
 import io.github.fherbreteau.functional.domain.entities.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,9 +91,9 @@ class AccessUpdaterTest {
                 .hasSize(4)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_CREATE, USER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_CREATE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()));
 
     }
@@ -129,12 +129,12 @@ class AccessUpdaterTest {
                 .hasSize(6)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_DELETE, USER_READ, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, USER_WRITE, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, USER_EXECUTE, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()));
+                        tuple(OPERATION_DELETE, OWNER_READ, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OWNER_WRITE, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OWNER_EXECUTE, USER, oldUserId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()));
     }
 
     @Test
@@ -206,9 +206,9 @@ class AccessUpdaterTest {
                 .hasSize(3)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_CREATE, USER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, USER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()));
+                        tuple(OPERATION_CREATE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()));
     }
 
     @Test
@@ -277,9 +277,9 @@ class AccessUpdaterTest {
                 .hasSize(3)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_DELETE, ANYONE_READ, ANYONE, ANYONE_ID, ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, ANYONE_WRITE, ANYONE, ANYONE_ID, ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, ANYONE_EXECUTE, ANYONE, ANYONE_ID, ITEM, fileHandle.toString()));
+                        tuple(OPERATION_DELETE, OTHER_READ, USER, OTHER_ID, ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OTHER_WRITE, USER, OTHER_ID, ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OTHER_EXECUTE, USER, OTHER_ID, ITEM, fileHandle.toString()));
     }
 
     @Test
@@ -311,9 +311,9 @@ class AccessUpdaterTest {
                 .hasSize(4)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
-                        tuple(OPERATION_DELETE, USER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, USER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, USER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_DELETE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()));
     }
 

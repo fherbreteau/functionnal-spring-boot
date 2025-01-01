@@ -1,9 +1,8 @@
-package io.github.fherbreteau.functional.update;
+package io.github.fherbreteau.functional.rules.update;
 
-import static io.github.fherbreteau.functional.Entities.GROUP;
-import static io.github.fherbreteau.functional.Entities.USER;
-import static io.github.fherbreteau.functional.update.Relations.MEMBER;
-import static io.github.fherbreteau.functional.update.Relations.SUPER_USER;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.update.Relations.MEMBER;
+import static io.github.fherbreteau.functional.rules.update.Relations.ADMIN;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -31,7 +30,7 @@ public class UserUpdaterImpl implements UserUpdater {
     public User createUser(User user) {
         List<RelationshipUpdate> updates = new ArrayList<>();
         if (user.isSuperUser()) {
-            updates.add(createRelation(SUPER_USER, user.getUserId(), USER, user.getUserId()));
+            updates.add(createRelation(ADMIN, user.getUserId(), USER, user.getUserId()));
         }
         user.getGroups().stream()
                 .map(Group::getGroupId)
@@ -71,7 +70,7 @@ public class UserUpdaterImpl implements UserUpdater {
     public void deleteUser(User user) {
         List<RelationshipUpdate> updates = new ArrayList<>();
         if (user.isSuperUser()) {
-            updates.add(deleteRelation(SUPER_USER, user.getUserId(), USER, user.getUserId()));
+            updates.add(deleteRelation(ADMIN, user.getUserId(), USER, user.getUserId()));
         }
         user.getGroups().stream()
                 .map(Group::getGroupId)

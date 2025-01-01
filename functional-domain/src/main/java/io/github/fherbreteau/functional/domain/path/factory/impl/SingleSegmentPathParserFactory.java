@@ -1,13 +1,14 @@
 package io.github.fherbreteau.functional.domain.path.factory.impl;
 
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static io.github.fherbreteau.functional.domain.path.factory.impl.ComplexSegmentPathParserPathFactory.IS_COMPOSITE_PATH;
 import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
 import static io.github.fherbreteau.functional.domain.path.factory.impl.EmptySegmentPathParserFactory.IS_EMPTY_PATH;
 import static io.github.fherbreteau.functional.domain.path.factory.impl.ParentSegmentPathParserFactory.IS_PARENT_PATH;
-import static java.lang.System.Logger.Level.DEBUG;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.PathParser;
@@ -17,9 +18,8 @@ import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class SingleSegmentPathParserFactory implements PathParserFactory {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
-
     private static final List<Predicate<String>> PATH_CHECKS = List.of(IS_CURRENT_PATH, IS_PARENT_PATH, IS_EMPTY_PATH, IS_COMPOSITE_PATH);
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     @Override
     public boolean supports(Path currentPath, String path) {
@@ -28,7 +28,7 @@ public class SingleSegmentPathParserFactory implements PathParserFactory {
 
     @Override
     public PathParser createParser(ItemRepository repository, AccessChecker accessChecker, Path parentPath, String path) {
-        logger.log(DEBUG, "Creating parser");
+        debug(logger, "Creating parser");
         return new SimplePathParser(repository, accessChecker, parentPath, path);
     }
 }

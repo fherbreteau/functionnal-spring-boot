@@ -1,7 +1,9 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
+
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
@@ -15,7 +17,7 @@ import io.github.fherbreteau.functional.driven.rules.UserChecker;
 import io.github.fherbreteau.functional.driven.rules.UserUpdater;
 
 public class DeleteGroupCommandFactory implements UserCommandFactory<Void> {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     @Override
     public boolean supports(UserCommandType type, UserInput userInput) {
@@ -31,7 +33,7 @@ public class DeleteGroupCommandFactory implements UserCommandFactory<Void> {
                                             UserChecker userChecker, UserUpdater userUpdater,
                                             PasswordProtector passwordProtector, UserCommandType type,
                                             UserInput userInput) {
-        logger.log(DEBUG, "Creating check command");
+        debug(logger,  "Creating check command");
         return new CheckDeleteGroupCommand(repository, groupRepository, userChecker, userUpdater,
                 userInput.getName(), userInput.isForce());
     }

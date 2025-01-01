@@ -1,9 +1,10 @@
 package io.github.fherbreteau.functional.domain.command;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
@@ -14,7 +15,7 @@ import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class CompositeItemCommandFactory {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final ItemRepository repository;
     private final ContentRepository contentRepository;
@@ -34,7 +35,7 @@ public class CompositeItemCommandFactory {
 
     @SuppressWarnings("rawtypes")
     public CheckCommand createCommand(ItemCommandType type, ItemInput input) {
-        logger.log(DEBUG, "Looking up for a command of type {0} on {1}", type, input);
+        debug(logger, "Looking up for a command of type {0}", type);
         return factories.stream()
                 .filter(f -> f.supports(type, input))
                 .map(f -> f.createCommand(repository, contentRepository, accessChecker, accessUpdater, type, input))

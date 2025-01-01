@@ -1,8 +1,7 @@
-package io.github.fherbreteau.functional.check;
+package io.github.fherbreteau.functional.rules.check;
 
-import static io.github.fherbreteau.functional.Entities.ITEM;
-import static io.github.fherbreteau.functional.Entities.USER;
-import static io.github.fherbreteau.functional.check.Permissions.*;
+import static io.github.fherbreteau.functional.rules.Entities.*;
+import static io.github.fherbreteau.functional.rules.check.Permissions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,9 +12,6 @@ import java.util.UUID;
 
 import com.authzed.api.v1.*;
 import com.authzed.api.v1.CheckPermissionResponse.Permissionship;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,34 +25,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AccessCheckerTest {
+class UserCheckerTest {
 
     @Mock
     private PermissionsServiceGrpc.PermissionsServiceBlockingStub permissionsService;
-
-    private UUID fileHandle;
-
-    private Item item;
 
     private UUID userId;
 
     private User actor;
 
     @InjectMocks
-    private AccessCheckerImpl accessChecker;
+    private UserCheckerImpl userChecker;
 
     @Captor
     private ArgumentCaptor<CheckPermissionRequest> requestCaptor;
 
     @BeforeEach
-    public void setUp() {
-        fileHandle = UUID.randomUUID();
-        item = File.builder()
-                .withName("file")
-                .withHandle(fileHandle)
-                .withParent(Folder.getRoot())
-                .withOwner(User.root())
-                .build();
+    public void setup() {
         userId = UUID.randomUUID();
         actor = User.builder("user")
                 .withUserId(userId)
@@ -66,7 +51,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingReadPermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingCreateUserPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -74,18 +59,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canRead(item, actor);
+        boolean result = userChecker.canCreateUser("new_user", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(READ);
+                .isEqualTo(CREATE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -94,13 +79,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingReadPermission() {
+    void shouldHandleErrorWhenCheckingCreateUserPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canRead(item, actor);
+        boolean result = userChecker.canCreateUser("new_user", actor);
 
         // Assert
         assertThat(result).isFalse();
@@ -109,7 +94,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingWritePermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingUpdateUserPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -117,18 +102,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canWrite(item, actor);
+        boolean result = userChecker.canUpdateUser("new_user", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(WRITE);
+                .isEqualTo(UPDATE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -137,13 +122,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingWritePermission() {
+    void shouldHandleErrorWhenCheckingUpdateUserPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canWrite(item, actor);
+        boolean result = userChecker.canUpdateUser("new_user", actor);
 
         // Assert
         assertThat(result).isFalse();
@@ -152,7 +137,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingExecutePermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingDeleteUserPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -160,18 +145,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canExecute(item, actor);
+        boolean result = userChecker.canDeleteUser("new_user", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(EXECUTE);
+                .isEqualTo(DELETE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -180,13 +165,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingExecutePermission() {
+    void shouldHandleErrorWhenCheckingDeleteUserPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canExecute(item, actor);
+        boolean result = userChecker.canDeleteUser("new_user", actor);
 
         // Assert
         assertThat(result).isFalse();
@@ -195,7 +180,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingChangeModePermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingCreateGroupPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -203,18 +188,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canChangeMode(item, actor);
+        boolean result = userChecker.canCreateGroup("new_group", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(CHANGE_MODE);
+                .isEqualTo(CREATE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -223,13 +208,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingChangeModePermission() {
+    void shouldHandleErrorWhenCheckingCreateGroupPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canChangeMode(item, actor);
+        boolean result = userChecker.canCreateGroup("new_group", actor);
 
         // Assert
         assertThat(result).isFalse();
@@ -238,7 +223,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingChangeOwnerPermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingUpdateGroupPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -246,18 +231,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canChangeOwner(item, actor);
+        boolean result = userChecker.canUpdateGroup("new_group", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(CHANGE_OWNER);
+                .isEqualTo(UPDATE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -266,13 +251,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingChangeOwnerPermission() {
+    void shouldHandleErrorWhenCheckingUpdateGroupPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canChangeOwner(item, actor);
+        boolean result = userChecker.canUpdateGroup("new_group", actor);
 
         // Assert
         assertThat(result).isFalse();
@@ -281,7 +266,7 @@ class AccessCheckerTest {
     @ParameterizedTest
     @CsvSource(value = {"PERMISSIONSHIP_UNSPECIFIED,false", "PERMISSIONSHIP_NO_PERMISSION,false",
         "PERMISSIONSHIP_HAS_PERMISSION,true", "PERMISSIONSHIP_CONDITIONAL_PERMISSION,false"})
-    void shouldDelegateToSpiceDbWhenCheckingChangeGroupPermission(Permissionship permissionship, boolean expectedResult) {
+    void shouldDelegateToSpiceDbWhenCheckingDeleteGroupPermission(Permissionship permissionship, boolean expectedResult) {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenReturn(CheckPermissionResponse.newBuilder()
@@ -289,18 +274,18 @@ class AccessCheckerTest {
                         .build());
 
         // Act
-        boolean result = accessChecker.canChangeGroup(item, actor);
+        boolean result = userChecker.canDeleteGroup("new_group", actor);
 
         // Assert
         assertThat(result).isEqualTo(expectedResult);
         verify(permissionsService).checkPermission(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getPermission)
-                .isEqualTo(CHANGE_GROUP);
+                .isEqualTo(DELETE);
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getResource, type(ObjectReference.class))
                 .extracting(ObjectReference::getObjectType, ObjectReference::getObjectId)
-                .containsExactly(ITEM, fileHandle.toString());
+                .containsExactly(USER, userId.toString());
         assertThat(requestCaptor.getValue())
                 .extracting(CheckPermissionRequest::getSubject, type(SubjectReference.class))
                 .extracting(SubjectReference::getObject)
@@ -309,13 +294,13 @@ class AccessCheckerTest {
     }
 
     @Test
-    void shouldHandleErrorWhenCheckingCheckGroupPermission() {
+    void shouldHandleErrorWhenCheckingDeleteGroupPermission() {
         // Arrange
         when(permissionsService.checkPermission(any()))
                 .thenThrow(RuntimeException.class);
 
         // Act
-        boolean result = accessChecker.canChangeGroup(item, actor);
+        boolean result = userChecker.canDeleteGroup("new_group", actor);
 
         // Assert
         assertThat(result).isFalse();

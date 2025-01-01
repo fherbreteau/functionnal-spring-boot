@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class CheckGetGroupCommand extends AbstractCheckGetInfoCommand<List<Group
 
     @Override
     protected GetGroupCommand createSuccess() {
-        logger.log(DEBUG, "Creating execute command");
+        debug(logger,  "Creating execute command");
         return new GetGroupCommand(userRepository, groupRepository, name, userId);
     }
 }

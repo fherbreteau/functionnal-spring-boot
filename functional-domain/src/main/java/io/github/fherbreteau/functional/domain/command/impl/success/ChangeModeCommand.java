@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.AbstractItem.AbstractBuilder;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
@@ -31,7 +31,7 @@ public class ChangeModeCommand extends AbstractModifyItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        logger.log(DEBUG, "Building new item with new access right {0}{1}{2}", ownerAccess, groupAccess, otherAccess);
+        debug(logger,  "Building new item with new access right {0}{1}{2}", ownerAccess, groupAccess, otherAccess);
         AbstractBuilder<?, ?> builder = item.copyBuilder();
         if (ownerAccess != null) {
             builder.withOwnerAccess(ownerAccess);

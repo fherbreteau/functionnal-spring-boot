@@ -1,14 +1,13 @@
 package io.github.fherbreteau.functional.config;
 
 import com.authzed.api.v1.PermissionsServiceGrpc.PermissionsServiceBlockingStub;
-import io.github.fherbreteau.functional.check.AccessCheckerImpl;
-import io.github.fherbreteau.functional.check.UserCheckerImpl;
-import io.github.fherbreteau.functional.driven.rules.AccessChecker;
-import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
-import io.github.fherbreteau.functional.driven.rules.UserChecker;
-import io.github.fherbreteau.functional.driven.rules.UserUpdater;
-import io.github.fherbreteau.functional.update.AccessUpdaterImpl;
-import io.github.fherbreteau.functional.update.UserUpdaterImpl;
+import com.authzed.api.v1.SchemaServiceGrpc.SchemaServiceBlockingStub;
+import io.github.fherbreteau.functional.driven.rules.*;
+import io.github.fherbreteau.functional.rules.check.AccessCheckerImpl;
+import io.github.fherbreteau.functional.rules.check.UserCheckerImpl;
+import io.github.fherbreteau.functional.rules.init.RuleLoaderImpl;
+import io.github.fherbreteau.functional.rules.update.AccessUpdaterImpl;
+import io.github.fherbreteau.functional.rules.update.UserUpdaterImpl;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.client.inject.GrpcClientBean;
 import org.springframework.context.annotation.Bean;
@@ -39,5 +38,10 @@ public class CheckConfiguration {
     @Bean
     UserUpdater userUpdater(PermissionsServiceBlockingStub permissionsService) {
         return new UserUpdaterImpl(permissionsService);
+    }
+
+    @Bean
+    RuleLoader ruleLoader(@GrpcClient("spicedb") SchemaServiceBlockingStub schemaService) {
+        return new RuleLoaderImpl(schemaService);
     }
 }

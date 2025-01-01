@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.command.impl.success.MoveItemCommand;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -23,7 +23,7 @@ public class CheckMoveItemCommand extends AbstractCheckLocationItemCommand<MoveI
 
     @Override
     protected MoveItemCommand createSuccess() {
-        logger.log(DEBUG, "Creating execute command");
+        debug(logger,  "Creating execute command");
         return new MoveItemCommand(repository, accessUpdater, source, destination);
     }
 }

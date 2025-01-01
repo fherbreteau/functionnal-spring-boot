@@ -1,4 +1,4 @@
-package io.github.fherbreteau.functional;
+package io.github.fherbreteau.functional.rules;
 
 import com.authzed.api.v1.LookupSubjectsRequest;
 import com.authzed.api.v1.RelationshipUpdate;

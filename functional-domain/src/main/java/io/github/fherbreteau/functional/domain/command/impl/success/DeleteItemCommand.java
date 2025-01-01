@@ -1,6 +1,6 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import io.github.fherbreteau.functional.domain.entities.File;
 import io.github.fherbreteau.functional.domain.entities.Item;
@@ -25,7 +25,7 @@ public class DeleteItemCommand extends AbstractSuccessItemCommand<Void> {
 
     @Override
     public Output<Void> execute(User actor) {
-        logger.log(DEBUG, "Deleting item {0}", item);
+        debug(logger, "Deleting item {0}", item);
         repository.delete(item);
         accessUpdater.deleteItem(item);
         if (item instanceof File file) {

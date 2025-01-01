@@ -1,6 +1,8 @@
 package io.github.fherbreteau.functional.domain.command.factory.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
+
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
@@ -14,7 +16,7 @@ import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
 
 public class ChangeGroupCommandFactory implements ItemCommandFactory<Item> {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     @Override
     public boolean supports(ItemCommandType type, ItemInput itemInput) {
@@ -29,7 +31,7 @@ public class ChangeGroupCommandFactory implements ItemCommandFactory<Item> {
     public CheckCommand<Item> createCommand(ItemRepository repository, ContentRepository contentRepository,
                                             AccessChecker accessChecker, AccessUpdater accessUpdater,
                                             ItemCommandType type, ItemInput itemInput) {
-        logger.log(DEBUG, "Creating check command");
+        debug(logger, "Creating check command");
         return new CheckChangeGroupCommand(repository, accessChecker, accessUpdater, itemInput.getItem(),
                 itemInput.getGroup());
     }

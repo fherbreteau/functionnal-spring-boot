@@ -1,8 +1,9 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import static java.lang.System.Logger.Level.DEBUG;
+import static io.github.fherbreteau.functional.domain.Logging.debug;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Path;
@@ -12,7 +13,7 @@ import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 
 public class SimplePathParser implements PathParser {
-    private final System.Logger logger = System.getLogger(getClass().getSimpleName());
+    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     private final ItemRepository repository;
     private final AccessChecker accessChecker;
@@ -28,7 +29,7 @@ public class SimplePathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        logger.log(DEBUG, "Resolving simple path {0} with {1}", current, segment);
+        debug(logger, "Resolving simple path {0} with {1}", current, segment);
         return Optional.of(current)
                 .filter(Path::isItemFolder)
                 .map(Path::getAsFolder)
