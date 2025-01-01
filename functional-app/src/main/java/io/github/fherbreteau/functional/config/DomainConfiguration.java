@@ -11,6 +11,7 @@ import io.github.fherbreteau.functional.domain.command.CompositeItemCommandFacto
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.ItemCommandFactory;
 import io.github.fherbreteau.functional.domain.command.factory.UserCommandFactory;
+import io.github.fherbreteau.functional.domain.entities.Rules;
 import io.github.fherbreteau.functional.domain.path.CompositePathParserFactory;
 import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.rules.RuleProvider;
@@ -95,9 +96,10 @@ public class DomainConfiguration {
     }
 
     @Bean
-    public RuleProvider ruleProvider(RuleLoader ruleLoader, @Value("${spicedb.rules}") Resource ruleResource) throws IOException {
-        String content = ruleResource.getContentAsString(UTF_8);
-        return new RuleProvider(ruleLoader, content);
+    public RuleProvider ruleProvider(RuleLoader ruleLoader, @Value("${spicedb.rules}") Resource ruleResource)
+            throws IOException {
+        Rules rules = new Rules(ruleResource.getContentAsString(UTF_8));
+        return new RuleProvider(ruleLoader, rules);
     }
 
     @Bean

@@ -1,8 +1,5 @@
 package io.github.fherbreteau.functional.domain.access.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,13 +9,15 @@ import io.github.fherbreteau.functional.domain.access.factory.CompositeAccessFac
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FullAccessParser implements AccessParser {
 
     private static final String ACCESS_RIGHT_REGEX = "(?<attribution>a|[ugo]{0,3})(?<action>[+-=]?)(?<right>[rwx]{1,3})";
     public static final Pattern ACCESS_RIGHT_PATTERN = Pattern.compile(ACCESS_RIGHT_REGEX);
 
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private final CompositeAccessFactory compositeAccessFactory;
     private final AccessContext context;
     private final String rights;
@@ -33,7 +32,7 @@ public class FullAccessParser implements AccessParser {
 
     @Override
     public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
-        debug(logger, "Parse access ");
+        logger.debug("Parsing access rights {}", rights);
         Matcher matcher = ACCESS_RIGHT_PATTERN.matcher(rights);
         if (!matcher.matches()) {
             return null;

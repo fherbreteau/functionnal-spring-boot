@@ -1,9 +1,6 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Path;
@@ -11,9 +8,11 @@ import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimplePathParser implements PathParser {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final ItemRepository repository;
     private final AccessChecker accessChecker;
@@ -29,7 +28,7 @@ public class SimplePathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        debug(logger, "Resolving simple path {0} with {1}", current, segment);
+        logger.debug("Resolving simple path {} with {}", current, segment);
         return Optional.of(current)
                 .filter(Path::isItemFolder)
                 .map(Path::getAsFolder)

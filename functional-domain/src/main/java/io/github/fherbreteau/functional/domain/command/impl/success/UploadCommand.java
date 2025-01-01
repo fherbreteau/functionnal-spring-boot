@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.io.InputStream;
 
 import io.github.fherbreteau.functional.domain.entities.File;
@@ -27,7 +25,7 @@ public class UploadCommand extends AbstractSuccessItemCommand<Item> {
 
     @Override
     public Output<Item> execute(User actor) {
-        debug(logger,  "Uploading content to item {0}", item);
+        logger.debug("Uploading content to item {}", item);
         File newItem = item.copyBuilder().withContentType(contentType).build();
         return contentRepository.writeContent(repository.update(newItem), content);
     }

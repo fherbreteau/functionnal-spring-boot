@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -37,7 +36,7 @@ public class CreateUserCommand extends AbstractModifyUserCommand<User> {
 
     @Override
     public Output<User> execute(User actor) {
-        debug(logger,  "Creating user with name {0} and id {1}", name, groupId);
+        logger.debug("Creating user with name {} and id {}", name, groupId);
         User.Builder builder = User.builder(name);
         if (nonNull(userId)) {
             builder.withUserId(userId);

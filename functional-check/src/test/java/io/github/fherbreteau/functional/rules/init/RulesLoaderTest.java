@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.authzed.api.v1.*;
 import com.authzed.api.v1.SchemaServiceGrpc.SchemaServiceBlockingStub;
+import io.github.fherbreteau.functional.domain.entities.Rules;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class RuleLoaderTest {
+class RulesLoaderTest {
     @Mock
     private SchemaServiceBlockingStub schemaService;
 
@@ -42,10 +43,12 @@ class RuleLoaderTest {
                         .build());
 
         // Act
-        String result = ruleLoader.readRules();
+        Rules result = ruleLoader.readRules();
 
         // Assert
-        assertThat(result).isEqualTo("schema");
+        assertThat(result)
+                .extracting(Rules::content)
+                .isEqualTo("schema");
         verify(schemaService).readSchema(readCaptor.capture());
         assertThat(readCaptor.getValue())
                 .isEqualTo(ReadSchemaRequest.newBuilder().build());
@@ -58,7 +61,7 @@ class RuleLoaderTest {
                 .thenThrow(new StatusRuntimeException(Status.NOT_FOUND));
 
         // Act
-        String result = ruleLoader.readRules();
+        Rules result = ruleLoader.readRules();
 
         // Assert
         assertThat(result).isNull();
@@ -85,7 +88,7 @@ class RuleLoaderTest {
                         .build());
 
         // Act
-        ruleLoader.writeRules("schema");
+        ruleLoader.writeRules(new Rules("schema"));
 
         // Arrange
         verify(schemaService).writeSchema(writeCaptor.capture());

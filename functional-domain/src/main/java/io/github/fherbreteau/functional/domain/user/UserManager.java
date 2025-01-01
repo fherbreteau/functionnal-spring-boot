@@ -1,19 +1,19 @@
 package io.github.fherbreteau.functional.domain.user;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.lang.String.format;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
 import io.github.fherbreteau.functional.driven.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserManager {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -24,7 +24,6 @@ public class UserManager {
     }
 
     public Output<User> findUserByName(String name) {
-        debug(logger, "Finding user with name");
         if (userRepository.exists(name)) {
             return Output.success(userRepository.findByName(name));
         } else {
@@ -33,7 +32,6 @@ public class UserManager {
     }
 
     public Output<Group> findGroupByName(String name) {
-        debug(logger, "Finding group with name");
         if (groupRepository.exists(name)) {
             return Output.success(groupRepository.findByName(name));
         } else {
@@ -42,7 +40,7 @@ public class UserManager {
     }
 
     public Output<String> getPassword(User user) {
-        debug(logger, "Getting password for {0}", user);
+        logger.debug("Getting password for {}", user);
         if (userRepository.exists(user.getUserId())) {
             String password = userRepository.getPassword(user);
             if (Objects.nonNull(password) && !password.isEmpty()) {

@@ -1,10 +1,7 @@
 package io.github.fherbreteau.functional.domain.path;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.path.factory.CompositePathFactory;
@@ -12,9 +9,11 @@ import io.github.fherbreteau.functional.domain.path.factory.PathParserFactory;
 import io.github.fherbreteau.functional.domain.path.factory.RecursivePathFactory;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CompositePathParserFactory implements CompositePathFactory {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final ItemRepository repository;
     private final AccessChecker accessChecker;
@@ -34,7 +33,7 @@ public class CompositePathParserFactory implements CompositePathFactory {
 
     @Override
     public PathParser createParser(Path currentPath, String path) {
-        debug(logger, "Creating parser");
+        logger.debug("Looking up for a parser from {} for {}", currentPath, path);
         return pathFactories.stream()
                 .filter(f -> f.supports(currentPath, path))
                 .map(f -> f.createParser(repository, accessChecker, currentPath, path))

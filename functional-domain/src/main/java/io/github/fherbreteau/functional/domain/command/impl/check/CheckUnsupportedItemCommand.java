@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
@@ -31,7 +29,7 @@ public class CheckUnsupportedItemCommand extends AbstractCheckItemCommand<Void, 
 
     @Override
     protected ItemErrorCommand<Void> createSuccess() {
-        debug(logger,  "Creating error command");
+        logger.debug("Creating error command");
         return new ItemErrorCommand<>(itemCommandType, itemInput);
     }
 }

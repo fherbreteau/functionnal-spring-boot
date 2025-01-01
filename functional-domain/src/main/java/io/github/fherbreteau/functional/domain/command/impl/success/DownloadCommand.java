@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.io.InputStream;
 
 import io.github.fherbreteau.functional.domain.entities.File;
@@ -23,7 +21,7 @@ public class DownloadCommand extends AbstractSuccessItemCommand<InputStream> {
 
     @Override
     public Output<InputStream> execute(User actor) {
-        debug(logger,  "Download file {0}", item);
+        logger.debug("Download file {}", item);
         return contentRepository.readContent(item);
     }
 }

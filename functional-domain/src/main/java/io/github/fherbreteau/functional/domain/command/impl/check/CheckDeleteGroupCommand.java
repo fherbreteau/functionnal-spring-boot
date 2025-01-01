@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class CheckDeleteGroupCommand extends AbstractCheckUserCommand<Void, Dele
 
     @Override
     protected DeleteGroupCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new DeleteGroupCommand(userRepository, groupRepository, userUpdater, name, force);
     }
 

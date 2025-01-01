@@ -1,49 +1,30 @@
 package io.github.fherbreteau.functional.domain.rules;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.Objects;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
+import io.github.fherbreteau.functional.domain.entities.Rules;
 import io.github.fherbreteau.functional.driven.rules.RuleLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RuleProvider {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final RuleLoader ruleLoader;
-    private final String expectedRules;
+    private final Rules rules;
 
-    public RuleProvider(RuleLoader ruleLoader, String expectedRules) {
+    public RuleProvider(RuleLoader ruleLoader, Rules rules) {
         this.ruleLoader = ruleLoader;
-        this.expectedRules = expectedRules;
+        this.rules = rules;
     }
 
     public void defineRules() {
-        String existingRules = ruleLoader.readRules();
-        debug(logger, "Existing rules '{0}'", summarize(existingRules));
+        Rules existingRules = ruleLoader.readRules();
+        logger.debug("Existing rules '{}'", existingRules);
 
-        if (!Objects.equals(existingRules, expectedRules)) {
-            debug(logger, "Existing rules '{0}'", summarize(expectedRules));
-            ruleLoader.writeRules(expectedRules);
+        if (!Objects.equals(rules, existingRules)) {
+            logger.debug("Existing rules '{}'", rules);
+            ruleLoader.writeRules(rules);
         }
-    }
-
-    private String summarize(String rules) {
-        if (Objects.isNull(rules)) {
-            return "No rules defined";
-        }
-        StringTokenizer tokenizer = new StringTokenizer(rules);
-        String start = "";
-        String end = "";
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            if (start.isEmpty()) {
-                start = token;
-            }
-            end = token;
-        }
-
-        return String.format("%s ... %s", start, end);
     }
 }

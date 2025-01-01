@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.UUID;
 
 import io.github.fherbreteau.functional.domain.command.impl.success.GetUserCommand;
@@ -20,7 +18,7 @@ public class CheckGetUserCommand extends AbstractCheckGetInfoCommand<User, GetUs
 
     @Override
     protected GetUserCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new GetUserCommand(userRepository, groupRepository, name, userId);
     }
 }

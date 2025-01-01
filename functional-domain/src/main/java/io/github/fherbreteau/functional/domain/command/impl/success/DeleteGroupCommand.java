@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.Output;
 import io.github.fherbreteau.functional.domain.entities.User;
@@ -22,7 +20,7 @@ public class DeleteGroupCommand extends AbstractModifyUserCommand<Void> {
 
     @Override
     public Output<Void> execute(User actor) {
-        debug(logger,  "Deleting group with name {0}", name);
+        logger.debug("Deleting group with name {}", name);
         Group group = groupRepository.findByName(name);
         if (force) {
             userRepository.removeGroupFromUser(group);

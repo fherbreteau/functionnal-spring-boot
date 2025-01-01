@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.authzed.api.v1.*;
 import com.authzed.api.v1.SchemaServiceGrpc.SchemaServiceBlockingStub;
+import io.github.fherbreteau.functional.domain.entities.Rules;
 import io.github.fherbreteau.functional.driven.rules.RuleLoader;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -20,12 +21,12 @@ public class RuleLoaderImpl implements RuleLoader {
         this.schemaService = schemaService;
     }
 
-    public String readRules() {
+    public Rules readRules() {
         try {
             ReadSchemaRequest request = ReadSchemaRequest.newBuilder().build();
             ReadSchemaResponse response = schemaService.readSchema(request);
             LOGGER.info("Schema read at {}", response.getReadAt().getToken());
-            return response.getSchemaText();
+            return new Rules(response.getSchemaText());
         } catch (StatusRuntimeException e) {
             if (Objects.equals(e.getStatus().getCode(), Status.Code.NOT_FOUND)) {
                 LOGGER.info("No schema Found on server");
@@ -36,9 +37,9 @@ public class RuleLoaderImpl implements RuleLoader {
         }
     }
 
-    public void writeRules(String schema) {
+    public void writeRules(Rules rules) {
         WriteSchemaRequest request = WriteSchemaRequest.newBuilder()
-                .setSchema(schema)
+                .setSchema(rules.content())
                 .build();
         WriteSchemaResponse response = schemaService.writeSchema(request);
         LOGGER.info("Schema written at {}", response.getWrittenAt().getToken());

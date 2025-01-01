@@ -13,6 +13,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
@@ -30,6 +36,11 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -54,6 +65,7 @@
                                     </excludes>
                                     <includes>
                                         <!-- Project dependencies -->
+                                        <include>org.slf4j</include>
                                         <!-- Test dependencies -->
                                         <include>org.junit.jupiter</include>
                                         <include>org.junit.platform</include>

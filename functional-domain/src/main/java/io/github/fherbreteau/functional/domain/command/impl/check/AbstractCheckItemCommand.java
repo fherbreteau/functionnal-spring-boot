@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.error;
-
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.command.Command;
@@ -21,7 +19,7 @@ public abstract class AbstractCheckItemCommand<T, C extends Command<Output<T>>> 
     }
 
     protected ItemErrorCommand<T> createError(List<String> reason) {
-        error(logger, "Unable to create Command");
+        logger.error("Unable to create Command");
         throw new UnsupportedOperationException("Unsupported Command always succeed");
     }
 }

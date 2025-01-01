@@ -1,16 +1,14 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
-import java.util.logging.Logger;
-
 import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InvalidPathParser implements PathParser {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final Path currentPath;
     private final String segment;
@@ -22,7 +20,7 @@ public class InvalidPathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        debug(logger, "Resolving invalid path {0}", segment);
+        logger.debug("Resolving invalid path {}", segment);
         return currentPath.isError() ? currentPath : Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, currentPath.getItem(), actor)));
     }
 }
