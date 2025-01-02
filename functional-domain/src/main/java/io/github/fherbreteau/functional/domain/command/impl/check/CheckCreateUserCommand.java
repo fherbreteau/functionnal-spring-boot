@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -69,7 +68,7 @@ public class CheckCreateUserCommand extends AbstractCheckUserCommand<User, Creat
 
     @Override
     protected CreateUserCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new CreateUserCommand(userRepository, groupRepository, userUpdater, passwordProtector, input);
     }
 

@@ -69,7 +69,7 @@ class CheckCreateFileCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().matches(s -> s.endsWith(" can't create file in 'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'"));
+                .first().matches(s -> s.endsWith(" can't create file in null"));
     }
 
     @Test
@@ -83,7 +83,7 @@ class CheckCreateFileCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().isEqualTo("file already exists in  'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'");
+                .first().isEqualTo("file already exists in null");
         assertThat(result).extracting("type")
                 .isEqualTo(ItemCommandType.TOUCH);
     }

@@ -116,6 +116,7 @@ public class UserUpdaterImpl implements UserUpdater {
             DeleteRelationshipsResponse response = permissionsService.deleteRelationships(request);
             if (response.getDeletionProgress() != DeleteRelationshipsResponse.DeletionProgress.DELETION_PROGRESS_COMPLETE) {
                 LOGGER.warn("Deletion of relation not completed : {}", response.getDeletionProgress());
+                return;
             }
             LOGGER.info("Group {} deleted at {}", group, response.getDeletedAt().getToken());
         } catch (Exception e) {

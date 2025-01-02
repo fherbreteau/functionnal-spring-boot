@@ -1,8 +1,10 @@
 package io.github.fherbreteau.functional.driven.rules;
 
+import io.github.fherbreteau.functional.domain.entities.Rules;
+
 public interface RuleLoader {
 
-    String readRules();
+    Rules readRules();
 
-    void writeRules(String rules);
+    void writeRules(Rules rules);
 }

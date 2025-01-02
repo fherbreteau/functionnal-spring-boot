@@ -1,17 +1,14 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BOOLEAN;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.mockito.BDDMockito.given;
 
 import io.github.fherbreteau.functional.domain.command.Command;
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.MoveItemCommand;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Folder;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
@@ -102,5 +99,12 @@ class CheckMoveItemCommandTest {
 
         Command<Output<Item>> result = command.execute(actor);
         assertThat(result).isInstanceOf(ItemErrorCommand.class);
+        Output<Item> error = result.execute(actor);
+        assertThat(error).extracting(Output::isFailure, BOOLEAN).isTrue();
+        String expectedError = String.format("%s can't move %s to a file", actor, destination.getHandle());
+        assertThat(error)
+                .extracting(Output::getFailure)
+                .extracting(Failure::getReasons, list(String.class))
+                .contains(expectedError);
     }
 }

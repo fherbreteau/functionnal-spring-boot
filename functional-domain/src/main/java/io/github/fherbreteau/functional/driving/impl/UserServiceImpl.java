@@ -1,21 +1,15 @@
 package io.github.fherbreteau.functional.driving.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
-import java.util.logging.Logger;
-
 import io.github.fherbreteau.functional.domain.command.CheckCommand;
 import io.github.fherbreteau.functional.domain.command.CompositeUserCommandFactory;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Output;
-import io.github.fherbreteau.functional.domain.entities.User;
-import io.github.fherbreteau.functional.domain.entities.UserCommandType;
-import io.github.fherbreteau.functional.domain.entities.UserInput;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.domain.user.UserManager;
 import io.github.fherbreteau.functional.driving.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserServiceImpl implements UserService {
-    private final Logger logger = Logger.getLogger(UserService.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(UserService.class.getSimpleName());
 
     private final UserManager userManager;
     private final CompositeUserCommandFactory userCommandFactory;
@@ -25,25 +19,27 @@ public class UserServiceImpl implements UserService {
         this.userCommandFactory = userCommandFactory;
     }
 
+    @Override
     public Output<User> findUserByName(String name) {
-        debug(logger,  "Finding user with name");
+        logger.debug("Finding user by name");
         return userManager.findUserByName(name);
     }
 
+    @Override
     public Output<Group> findGroupByName(String name) {
-        debug(logger,  "Finding group with name");
+        logger.debug("Finding group by name");
         return userManager.findGroupByName(name);
     }
 
     @Override
     public Output<String> getUserPassword(User user) {
-        debug(logger,  "Loading user password for {0}", user);
+        logger.debug("Loading user password for {}", user);
         return userManager.getPassword(user);
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public <T> Output<T> processCommand(UserCommandType type, User currentUser, UserInput input) {
-        debug(logger,  "Processing command {0} for {1}", type, currentUser);
+        logger.debug("Processing command {} for {}", type, currentUser);
         CheckCommand<T> command = userCommandFactory.createCommand(type, input);
         return command.execute(currentUser).execute(currentUser);
     }

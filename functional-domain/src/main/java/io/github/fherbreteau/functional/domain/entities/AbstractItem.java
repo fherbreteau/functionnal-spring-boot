@@ -118,22 +118,6 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
                 " " + (parent == null ? "null" : parent.getPath()) + "'";
     }
 
-    protected B copy(B builder) {
-        return builder
-                .withName(name)
-                .withHandle(handle)
-                .withOwner(owner)
-                .withGroup(group)
-                .withOwnerAccess(ownerAccess)
-                .withGroupAccess(groupAccess)
-                .withOtherAccess(otherAccess)
-                .withCreated(created)
-                .withLastModified(lastModified)
-                .withLastAccessed(lastAccessed)
-                .withParent(parent);
-
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -187,8 +171,22 @@ public abstract class AbstractItem<T extends Item, B extends AbstractBuilder<T, 
         protected AbstractBuilder() {
         }
 
+        protected AbstractBuilder(I item) {
+            handle = item.getHandle();
+            name = item.getName();
+            owner = item.getOwner();
+            group = item.getGroup();
+            ownerAccess = item.getOwnerAccess();
+            groupAccess = item.getGroupAccess();
+            otherAccess = item.getOtherAccess();
+            created = item.getCreated();
+            lastModified = item.getLastModified();
+            lastAccessed = item.getLastAccessed();
+            parent = item.getParent();
+        }
+
         public B withHandle(UUID handle) {
-            this.handle = handle;
+            this.handle = requireNonNull(handle);
             return (B) this;
         }
 

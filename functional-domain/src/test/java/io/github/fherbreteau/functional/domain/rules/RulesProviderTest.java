@@ -2,6 +2,7 @@ package io.github.fherbreteau.functional.domain.rules;
 
 import static org.mockito.Mockito.*;
 
+import io.github.fherbreteau.functional.domain.entities.Rules;
 import io.github.fherbreteau.functional.driven.rules.RuleLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RulesProviderTest {
 
-    private final String expectedRules = """
+    private final Rules expectedRules = new Rules("""
             group { }
             user { }
             item { }
-            """;
+            """);
 
     @Mock
     private RuleLoader ruleLoader;
@@ -32,7 +33,7 @@ class RulesProviderTest {
     void shouldLoadRulesWhenRulesAreNotTheExpectedOnes() {
         // Arrange
         when(ruleLoader.readRules())
-                .thenReturn("");
+                .thenReturn(new Rules(""));
 
         // Act
         ruleProvider.defineRules();

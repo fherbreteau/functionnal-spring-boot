@@ -1,18 +1,12 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.UploadCommand;
-import io.github.fherbreteau.functional.domain.entities.File;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.repository.ContentRepository;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
@@ -43,7 +37,7 @@ public class CheckUploadCommand extends AbstractCheckItemCommand<Item, UploadCom
 
     @Override
     protected UploadCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new UploadCommand(repository, contentRepository, item, content, contentType);
     }
 

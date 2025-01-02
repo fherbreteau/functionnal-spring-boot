@@ -36,12 +36,16 @@ public final class FolderItem extends AbstractItem<Folder, FolderItem.Builder> i
     @Override
     @SuppressWarnings("unchecked")
     public Builder copyBuilder() {
-        return copy(Folder.builder());
+        return new Builder(this);
     }
 
     public static final class Builder extends AbstractBuilder<Folder, Builder> {
 
         Builder() {
+        }
+
+        Builder(Folder folder) {
+            super(folder);
         }
 
         @Override

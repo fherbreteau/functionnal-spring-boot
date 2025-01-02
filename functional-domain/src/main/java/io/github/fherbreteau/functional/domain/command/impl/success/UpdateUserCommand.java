@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public class UpdateUserCommand extends AbstractModifyUserCommand<User> {
 
     @Override
     public Output<User> execute(User actor) {
-        debug(logger,  "Updating user with name {0}", name);
+        logger.debug("Updating user with name {}", name);
         User user = userRepository.findByName(name);
         User.Builder builder = user.copy();
         if (nonNull(userId)) {

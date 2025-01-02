@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
 
 import java.util.UUID;
@@ -27,7 +26,7 @@ public class UpdateGroupCommand extends AbstractModifyUserCommand<Group> {
 
     @Override
     public Output<Group> execute(User actor) {
-        debug(logger,  "Updating group with name {0}", name);
+        logger.debug("Updating group with name {}", name);
         Group group = groupRepository.findByName(name);
         Group.Builder builder = group.copy();
         if (nonNull(groupId)) {

@@ -38,15 +38,15 @@ public abstract class AbstractCheckLocationItemCommand<C extends AbstractModifyI
     protected final List<String> checkAccess(User actor) {
         List<String> errors = new ArrayList<>();
         if (source.isFolder() && destination.isFile()) {
-            errors.add(String.format("%s can't %s %s to a file", actor, getAction(), source));
+            errors.add(String.format("%s can't %s %s to a file", actor, getAction(), source.getHandle()));
         }
         Folder destFolder = getDestinationFolder();
         if (!accessChecker.canWrite(destFolder, actor)) {
-            errors.add(String.format("%s can't %s file in %s", actor, getAction(), destFolder));
+            errors.add(String.format("%s can't %s file in %s", actor, getAction(), destFolder.getHandle()));
         }
         String name = getDestinationName();
         if (repository.exists(destFolder, name)) {
-            errors.add(String.format("%s already exists in  %s", name, destFolder));
+            errors.add(String.format("%s already exists in %s", name, destFolder.getHandle()));
         }
         return errors;
     }

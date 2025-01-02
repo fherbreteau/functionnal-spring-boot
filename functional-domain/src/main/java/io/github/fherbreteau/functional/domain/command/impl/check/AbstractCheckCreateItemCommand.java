@@ -31,10 +31,10 @@ public abstract class AbstractCheckCreateItemCommand<T, C extends Command<Output
     protected final List<String> checkAccess(User actor) {
         List<String> reasons = new ArrayList<>();
         if (!accessChecker.canWrite(parent, actor)) {
-            reasons.add(String.format(getCantWriteFormat(), actor, parent));
+            reasons.add(String.format(getCantWriteFormat(), actor, parent.getHandle()));
         }
         if (repository.exists(parent, name)) {
-            reasons.add(String.format("%s already exists in  %s", name, parent));
+            reasons.add(String.format("%s already exists in %s", name, parent.getHandle()));
         }
         return reasons;
     }

@@ -1,6 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.success;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static java.util.Objects.nonNull;
 
 import java.util.UUID;
@@ -23,14 +22,14 @@ public class GetUserCommand extends AbstractSuccessUserCommand<User> {
     @Override
     public Output<User> execute(User actor) {
         if (nonNull(name)) {
-            debug(logger,  "Get user with name {0}", name);
+            logger.debug("Get user with name {}", name);
             return Output.success(userRepository.findByName(name));
         }
         if (nonNull(userId)) {
-            debug(logger,  "Get user with id {0}", userId);
+            logger.debug("Get user with id {}", userId);
             return Output.success(userRepository.findById(userId));
         }
-        debug(logger,  "Get user {0}", actor);
+        logger.debug("Get user {}", actor);
         return Output.success(actor);
     }
 }

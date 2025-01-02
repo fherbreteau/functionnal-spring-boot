@@ -66,7 +66,7 @@ class CheckCreateFolderCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().matches(s -> s.endsWith(" can't create folder in 'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'"));
+                .first().matches(s -> s.endsWith(" can't create folder in null"));
     }
 
     @Test
@@ -80,7 +80,7 @@ class CheckCreateFolderCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().isEqualTo("folder already exists in  'parent root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- null'");
+                .first().isEqualTo("folder already exists in null");
         assertThat(result).extracting("type")
                 .isEqualTo(ItemCommandType.MKDIR);
     }

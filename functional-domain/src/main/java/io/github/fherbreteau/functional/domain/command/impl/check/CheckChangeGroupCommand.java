@@ -1,17 +1,11 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.fherbreteau.functional.domain.command.impl.error.ItemErrorCommand;
 import io.github.fherbreteau.functional.domain.command.impl.success.ChangeGroupCommand;
-import io.github.fherbreteau.functional.domain.entities.Group;
-import io.github.fherbreteau.functional.domain.entities.Item;
-import io.github.fherbreteau.functional.domain.entities.ItemCommandType;
-import io.github.fherbreteau.functional.domain.entities.ItemInput;
-import io.github.fherbreteau.functional.domain.entities.User;
+import io.github.fherbreteau.functional.domain.entities.*;
 import io.github.fherbreteau.functional.driven.repository.ItemRepository;
 import io.github.fherbreteau.functional.driven.rules.AccessChecker;
 import io.github.fherbreteau.functional.driven.rules.AccessUpdater;
@@ -41,7 +35,7 @@ public class CheckChangeGroupCommand extends AbstractCheckItemCommand<Item, Chan
 
     @Override
     protected ChangeGroupCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new ChangeGroupCommand(repository, accessUpdater, item, newGroup);
     }
 

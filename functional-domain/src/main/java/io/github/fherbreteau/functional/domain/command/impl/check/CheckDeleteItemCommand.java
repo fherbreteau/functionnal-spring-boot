@@ -1,7 +1,5 @@
 package io.github.fherbreteau.functional.domain.command.impl.check;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +31,14 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, Delet
     protected List<String> checkAccess(User actor) {
         List<String> reasons = new ArrayList<>();
         if (!accessChecker.canWrite(item.getParent(), actor)) {
-            reasons.add(String.format("%s can't delete %s", actor, item));
+            reasons.add(String.format("%s can't delete %s", actor, item.getHandle()));
         }
         return reasons;
     }
 
     @Override
     protected DeleteItemCommand createSuccess() {
-        debug(logger,  "Creating execute command");
+        logger.debug("Creating execute command");
         return new DeleteItemCommand(repository, contentRepository, accessUpdater, item);
     }
 

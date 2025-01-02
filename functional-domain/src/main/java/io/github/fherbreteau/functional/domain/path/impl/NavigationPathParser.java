@@ -1,20 +1,20 @@
 package io.github.fherbreteau.functional.domain.path.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
 import static io.github.fherbreteau.functional.domain.path.factory.impl.CurrentSegmentPathParserFactory.IS_CURRENT_PATH;
 
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.entities.Failure;
 import io.github.fherbreteau.functional.domain.entities.Item;
 import io.github.fherbreteau.functional.domain.entities.Path;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.domain.path.PathParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NavigationPathParser implements PathParser {
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     private final Path parentPath;
     private final UnaryOperator<Item> itemFunction;
@@ -28,12 +28,12 @@ public class NavigationPathParser implements PathParser {
 
     @Override
     public Path resolve(User actor) {
-        debug(logger, "Navigating path {0} in parent {1}", parentPath, path);
+        logger.debug("Navigating path {} in parent {}", path, parentPath);
         return Optional.of(parentPath)
                 .filter(p -> !parentPath.isItemFile() || !IS_CURRENT_PATH.test(path))
                 .map(Path::getItem)
                 .map(itemFunction)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", path, parentPath.getItem(), actor))));
+                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", path, parentPath.getHandle(), actor))));
     }
 }

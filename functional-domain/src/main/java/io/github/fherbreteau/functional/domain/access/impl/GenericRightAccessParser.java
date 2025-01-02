@@ -1,17 +1,16 @@
 package io.github.fherbreteau.functional.domain.access.impl;
 
-import static io.github.fherbreteau.functional.domain.Logging.debug;
-
 import java.util.function.UnaryOperator;
-import java.util.logging.Logger;
 
 import io.github.fherbreteau.functional.domain.access.AccessParser;
 import io.github.fherbreteau.functional.domain.entities.AccessRight;
 import io.github.fherbreteau.functional.domain.entities.ItemInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenericRightAccessParser implements AccessParser {
 
-    private final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private final UnaryOperator<AccessRight> updateFunction;
 
     public GenericRightAccessParser(UnaryOperator<AccessRight> updateFunction) {
@@ -20,7 +19,7 @@ public class GenericRightAccessParser implements AccessParser {
 
     @Override
     public AccessRight resolve(ItemInput.Builder builder, AccessRight accessRight) {
-        debug(logger, "Generic right access parsing");
+        logger.debug("Generic right access parsing");
         return updateFunction.apply(accessRight);
     }
 }

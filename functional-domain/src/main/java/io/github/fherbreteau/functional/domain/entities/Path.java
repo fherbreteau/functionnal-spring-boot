@@ -2,6 +2,7 @@ package io.github.fherbreteau.functional.domain.entities;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public final class Path {
 
@@ -72,6 +73,10 @@ public final class Path {
 
     public String getContentType() {
         return isItemFolder() ? null : getAsFile().getContentType();
+    }
+
+    public UUID getHandle() {
+        return item.getHandle();
     }
 
     @Override
