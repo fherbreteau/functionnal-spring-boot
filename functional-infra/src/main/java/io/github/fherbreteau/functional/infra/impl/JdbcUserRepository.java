@@ -168,14 +168,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public boolean hasUserWithGroup(String name) {
-        String query = """
-                SELECT 1 FROM %s
-                JOIN %s g ON g.ID = GROUP_ID
-                WHERE g.NAME = :name
-                """.formatted(userGroupTable, userTable);
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue(COL_NAME, name);
-        return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
+        return userGroupRepository.existsByGroupName(name);
     }
 
     @Override

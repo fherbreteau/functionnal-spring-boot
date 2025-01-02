@@ -253,8 +253,9 @@ class UserUpdaterTest {
     void shouldDoNothingWhenCreatingGroup() {
         // Arrange
         // Act
-        userUpdater.createGroup(group);
+        Group result = userUpdater.createGroup(group);
         // Assert
+        assertThat(result).isEqualTo(group);
         verifyNoInteractions(permissionsService);
     }
 

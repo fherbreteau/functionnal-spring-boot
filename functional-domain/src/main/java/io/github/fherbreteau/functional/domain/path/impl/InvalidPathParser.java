@@ -21,6 +21,6 @@ public class InvalidPathParser implements PathParser {
     @Override
     public Path resolve(User actor) {
         logger.debug("Resolving invalid path {}", segment);
-        return currentPath.isError() ? currentPath : Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, currentPath.getItem(), actor)));
+        return currentPath.isError() ? currentPath : Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, currentPath.getHandle(), actor)));
     }
 }

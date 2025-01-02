@@ -1,11 +1,14 @@
 package io.github.fherbreteau.functional.infra.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.list;
 
 import java.util.UUID;
 
 import io.github.fherbreteau.functional.domain.entities.Group;
+import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.driven.repository.GroupRepository;
+import io.github.fherbreteau.functional.driven.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -15,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @JdbcTest
 @ActiveProfiles("test")
-@ContextConfiguration(classes = { JdbcGroupRepository.class, JdbcUserGroupRepository.class })
+@ContextConfiguration(classes = { JdbcGroupRepository.class, JdbcUserGroupRepository.class, JdbcUserRepository.class })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcGroupRepositoryTest {
 
@@ -24,6 +27,9 @@ class JdbcGroupRepositoryTest {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void shouldCheckExistenceOfRootGroupByName() {
@@ -74,6 +80,13 @@ class JdbcGroupRepositoryTest {
         assertThat(groupRepository.update(group)).isEqualTo(group);
         assertThat(groupRepository.exists("to_update_by_name")).isTrue();
         assertThat(groupRepository.exists(groupId)).isFalse();
+
+        UUID userId = UUID.fromString("bc321002-b703-424b-9c3f-d47bf15be632");
+        assertThat(userRepository.findById(userId))
+                .extracting(User::getGroups, list(Group.class))
+                .singleElement()
+                .extracting(Group::getName, Group::getGroupId)
+                .containsExactly("to_update_by_name", newId);
 
         assertThat(groupRepository.update(group)).isEqualTo(group);
     }

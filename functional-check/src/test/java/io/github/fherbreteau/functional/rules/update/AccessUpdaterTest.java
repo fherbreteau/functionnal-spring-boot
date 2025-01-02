@@ -69,7 +69,7 @@ class AccessUpdaterTest {
                 .withGroup(group)
                 .withOwnerAccess(AccessRight.full())
                 .withGroupAccess(AccessRight.readOnly())
-                .withOtherAccess(AccessRight.none())
+                .withOtherAccess(AccessRight.writeExecute())
                 .build();
     }
 
@@ -88,13 +88,15 @@ class AccessUpdaterTest {
         verify(permissionsService).writeRelationships(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(WriteRelationshipsRequest::getUpdatesList, list(RelationshipUpdate.class))
-                .hasSize(4)
+                .hasSize(6)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
                         tuple(OPERATION_CREATE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_CREATE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_CREATE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_CREATE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()));
+                        tuple(OPERATION_CREATE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OTHER_WRITE, USER, OTHER_ID, ITEM, fileHandle.toString()),
+                        tuple(OPERATION_CREATE, OTHER_EXECUTE, USER, OTHER_ID, ITEM, fileHandle.toString()));
 
     }
 
@@ -274,12 +276,9 @@ class AccessUpdaterTest {
         verify(permissionsService).writeRelationships(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(WriteRelationshipsRequest::getUpdatesList, list(RelationshipUpdate.class))
-                .hasSize(3)
+                .singleElement()
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
-                .containsExactly(
-                        tuple(OPERATION_DELETE, OTHER_READ, USER, OTHER_ID, ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, OTHER_WRITE, USER, OTHER_ID, ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, OTHER_EXECUTE, USER, OTHER_ID, ITEM, fileHandle.toString()));
+                .containsExactly(OPERATION_DELETE, OTHER_READ, USER, OTHER_ID, ITEM, fileHandle.toString());
     }
 
     @Test
@@ -308,13 +307,15 @@ class AccessUpdaterTest {
         verify(permissionsService).writeRelationships(requestCaptor.capture());
         assertThat(requestCaptor.getValue())
                 .extracting(WriteRelationshipsRequest::getUpdatesList, list(RelationshipUpdate.class))
-                .hasSize(4)
+                .hasSize(6)
                 .extracting(RelationshipUpdate::getOperation, Utils::getRelation, Utils::getSubjectType, Utils::getSubjectId, Utils::getResourceType, Utils::getResourceId)
                 .containsExactly(
                         tuple(OPERATION_DELETE, OWNER_READ, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_DELETE, OWNER_WRITE, USER, userId.toString(), ITEM, fileHandle.toString()),
                         tuple(OPERATION_DELETE, OWNER_EXECUTE, USER, userId.toString(), ITEM, fileHandle.toString()),
-                        tuple(OPERATION_DELETE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()));
+                        tuple(OPERATION_DELETE, GROUP_READ, GROUP, groupId.toString(), ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OTHER_WRITE, USER, OTHER_ID, ITEM, fileHandle.toString()),
+                        tuple(OPERATION_DELETE, OTHER_EXECUTE, USER, OTHER_ID, ITEM, fileHandle.toString()));
     }
 
     @Test

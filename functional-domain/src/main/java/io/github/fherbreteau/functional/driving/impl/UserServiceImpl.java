@@ -19,11 +19,13 @@ public class UserServiceImpl implements UserService {
         this.userCommandFactory = userCommandFactory;
     }
 
+    @Override
     public Output<User> findUserByName(String name) {
         logger.debug("Finding user by name");
         return userManager.findUserByName(name);
     }
 
+    @Override
     public Output<Group> findGroupByName(String name) {
         logger.debug("Finding group by name");
         return userManager.findGroupByName(name);
@@ -35,9 +37,9 @@ public class UserServiceImpl implements UserService {
         return userManager.getPassword(user);
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public <T> Output<T> processCommand(UserCommandType type, User currentUser, UserInput input) {
-        logger.debug("Processing command {} with input {} for {}", type, input, currentUser);
+        logger.debug("Processing command {} for {}", type, currentUser);
         CheckCommand<T> command = userCommandFactory.createCommand(type, input);
         return command.execute(currentUser).execute(currentUser);
     }

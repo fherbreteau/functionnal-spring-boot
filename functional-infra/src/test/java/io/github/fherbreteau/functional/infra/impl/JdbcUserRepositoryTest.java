@@ -106,10 +106,14 @@ class JdbcUserRepositoryTest {
         UUID newUUID = UUID.fromString("4a9e0664-df93-433a-a953-c59826abc89b");
         userToUpdate = userToUpdate.copy().withUserId(newUUID).build();
         assertThat(userRepository.update(userToUpdate)).isEqualTo(userToUpdate);
-        assertThat(userRepository.exists("User2")).isTrue();
+        assertThat(userRepository.exists(newUUID)).isTrue();
         assertThat(userRepository.exists(userId)).isFalse();
-
-        assertThat(userRepository.update(userToUpdate)).isEqualTo(userToUpdate);
+        UUID groupId = UUID.fromString("38f2056e-d43e-4a30-88bf-cc4835dc7373");
+        assertThat(userRepository.findById(newUUID))
+                .extracting(User::getGroups, list(Group.class))
+                .singleElement()
+                .extracting(Group::getName, Group::getGroupId)
+                .containsExactly("to_update_by_id", groupId);
     }
 
     @Test

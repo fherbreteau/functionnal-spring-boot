@@ -37,6 +37,6 @@ public class SimplePathParser implements PathParser {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(Path::success)
-                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, current.getItem(), actor))));
+                .orElseGet(() -> Path.error(Failure.failure(String.format("%s not found in %s for %s", segment, current.getHandle(), actor))));
     }
 }

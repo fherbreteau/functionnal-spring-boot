@@ -34,7 +34,7 @@ public class CompositeItemCommandFactory {
 
     @SuppressWarnings("rawtypes")
     public CheckCommand createCommand(ItemCommandType type, ItemInput input) {
-        logger.debug("Looking up for a command of type {} for {}", type, input);
+        logger.debug("Looking up for a command of type {}", type);
         return factories.stream()
                 .filter(f -> f.supports(type, input))
                 .map(f -> f.createCommand(repository, contentRepository, accessChecker, accessUpdater, type, input))

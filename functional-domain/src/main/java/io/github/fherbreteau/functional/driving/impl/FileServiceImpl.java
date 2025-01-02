@@ -21,7 +21,7 @@ public class FileServiceImpl implements FileService {
     }
 
     public Path getPath(String path, User currentUser) {
-        logger.debug("Getting path {} for {}", path, currentUser);
+        logger.debug("Getting path for {}", currentUser);
         PathParser parser = pathFactory.createParser(Path.ROOT, path);
         return parser.resolve(currentUser);
     }

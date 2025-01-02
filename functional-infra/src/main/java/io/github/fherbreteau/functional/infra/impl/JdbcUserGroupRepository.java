@@ -1,6 +1,7 @@
 package io.github.fherbreteau.functional.infra.impl;
 
 import static io.github.fherbreteau.functional.infra.utils.UserGroupSQLConstants.COL_GROUP_ID;
+import static io.github.fherbreteau.functional.infra.utils.UserSQLConstants.COL_NAME;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import io.github.fherbreteau.functional.domain.entities.Group;
 import io.github.fherbreteau.functional.domain.entities.User;
 import io.github.fherbreteau.functional.infra.UserGroupRepository;
+import io.github.fherbreteau.functional.infra.mapper.ExistsExtractor;
 import io.github.fherbreteau.functional.infra.mapper.UserGroupExtractor;
 import io.github.fherbreteau.functional.infra.utils.UserGroupSQLConstants;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +24,28 @@ public class JdbcUserGroupRepository implements UserGroupRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final String userGroupTable;
+    private final String groupTable;
     private final UserGroupExtractor userGroupExtractor = new UserGroupExtractor();
+    private final ExistsExtractor existsExtractor = new ExistsExtractor();
 
     public JdbcUserGroupRepository(NamedParameterJdbcTemplate jdbcTemplate,
-                                   @Value("${database.table.user-group:user-group}") String userGroupTable) {
+                                   @Value("${database.table.user-group:user-group}") String userGroupTable,
+                                   @Value("${database.table.group:group}") String groupTable) {
         this.jdbcTemplate = jdbcTemplate;
         this.userGroupTable = userGroupTable;
+        this.groupTable = groupTable;
+    }
+
+    @Override
+    public boolean existsByGroupName(String name) {
+        String query = """
+                SELECT 1 FROM %s
+                JOIN %s g ON g.ID = GROUP_ID
+                WHERE g.NAME = :name
+                """.formatted(userGroupTable, groupTable);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue(COL_NAME, name);
+        return Boolean.TRUE.equals(jdbcTemplate.query(query, params, existsExtractor));
     }
 
     @Override

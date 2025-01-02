@@ -91,7 +91,8 @@ public class JdbcItemRepository implements ItemRepository {
                 """.formatted(itemTable);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, itemExtractor.map(item), keyHolder, new String[]{COL_ID});
-        I inserted = (I) item.copyBuilder().withHandle(keyHolder.getKeyAs(UUID.class)).build();
+        UUID handle = keyHolder.getKeyAs(UUID.class);
+        I inserted = (I) item.copyBuilder().withHandle(handle).build();
         accessRightRepository.createAccess(inserted.getHandle(), item.getOwnerAccess(), ATTR_OWNER);
         accessRightRepository.createAccess(inserted.getHandle(), item.getGroupAccess(), ATTR_GROUP);
         accessRightRepository.createAccess(inserted.getHandle(), item.getOtherAccess(), ATTR_OTHER);

@@ -75,6 +75,6 @@ class CheckDeleteItemCommandTest {
         assertThat(result).isInstanceOf(ItemErrorCommand.class)
                 .extracting("reasons", list(String.class))
                 .hasSize(1)
-                .first().matches(s -> s.endsWith(" can't delete 'to_delete root(00000000-0000-0000-0000-000000000000):root(00000000-0000-0000-0000-000000000000) --------- parent'"));
+                .first().matches(s -> s.endsWith(" can't delete null"));
     }
 }

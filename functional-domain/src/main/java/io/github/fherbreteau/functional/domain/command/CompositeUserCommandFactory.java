@@ -35,10 +35,10 @@ public class CompositeUserCommandFactory {
         this.factories = factories.stream().sorted(Comparator.comparing(UserCommandFactory::order)).toList();
     }
 
-    @SuppressWarnings("rawtypes")
-    public CheckCommand createCommand(UserCommandType type, UserInput input) {
-        logger.debug("Looking up for a command of type {} for {}", type, input);
-        return factories.stream()
+    @SuppressWarnings("unchecked")
+    public <T> CheckCommand<T> createCommand(UserCommandType type, UserInput input) {
+        logger.debug("Looking up for a command of type {}", type);
+        return (CheckCommand<T>) factories.stream()
                 .filter(f -> f.supports(type, input))
                 .map(f -> f.createCommand(userRepository, groupRepository, userChecker, userUpdater, passwordProtector,
                         type, input))

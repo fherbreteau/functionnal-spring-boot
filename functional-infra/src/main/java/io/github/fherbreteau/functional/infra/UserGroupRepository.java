@@ -8,6 +8,8 @@ import io.github.fherbreteau.functional.domain.entities.User;
 
 public interface UserGroupRepository {
 
+    boolean existsByGroupName(String name);
+
     void create(User user, List<UUID> groupIds);
 
     void create(List<UUID> userIds, Group group);

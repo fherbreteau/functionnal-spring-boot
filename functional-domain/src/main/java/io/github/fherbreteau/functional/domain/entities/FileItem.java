@@ -36,8 +36,7 @@ public final class FileItem extends AbstractItem<File, FileItem.Builder> impleme
     @Override
     @SuppressWarnings("unchecked")
     public Builder copyBuilder() {
-        return copy(File.builder())
-                .withContentType(contentType);
+        return new Builder(this);
     }
 
     @Override
@@ -66,6 +65,11 @@ public final class FileItem extends AbstractItem<File, FileItem.Builder> impleme
         private String contentType = "application/octet-stream";
 
         Builder() {
+        }
+
+        Builder(File item) {
+            super(item);
+            contentType = item.getContentType();
         }
 
         public Builder withContentType(String contentType) {

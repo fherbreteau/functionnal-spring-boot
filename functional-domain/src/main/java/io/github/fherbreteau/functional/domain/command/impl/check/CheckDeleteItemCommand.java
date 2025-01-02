@@ -31,7 +31,7 @@ public class CheckDeleteItemCommand extends AbstractCheckItemCommand<Void, Delet
     protected List<String> checkAccess(User actor) {
         List<String> reasons = new ArrayList<>();
         if (!accessChecker.canWrite(item.getParent(), actor)) {
-            reasons.add(String.format("%s can't delete %s", actor, item));
+            reasons.add(String.format("%s can't delete %s", actor, item.getHandle()));
         }
         return reasons;
     }
